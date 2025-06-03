@@ -1,15 +1,15 @@
 {
   "name": "notfrens-miniapp-ton",
-  "version": "3.0.0", 
+  "version": "3.0.0",
+  "description": "NotFrens Complete Web3 Platform with TON Wallet & USDT Payments",
   "main": "server.js",
+  "engines": {
+    "node": "18.x"
+  },
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "node server.js",
+    "vercel-build": "echo 'Build complete'"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5", 
-    "dotenv": "^16.3.1",
-    "node-telegram-bot-api": "^0.63.0",
-    "axios": "^1.6.0"
-  }
-}
+    "express": "^4.
