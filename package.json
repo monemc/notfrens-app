@@ -1,7 +1,7 @@
 {
   "name": "notfrens-miniapp-ton",
-  "version": "3.0.0",
-  "description": "NotFrens Complete Web3 Platform with TON Wallet & USDT Payments",
+  "version": "3.1.0",
+  "description": "NotFrens Complete Web3 Platform with TON Wallet & USDT Payments - Fixed & Optimized",
   "main": "server.js",
   "engines": {
     "node": "18.x"
@@ -9,7 +9,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "vercel-build": "echo 'Build complete'"
+    "vercel-build": "echo 'Build complete'",
+    "test": "echo 'Tests will be added later'"
   },
   "dependencies": {
     "express": "^4.18.2",
@@ -24,7 +25,17 @@
     "ton",
     "usdt",
     "web3",
-    "vercel"
+    "vercel",
+    "miniapp",
+    "crypto",
+    "referral",
+    "payment"
   ],
   "author": "NotFrens Team",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/notfrens-miniapp"
+  },
+  "homepage": "https://notfrens.app"
+}
