@@ -802,3 +802,17 @@ if (process.env.NODE_ENV !== 'production') {
     console.log(`🤖 Telegram Bot: @${BOT_USERNAME}`);
   });
 }
+// Bot commands qismiga qo'shing
+if (bot) {
+  bot.onText(/\/deploy/, async (msg) => {
+    const userId = msg.from.id;
+    if (userId == process.env.ADMIN_TELEGRAM_ID) {
+      try {
+        await axios.post(process.env.DEPLOY_HOOK_URL);
+        bot.sendMessage(msg.chat.id, '✅ Deploy started!');
+      } catch (error) {
+        bot.sendMessage(msg.chat.id, '❌ Deploy failed');
+      }
+    }
+  });
+}
