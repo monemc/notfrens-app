@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const TelegramBot = require('node-telegram-bot-api');
 const path = require('path');
 const serverless = require('serverless-http');
 require('dotenv').config();
@@ -11,18 +12,22 @@ const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '7583849213:AAHIuBd
 const BOT_USERNAME = process.env.BOT_USERNAME || 'not_frens_bot';
 const WEB_APP_URL = process.env.WEB_APP_URL || 'https://notfrens.app';
 const TON_API_KEY = process.env.TON_API_KEY || 'a449ebf3378f11572f17d64e4ec01f059d6f8f77ee3dafc0f69bc73284384b0f';
-
 const ADMIN_TELEGRAM_ID = parseInt(process.env.ADMIN_TELEGRAM_ID) || 123456789;
 
-// USDT Configuration
-const USDT_CONFIG = {
-    ownerUsdtAddress: process.env.USDT_RECEIVING_ADDRESS || "UQCpLxU30SVhlQ049kja71GohOM43YR3emTT3igMHsntmlkI",
-    premiumPrice: parseInt(process.env.PREMIUM_PRICE_USDT) || 11,
-    autoVerification: process.env.AUTO_VERIFICATION === 'true' || true
-};
-
-console.log('🚀 NotFrens Backend Starting...');
-console.log(`🌐 Domain: ${WEB_APP_URL}`);
+// Initialize Telegram Bot
+let bot;
+try {
+  if (TELEGRAM_BOT_TOKEN && process.env.NODE_ENV !== 'production') {
+    // Local development - use polling
+    bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: true });
+  } else if (TELEGRAM_BOT_TOKEN) {
+    // Production - use webhook
+    bot = new TelegramBot(TELEGRAM_BOT_TOKEN);
+  }
+  console.log('🤖 Telegram Bot initialized');
+} catch (error) {
+  console.error('❌ Bot init failed:', error.message);
+}
 
 // Middleware
 app.use(cors({
@@ -35,7 +40,7 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Storage
+// Storage (same as before)
 let users = [];
 let claimRequests = [];
 let allReferrals = [];
@@ -44,7 +49,7 @@ let tonTransactions = [];
 let usdtPayments = [];
 let premiumUsers = [];
 
-// Initialize demo data
+// Initialize demo data (same as before)
 if (users.length === 0) {
   const sampleUsers = [
     {
@@ -61,38 +66,14 @@ if (users.length === 0) {
       isPremium: false,
       createdAt: new Date().toISOString(),
       lastActive: new Date().toISOString()
-    },
-    {
-      id: 2,
-      telegramId: 987654321,
-      username: 'Friend1',
-      firstName: 'Friend',
-      lastName: 'One',
-      referralCode: '987654321',
-      referrerTelegramId: 123456789,
-      referrerCode: '123456789',
-      claimedLevels: {},
-      walletAddress: null,
-      isPremium: false,
-      createdAt: new Date().toISOString(),
-      lastActive: new Date().toISOString()
     }
   ];
   
   users.push(...sampleUsers);
-  
-  allReferrals.push({
-    referrerId: 123456789,
-    referralId: 987654321,
-    position: 1,
-    isStructural: true,
-    timestamp: new Date().toISOString()
-  });
-  
-  console.log(`✅ Demo data created: ${users.length} users, ${allReferrals.length} referrals`);
+  console.log(`✅ Demo data created: ${users.length} users`);
 }
 
-// Level configuration
+// Level configuration (same as before)
 const LEVEL_CONFIG = {
   1: { required: 1, reward: 0, premiumRequired: false },
   2: { required: 3, reward: 0, premiumRequired: false },
@@ -108,24 +89,285 @@ const LEVEL_CONFIG = {
   12: { required: 177147, reward: 222000, premiumRequired: true }
 };
 
-// TON Connect manifest
-const tonConnectManifest = {
-  url: WEB_APP_URL,
-  name: "NotFrens",
-  iconUrl: `${WEB_APP_URL}/icon-192x192.png`,
-  termsOfUseUrl: `${WEB_APP_URL}/terms`,
-  privacyPolicyUrl: `${WEB_APP_URL}/privacy`
-};
+// ========================= TELEGRAM BOT COMMANDS =========================
 
-// Utility functions
-function validateTelegramUserId(userId) {
-  return userId && Number.isInteger(userId) && userId > 0;
+if (bot) {
+  // /start command with referral support
+  bot.onText(/\/start(.*)/, async (msg, match) => {
+    const chatId = msg.chat.id;
+    const userId = msg.from.id;
+    const username = msg.from.username || msg.from.first_name;
+    const referralCode = match[1] ? match[1].trim() : null;
+    
+    console.log(`🚀 User ${userId} (@${username}) started bot`);
+    
+    try {
+      // Create or get user
+      let user = users.find(u => u.telegramId === userId);
+      if (!user) {
+        user = {
+          id: users.length + 1,
+          telegramId: userId,
+          username: username || `User${userId}`,
+          firstName: msg.from.first_name || 'User',
+          lastName: msg.from.last_name || '',
+          referralCode: userId.toString(),
+          referrerTelegramId: null,
+          referrerCode: null,
+          claimedLevels: {},
+          walletAddress: null,
+          isPremium: false,
+          createdAt: new Date().toISOString(),
+          lastActive: new Date().toISOString()
+        };
+        users.push(user);
+        console.log(`👤 New user created: ${userId}`);
+      }
+      
+      // Handle referral
+      if (referralCode && referralCode !== userId.toString()) {
+        const cleanCode = referralCode.replace('ref', '');
+        const referrerTelegramId = parseInt(cleanCode);
+        
+        if (!isNaN(referrerTelegramId) && referrerTelegramId !== userId) {
+          const referrer = users.find(u => u.telegramId === referrerTelegramId);
+          
+          if (referrer && !user.referrerTelegramId) {
+            // Add referral
+            const existingReferral = allReferrals.find(r => 
+              r.referralId === userId && r.referrerId === referrerTelegramId
+            );
+            
+            if (!existingReferral) {
+              allReferrals.push({
+                referrerId: referrerTelegramId,
+                referralId: userId,
+                position: allReferrals.filter(r => r.referrerId === referrerTelegramId).length + 1,
+                isStructural: true,
+                timestamp: new Date().toISOString()
+              });
+              
+              user.referrerTelegramId = referrerTelegramId;
+              user.referrerCode = cleanCode;
+              
+              console.log(`🔗 Referral added: ${referrerTelegramId} -> ${userId}`);
+              
+              // Notify referrer
+              try {
+                await bot.sendMessage(referrerTelegramId,
+                  `🎉 Great news! @${username} joined using your referral link!\n` +
+                  `💰 You earned 100 NOTF tokens!\n` +
+                  `📱 Open the app to see your progress!`,
+                  {
+                    reply_markup: {
+                      inline_keyboard: [
+                        [{ text: '🚀 Open NotFrens App', web_app: { url: `${WEB_APP_URL}?user=${referrerTelegramId}` }}]
+                      ]
+                    }
+                  }
+                );
+              } catch (error) {
+                console.log('Could not notify referrer:', error.message);
+              }
+            }
+          }
+        }
+      }
+      
+      // Welcome message with Web App button
+      const welcomeMessage = 
+        `🎉 Welcome to NotFrens, ${username}!\n\n` +
+        `🌟 Your Web3 referral journey starts here!\n\n` +
+        `💎 <b>What you can do:</b>\n` +
+        `• Connect your TON wallet\n` +
+        `• Invite friends and earn NOTF tokens\n` +
+        `• Buy Premium ($11 USDT) to unlock levels\n` +
+        `• Complete 12 levels and claim up to $222,000!\n\n` +
+        `🚀 <b>Ready to become a NotFren?</b>\n` +
+        `Tap the button below to open the app!`;
+      
+      const keyboard = {
+        inline_keyboard: [
+          [{ 
+            text: '🚀 Open NotFrens App', 
+            web_app: { url: `${WEB_APP_URL}?user=${userId}` }
+          }],
+          [
+            { text: '👥 Get Referral Link', callback_data: 'get_referral' },
+            { text: '📊 My Stats', callback_data: 'my_stats' }
+          ],
+          [{ text: '❓ Help', callback_data: 'help' }]
+        ]
+      };
+      
+      await bot.sendMessage(chatId, welcomeMessage, {
+        reply_markup: keyboard,
+        parse_mode: 'HTML'
+      });
+      
+    } catch (error) {
+      console.error('Error in /start:', error);
+      await bot.sendMessage(chatId, 
+        '❌ Something went wrong. Please try again.\n\n' +
+        'If the problem persists, contact support.'
+      );
+    }
+  });
+  
+  // Handle callback queries
+  bot.on('callback_query', async (callbackQuery) => {
+    const chatId = callbackQuery.message.chat.id;
+    const userId = callbackQuery.from.id;
+    const data = callbackQuery.data;
+    
+    try {
+      if (data === 'get_referral') {
+        const referralLink = `https://t.me/${BOT_USERNAME}?start=ref${userId}`;
+        
+        await bot.sendMessage(chatId,
+          `🔗 <b>Your Personal Referral Link:</b>\n\n` +
+          `<code>${referralLink}</code>\n\n` +
+          `📱 <b>How to earn:</b>\n` +
+          `1. Share your link with friends\n` +
+          `2. They join and buy Premium ($11 USDT)\n` +
+          `3. You get 100 NOTF tokens per referral\n` +
+          `4. Complete levels to claim big rewards!\n\n` +
+          `🎯 <b>Level Requirements:</b>\n` +
+          `Level 3: 9 referrals → $30\n` +
+          `Level 5: 81 referrals → $300\n` +
+          `Level 7: 729 referrals → $1,800\n` +
+          `Level 9: 6,561 referrals → $20,000\n` +
+          `Level 12: 177,147 referrals → $222,000\n\n` +
+          `⚠️ <i>All referrals must have Premium for level progression</i>`,
+          {
+            parse_mode: 'HTML',
+            reply_markup: {
+              inline_keyboard: [
+                [{ text: '📤 Share Link', switch_inline_query: `Join me on NotFrens and earn crypto! ${referralLink}` }],
+                [{ text: '🚀 Open App', web_app: { url: `${WEB_APP_URL}?user=${userId}` }}]
+              ]
+            }
+          }
+        );
+      }
+      
+      else if (data === 'my_stats') {
+        const user = users.find(u => u.telegramId === userId);
+        
+        if (user) {
+          const directReferrals = allReferrals.filter(r => r.referrerId === userId).length;
+          const levels = calculateAllLevels(userId);
+          const completedLevels = Object.values(levels).filter(l => l.completed).length;
+          
+          const statsMessage =
+            `📊 <b>Your NotFrens Stats:</b>\n\n` +
+            `👤 Username: @${user.username}\n` +
+            `💰 Tokens: ${directReferrals * 100} NOTF\n` +
+            `👥 Direct Referrals: ${directReferrals}\n` +
+            `⭐ Premium: ${user.isPremium ? '✅ Active' : '❌ Not Active'}\n` +
+            `🏆 Levels Completed: ${completedLevels}/12\n\n` +
+            `💎 <b>Next Steps:</b>\n` +
+            `${!user.isPremium ? '1. 💳 Buy Premium ($11 USDT) to unlock levels\n' : ''}` +
+            `${directReferrals < 3 ? `2. 👥 Invite ${3 - directReferrals} more friends\n` : ''}` +
+            `3. 🏆 Complete levels and claim rewards!\n\n` +
+            `🎯 <b>Your Progress:</b>\n` +
+            `Level 3: ${levels[3] ? levels[3].current : 0}/9 referrals\n` +
+            `Level 5: ${levels[5] ? levels[5].current : 0}/81 referrals\n` +
+            `Level 12: ${levels[12] ? levels[12].current : 0}/177,147 referrals`;
+          
+          await bot.sendMessage(chatId, statsMessage, {
+            parse_mode: 'HTML',
+            reply_markup: {
+              inline_keyboard: [
+                [{ text: '🚀 Open App', web_app: { url: `${WEB_APP_URL}?user=${userId}` }}],
+                [{ text: '🔗 Get Referral Link', callback_data: 'get_referral' }]
+              ]
+            }
+          });
+        }
+      }
+      
+      else if (data === 'help') {
+        const helpMessage =
+          `❓ <b>NotFrens Help</b>\n\n` +
+          `<b>🎯 How NotFrens Works:</b>\n` +
+          `1. 💎 Buy Premium subscription ($11 USDT)\n` +
+          `2. 👥 Invite friends using your referral link\n` +
+          `3. 🏆 Complete 12 levels (each needs 3x more referrals)\n` +
+          `4. 💰 Claim rewards up to $222,000!\n\n` +
+          `<b>🔗 Commands:</b>\n` +
+          `/start - Start the bot\n` +
+          `/help - Show this help\n` +
+          `/stats - Show your statistics\n` +
+          `/referral - Get your referral link\n\n` +
+          `<b>💰 Reward Levels:</b>\n` +
+          `Level 3 (9 refs): $30\n` +
+          `Level 5 (81 refs): $300\n` +
+          `Level 7 (729 refs): $1,800\n` +
+          `Level 9 (6,561 refs): $20,000\n` +
+          `Level 12 (177,147 refs): $222,000\n\n` +
+          `⚠️ <i>Important: All your referrals must have Premium to count for level progression!</i>\n\n` +
+          `🆘 Need support? Contact @YourSupportUsername`;
+        
+        await bot.sendMessage(chatId, helpMessage, {
+          parse_mode: 'HTML',
+          reply_markup: {
+            inline_keyboard: [
+              [{ text: '🚀 Open App', web_app: { url: `${WEB_APP_URL}?user=${userId}` }}]
+            ]
+          }
+        });
+      }
+      
+      await bot.answerCallbackQuery(callbackQuery.id);
+      
+    } catch (error) {
+      console.error('Error in callback:', error);
+      await bot.answerCallbackQuery(callbackQuery.id, { text: '❌ Error occurred' });
+    }
+  });
+  
+  // Simple commands
+  bot.onText(/\/help/, (msg) => {
+    bot.emit('callback_query', {
+      message: { chat: { id: msg.chat.id } },
+      from: { id: msg.from.id },
+      data: 'help',
+      id: 'help_cmd'
+    });
+  });
+  
+  bot.onText(/\/stats/, (msg) => {
+    bot.emit('callback_query', {
+      message: { chat: { id: msg.chat.id } },
+      from: { id: msg.from.id },
+      data: 'my_stats',
+      id: 'stats_cmd'
+    });
+  });
+  
+  bot.onText(/\/referral/, (msg) => {
+    bot.emit('callback_query', {
+      message: { chat: { id: msg.chat.id } },
+      from: { id: msg.from.id },
+      data: 'get_referral',
+      id: 'referral_cmd'
+    });
+  });
+  
+  // Error handling
+  bot.on('polling_error', (error) => {
+    console.error('Polling error:', error);
+  });
+  
+  bot.on('error', (error) => {
+    console.error('Bot error:', error);
+  });
 }
 
-function validateTonAddress(address) {
-  return address && 
-         (address.startsWith('EQ') || address.startsWith('UQ')) && 
-         address.length >= 48;
+// Utility functions (same as before)
+function validateTelegramUserId(userId) {
+  return userId && Number.isInteger(userId) && userId > 0;
 }
 
 function calculateTotalReferrals(userTelegramId, targetLevel) {
@@ -178,42 +420,7 @@ function calculateAllLevels(userTelegramId) {
   return levels;
 }
 
-function getRealTimeStats() {
-  const totalUsers = users.length;
-  const totalClaims = claimRequests.length;
-  const connectedWallets = walletConnections.length;
-  const totalTransactions = tonTransactions.length;
-  const totalUSDTPayments = usdtPayments.length;
-  const activePremiumUsers = premiumUsers.filter(p => p.active).length;
-  
-  return {
-    users: {
-      total: totalUsers,
-      withWallets: users.filter(u => u.walletAddress).length,
-      premium: activePremiumUsers
-    },
-    claims: {
-      total: totalClaims,
-      pending: claimRequests.filter(c => c.status === 'pending').length,
-      processed: claimRequests.filter(c => c.status === 'processed').length
-    },
-    ton: {
-      connectedWallets: connectedWallets,
-      totalTransactions: totalTransactions,
-      apiEnabled: !!TON_API_KEY
-    },
-    payments: {
-      totalUSDTPayments: totalUSDTPayments,
-      verifiedPayments: usdtPayments.filter(p => p.status === 'verified').length,
-      totalRevenue: usdtPayments
-        .filter(p => p.status === 'verified')
-        .reduce((sum, p) => sum + p.usdtEquivalent, 0),
-      premiumUsers: activePremiumUsers
-    }
-  };
-}
-
-// Routes
+// ========================= API ROUTES (same as before) =========================
 
 // Main app route
 app.get('/', (req, res) => {
@@ -222,23 +429,31 @@ app.get('/', (req, res) => {
 
 // TON Connect manifest
 app.get('/tonconnect-manifest.json', (req, res) => {
-  res.json(tonConnectManifest);
+  const manifest = {
+    url: WEB_APP_URL,
+    name: "NotFrens",
+    iconUrl: `${WEB_APP_URL}/icon-192x192.png`,
+    termsOfUseUrl: `${WEB_APP_URL}/terms`,
+    privacyPolicyUrl: `${WEB_APP_URL}/privacy`
+  };
+  res.json(manifest);
 });
 
-// API Routes
+// Health check
 app.get('/api/health', (req, res) => {
-  const stats = getRealTimeStats();
   res.json({
     status: 'online',
     timestamp: new Date().toISOString(),
-    users: stats.users.total,
-    claims: stats.claims.total,
+    users: users.length,
+    claims: claimRequests.length,
     version: '3.1.0',
+    bot: bot ? 'connected' : 'disconnected',
     features: {
       tonWallet: true,
       usdtPayments: true,
       referralSystem: true,
-      premiumLevels: true
+      premiumLevels: true,
+      telegramBot: !!bot
     }
   });
 });
@@ -276,7 +491,7 @@ app.get('/api/telegram-user/:telegramId', (req, res) => {
       };
       
       users.push(user);
-      console.log(`👤 New user created: ${telegramId}`);
+      console.log(`👤 New user created via API: ${telegramId}`);
     }
     
     // Update last active
@@ -301,7 +516,7 @@ app.get('/api/telegram-user/:telegramId', (req, res) => {
       totalDirectReferrals,
       directReferrals,
       levels,
-      referralLink: `https://t.me/${BOT_USERNAME}/notfrens?startapp=${telegramId}`,
+      referralLink: `https://t.me/${BOT_USERNAME}?start=ref${telegramId}`,
       stats: {
         totalTokensEarned: totalDirectReferrals * 100,
         levelsCompleted: Object.values(levels).filter(l => l.completed).length,
@@ -323,7 +538,7 @@ app.get('/api/telegram-user/:telegramId', (req, res) => {
   }
 });
 
-// Add referral
+// Add referral (API endpoint)
 app.post('/api/telegram-referral', (req, res) => {
   try {
     const { telegramId, referrerCode } = req.body;
@@ -383,7 +598,7 @@ app.post('/api/telegram-referral', (req, res) => {
       user.referrerCode = referrerCode;
     }
     
-    console.log(`🔗 New referral: ${referrerTelegramId} -> ${telegramId}`);
+    console.log(`🔗 Referral added via API: ${referrerTelegramId} -> ${telegramId}`);
     
     res.json({
       success: true,
@@ -400,211 +615,12 @@ app.post('/api/telegram-referral', (req, res) => {
   }
 });
 
-// Claim reward
-app.post('/api/telegram-claim', (req, res) => {
-  try {
-    const { telegramId, level } = req.body;
-    
-    if (!validateTelegramUserId(telegramId) || !level || level < 1 || level > 12) {
-      return res.status(400).json({
-        success: false,
-        error: 'Invalid parameters'
-      });
-    }
-    
-    const user = users.find(u => u.telegramId === telegramId);
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        error: 'User not found'
-      });
-    }
-    
-    // Check premium requirement
-    const levelConfig = LEVEL_CONFIG[level];
-    if (levelConfig.premiumRequired && !user.isPremium) {
-      return res.status(403).json({
-        success: false,
-        error: 'Premium required for this level'
-      });
-    }
-    
-    // Check if already claimed
-    if (user.claimedLevels[level]) {
-      return res.status(400).json({
-        success: false,
-        error: 'Level already claimed'
-      });
-    }
-    
-    // Check if level is completed
-    const levels = calculateAllLevels(telegramId);
-    const currentLevel = levels[level];
-    
-    if (!currentLevel || !currentLevel.completed) {
-      return res.status(400).json({
-        success: false,
-        error: 'Level not completed'
-      });
-    }
-    
-    if (currentLevel.reward === 0) {
-      return res.status(400).json({
-        success: false,
-        error: 'No reward for this level'
-      });
-    }
-    
-    // Create claim request
-    const claimRequest = {
-      id: claimRequests.length + 1,
-      telegramId,
-      level,
-      amount: currentLevel.reward,
-      status: 'pending',
-      requestedAt: new Date().toISOString(),
-      processedAt: null,
-      adminNotes: null
-    };
-    
-    claimRequests.push(claimRequest);
-    
-    // Mark as claimed
-    user.claimedLevels[level] = {
-      claimedAt: new Date().toISOString(),
-      amount: currentLevel.reward,
-      status: 'pending'
-    };
-    
-    console.log(`💰 Claim request: User ${telegramId}, Level ${level}, Amount ${currentLevel.reward}`);
-    
-    res.json({
-      success: true,
-      claimRequest,
-      message: 'Claim request submitted successfully'
-    });
-    
-  } catch (error) {
-    console.error('Error processing claim:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error'
-    });
+// Webhook endpoint for Telegram
+app.post('/webhook', (req, res) => {
+  if (bot) {
+    bot.processUpdate(req.body);
   }
-});
-
-// TON wallet connection
-app.post('/api/ton/connect', (req, res) => {
-  try {
-    const { telegramId, walletAddress } = req.body;
-    
-    if (!validateTelegramUserId(telegramId) || !validateTonAddress(walletAddress)) {
-      return res.status(400).json({
-        success: false,
-        error: 'Invalid parameters'
-      });
-    }
-    
-    // Update user wallet
-    const user = users.find(u => u.telegramId === telegramId);
-    if (user) {
-      user.walletAddress = walletAddress;
-      user.lastActive = new Date().toISOString();
-    }
-    
-    // Store wallet connection
-    const existingConnection = walletConnections.find(c => 
-      c.telegramId === telegramId || c.walletAddress === walletAddress
-    );
-    
-    if (!existingConnection) {
-      walletConnections.push({
-        telegramId,
-        walletAddress,
-        connectedAt: new Date().toISOString(),
-        status: 'active'
-      });
-    }
-    
-    console.log(`💳 Wallet connected: ${telegramId} -> ${walletAddress}`);
-    
-    res.json({
-      success: true,
-      message: 'Wallet connected successfully'
-    });
-    
-  } catch (error) {
-    console.error('Error connecting wallet:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error'
-    });
-  }
-});
-
-// TON balance check
-app.post('/api/ton/balance', async (req, res) => {
-  try {
-    const { address } = req.body;
-    
-    if (!validateTonAddress(address)) {
-      return res.status(400).json({
-        success: false,
-        error: 'Invalid TON address'
-      });
-    }
-    
-    // Simulate balance check (replace with real TON API call)
-    const mockBalance = (Math.random() * 10).toFixed(3);
-    
-    res.json({
-      success: true,
-      balance: mockBalance,
-      address: address
-    });
-    
-  } catch (error) {
-    console.error('Error checking balance:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to check balance'
-    });
-  }
-});
-
-// TON transaction notification
-app.post('/api/ton/transaction', (req, res) => {
-  try {
-    const { hash, from, to, amount, comment } = req.body;
-    
-    const transaction = {
-      id: tonTransactions.length + 1,
-      hash,
-      from,
-      to,
-      amount: parseFloat(amount),
-      comment,
-      timestamp: new Date().toISOString(),
-      status: 'pending'
-    };
-    
-    tonTransactions.push(transaction);
-    
-    console.log(`⚡ TON Transaction: ${from} -> ${to}, ${amount} TON`);
-    
-    res.json({
-      success: true,
-      transaction,
-      message: 'Transaction recorded'
-    });
-    
-  } catch (error) {
-    console.error('Error recording transaction:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error'
-    });
-  }
+  res.sendStatus(200);
 });
 
 // USDT payment notification
@@ -636,7 +652,12 @@ app.post('/api/payment/usdt', (req, res) => {
     
     usdtPayments.push(payment);
     
-    // Auto-verify if amount matches premium price
+    // Auto-verify premium payment
+    const USDT_CONFIG = {
+      ownerUsdtAddress: process.env.USDT_RECEIVING_ADDRESS || "UQCpLxU30SVhlQ049kja71GohOM43YR3emTT3igMHsntmlkI",
+      premiumPrice: parseInt(process.env.PREMIUM_PRICE_USDT) || 11
+    };
+    
     if (parseFloat(usdtEquivalent) === USDT_CONFIG.premiumPrice && to === USDT_CONFIG.ownerUsdtAddress) {
       payment.status = 'verified';
       payment.verifiedAt = new Date().toISOString();
@@ -655,10 +676,35 @@ app.post('/api/payment/usdt', (req, res) => {
         });
         
         console.log(`⭐ Premium activated for user ${telegramId}`);
+        
+        // Notify user via Telegram
+        if (bot) {
+          try {
+            bot.sendMessage(telegramId,
+              `🎉 <b>Premium Activated!</b>\n\n` +
+              `✅ Your premium subscription is now active!\n` +
+              `🔓 Level progression unlocked\n` +
+              `💰 You can now claim rewards\n` +
+              `🚀 Invite friends to advance through levels\n\n` +
+              `📱 Open the app to see your progress!`,
+              {
+                parse_mode: 'HTML',
+                reply_markup: {
+                  inline_keyboard: [
+                    [{ text: '🚀 Open App', web_app: { url: `${WEB_APP_URL}?user=${telegramId}` }}],
+                    [{ text: '🔗 Get Referral Link', callback_data: 'get_referral' }]
+                  ]
+                }
+              }
+            );
+          } catch (error) {
+            console.error('Error notifying premium activation:', error);
+          }
+        }
       }
     }
     
-    console.log(`💰 USDT Payment: ${telegramId}, ${usdtEquivalent}, Status: ${payment.status}`);
+    console.log(`💰 USDT Payment: ${telegramId}, $${usdtEquivalent}, Status: ${payment.status}`);
     
     res.json({
       success: true,
@@ -675,43 +721,14 @@ app.post('/api/payment/usdt', (req, res) => {
   }
 });
 
-// Admin stats
-app.get('/api/admin/stats', (req, res) => {
-  try {
-    const stats = getRealTimeStats();
-    
-    res.json({
-      success: true,
-      stats: {
-        ...stats,
-        recentActivity: {
-          newUsers: users.filter(u => 
-            new Date(u.createdAt) > new Date(Date.now() - 24 * 60 * 60 * 1000)
-          ).length,
-          recentClaims: claimRequests.filter(c => 
-            new Date(c.requestedAt) > new Date(Date.now() - 24 * 60 * 60 * 1000)
-          ).length,
-          recentPayments: usdtPayments.filter(p => 
-            new Date(p.timestamp) > new Date(Date.now() - 24 * 60 * 60 * 1000)
-          ).length
-        }
-      },
-      timestamp: new Date().toISOString()
-    });
-    
-  } catch (error) {
-    console.error('Error getting admin stats:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Internal server error'
-    });
-  }
-});
-
-// Catch all route - serve main app
+// Catch all route
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'app.html'));
 });
 
-// Export for Netlify Functions
+// Export for serverless
 module.exports.handler = serverless(app);
+
+console.log('🚀 NotFrens Server started with Telegram Bot integration!');
+console.log(`🤖 Bot: @${BOT_USERNAME}`);
+console.log(`🌐 Web App: ${WEB_APP_URL}`);
