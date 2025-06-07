@@ -732,3 +732,12 @@ module.exports.handler = serverless(app);
 console.log('🚀 NotFrens Server started with Telegram Bot integration!');
 console.log(`🤖 Bot: @${BOT_USERNAME}`);
 console.log(`🌐 Web App: ${WEB_APP_URL}`);
+// Admin panel route (server.js ga qo'shing)
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'admin.html'));
+});
+
+// Admin stats API (allaqachon bor)
+app.get('/api/admin/stats', (req, res) => {
+  // ... existing code
+});
