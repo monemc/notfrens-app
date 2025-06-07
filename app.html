@@ -1,1075 +1,4 @@
-.level-card.no-claim {
-            padding: 15px;
-        }
-
-        .tokens-earned {
-            font-size: 14px;
-            color: #FFD700;
-            margin-top: 5px;
-            font-weight: 500;
-        }
-        
-        .referral-info-box {
-            background: rgba(20, 20, 20, 0.8);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 12px;
-            padding: 15px;
-            margin-top: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .info-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #FFD700;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-        
-        .info-list {
-            list-style: none;
-        }
-        
-        .info-list li {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 8px;
-            display: flex;
-            align-items: baseline;
-        }
-        
-        .info-list li:before {
-            content: "•";
-            color: #FFD700;
-            font-weight: bold;
-            margin-right: 8px;
-        }
-        
-        .highlight {
-            color: #FFD700;
-            font-weight: 600;
-        }
-
-        @media (max-width: 480px) {
-            .container {
-                padding: 15px;
-            }
-            
-            .form-input {
-                font-size: 16px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="api-status" id="apiStatus">API: Checking...</div>
-    
-    <div class="container" id="mainScreen">
-        <div class="bg-glow bg-glow-1"></div>
-        <div class="bg-glow bg-glow-2"></div>
-        
-        <div class="wallet-connect-area">
-            <div id="ton-connect-ui"></div>
-        </div>
-        
-        <div class="wallet-info" id="walletInfo">
-            <div class="wallet-address" id="walletAddress">Not Connected</div>
-            <div class="wallet-balance" id="walletBalance">0 TON</div>
-        </div>
-        
-        <div class="transaction-section" id="transactionSection">
-            <div class="transaction-form">
-                <div class="transaction-title">💎 Send TON</div>
-                <div class="form-group">
-                    <label class="form-label">To Address:</label>
-                    <input type="text" class="form-input" id="toAddress" placeholder="EQD..." />
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Amount (TON):</label>
-                    <input type="number" class="form-input" id="amount" step="0.001" min="0.001" placeholder="0.1" />
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Comment (optional):</label>
-                    <input type="text" class="form-input" id="comment" placeholder="Payment comment" />
-                </div>
-                <button class="send-btn" id="sendBtn" onclick="sendTransaction()">Send TON</button>
-            </div>
-        </div>
-        
-        <div class="status-message" id="statusMessage"></div>
-        
-        <div class="logo-container">
-            <div class="logo">
-                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <path class="logo-path" d="M50 10 L10 80 L90 80 Z" />
-                    <path class="logo-path" d="M50 10 L50 80" />
-                    <path class="logo-path" d="M50 10 L10 80" />
-                    <path class="logo-path" d="M50 10 L90 80" />
-                    <circle class="logo-node" cx="50" cy="10" r="5" />
-                    <circle class="logo-node" cx="10" cy="80" r="5" />
-                    <circle class="logo-node" cx="90" cy="80" r="5" />
-                    <circle class="logo-node" cx="50" cy="80" r="5" />
-                </svg>
-            </div>
-        </div>
-        
-        <div class="token-display pulse-animation">
-            <div class="token-label">Your Notfrens Balance</div>
-            <div class="token-amount" id="tokenBalance">0 NOTF</div>
-        </div>
-        
-        <div class="button-container">
-            <div class="nav-button">
-                <div class="button-icon">🏆</div>
-                <div class="button-label">Rank</div>
-            </div>
-            
-            <div class="nav-button" id="frensButton">
-                <div class="button-icon">👥</div>
-                <div class="button-label">Frens</div>
-            </div>
-            
-            <div class="nav-button">
-                <div class="button-icon">✅</div>
-                <div class="button-label">Tasks</div>
-            </div>
-            
-            <div class="nav-button coming-soon">
-                <div class="button-icon">💱</div>
-                <div class="button-label">Trade (NFT)</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- PREMIUM PAYMENT MODAL - FAQAT SIZNING HAMYONINGIZGA -->
-    <div class="modal" id="usdtPaymentModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">💰 Premium Upgrade - 11 USDT</h3>
-                <button class="close-modal" id="closeUsdtModal">×</button>
-            </div>
-            
-            <div class="usdt-payment-content">
-                <div class="payment-info">
-                    <div class="payment-amount">
-                        <span class="currency">💵</span>
-                        <span class="amount">11 USDT</span>
-                        <span class="description">Premium Access</span>
-                    </div>
-                    
-                    <div class="payment-benefits">
-                        <h4>Premium Benefits:</h4>
-                        <ul>
-                            <li>✅ Level progression unlocked</li>
-                            <li>✅ Referral rewards enabled</li>
-                            <li>✅ Priority support</li>
-                            <li>✅ Advanced analytics</li>
-                            <li>✅ Higher token rewards</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <!-- WALLET CONNECTION REQUIRED -->
-                <div id="walletRequiredSection" class="wallet-required">
-                    <h4>🔗 Wallet Connection Required</h4>
-                    <p>Please connect your TON wallet first to proceed with payment</p>
-                    <button class="connect-wallet-btn" onclick="connectWalletFirst()">
-                        💎 Connect TON Wallet
-                    </button>
-                </div>
-                
-                <!-- PAYMENT FORM - FAQAT WALLET ULANGANIDA -->
-                <div id="paymentFormSection" class="payment-form" style="display: none;">
-                    <div class="recipient-info">
-                        <label>📍 Payment Destination:</label>
-                        <div class="address-display" id="ownerAddress">
-                            UQCpLxU30SVhlQ049kja71GohOM43YR3emTT3igMHsntmlkI
-                        </div>
-                    </div>
-                    
-                    <div class="amount-info">
-                        <label>💰 USDT Amount:</label>
-                        <div class="amount-display">11 USDT</div>
-                    </div>
-                    
-                    <div class="comment-info">
-                        <label>💬 Payment Comment:</label>
-                        <div class="comment-display" id="paymentComment">
-                            NotFrens Premium Payment - User ID: 123456789
-                        </div>
-                    </div>
-                    
-                    <button onclick="sendUSDTPayment()" class="payment-btn" id="usdtPayBtn">
-                        💎 Send 11 USDT Payment
-                    </button>
-                    
-                    <div style="margin-top: 15px; padding: 10px; background: rgba(255, 193, 7, 0.1); border-radius: 8px; font-size: 12px; color: rgba(255, 255, 255, 0.8);">
-                        ⚠️ <strong>Important:</strong> Payment will be sent to owner's wallet. After confirmation, premium will be activated automatically.
-                    </div>
-                </div>
-                
-                <!-- PAYMENT STATUS -->
-                <div id="paymentStatus" class="payment-status" style="display: none;">
-                    <div class="status-icon">⏳</div>
-                    <div class="status-text">Processing payment...</div>
-                    <div class="status-desc">Please wait while we verify your transaction</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- FRENS SCREEN -->
-    <div class="frens-screen" id="frensScreen">
-        <div class="screen-header">
-            <button class="back-button" id="frensBackButton">
-                <span class="back-icon">&#10094;</span> Back
-            </button>
-            <h2 class="screen-title">Frens</h2>
-        </div>
-        
-        <div class="stats-container">
-            <div class="stats-box">
-                <div class="stats-label">Total</div>
-                <div class="stats-value" id="totalEarned">$0</div>
-            </div>
-            <div class="stats-box">
-                <div class="stats-label">Withdrawn</div>
-                <div class="stats-value" id="withdrawn">$0</div>
-            </div>
-        </div>
-        
-        <div class="referral-link-container">
-            <div class="link-label">Referral Link</div>
-            <div class="link-actions">
-                <input type="text" class="referral-input" id="referralInput" value="Loading..." readonly>
-                <div class="link-buttons">
-                    <button class="link-button" id="copyButton">Copy</button>
-                    <button class="link-button" id="shareButton">Share</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="premium-status not-premium" id="premiumStatusDiv">
-            <span class="status-text" id="premiumStatusText">Premium ❌</span>
-            <button class="premium-button" id="premiumButton" onclick="showUSDTPayment()">Pay 11 USDT</button>
-        </div>
-        
-        <div class="user-tree">
-            <div class="user-profile">
-                <div class="user-avatar" id="userAvatar">👤</div>
-                <div class="user-name" id="userName">Loading...</div>
-                <div class="tokens-earned" id="tokensEarned">0 Tokens Earned from Referrals</div>
-            </div>
-            
-            <div class="direct-referrals" id="directReferrals">
-                <div class="referral-card">
-                    <div class="referral-name">Slot 1</div>
-                    <div class="referral-status not-added">Empty</div>
-                </div>
-                <div class="referral-card">
-                    <div class="referral-name">Slot 2</div>
-                    <div class="referral-status not-added">Empty</div>
-                </div>
-                <div class="referral-card">
-                    <div class="referral-name">Slot 3</div>
-                    <div class="referral-status not-added">Empty</div>
-                </div>
-            </div>
-            
-            <div class="referral-info-box">
-                <div class="info-title">💰 Premium Required for Progression 💰</div>
-                <ul class="info-list">
-                    <li><span class="highlight">100 NOTF tokens</span> for every direct referral</li>
-                    <li><span class="highlight">Premium subscription</span> required for level progression</li>
-                    <li><span class="highlight">Only premium users</span> can advance through levels</li>
-                    <li>Claim payments when levels are complete</li>
-                </ul>
-            </div>
-        </div>
-        
-        <div class="levels-container" id="levelsContainer">
-            <div class="level-card">
-                <div class="level-info">
-                    <div class="level-name">Level 3</div>
-                    <div class="level-progress" id="level3Progress">0/9</div>
-                </div>
-                <div class="level-rewards">
-                    <div class="reward-amount">$30</div>
-                    <button class="claim-button" disabled id="claim3Button" onclick="claimReward(3)">Premium Required</button>
-                </div>
-            </div>
-            
-            <div class="level-card no-claim">
-                <div class="level-info">
-                    <div class="level-name">Level 4</div>
-                    <div class="level-progress" id="level4Progress">0/27</div>
-                </div>
-            </div>
-            
-            <div class="level-card">
-                <div class="level-info">
-                    <div class="level-name">Level 5</div>
-                    <div class="level-progress" id="level5Progress">0/81</div>
-                </div>
-                <div class="level-rewards">
-                    <div class="reward-amount">$300</div>
-                    <button class="claim-button" disabled id="claim5Button" onclick="claimReward(5)">Premium Required</button>
-                </div>
-            </div>
-            
-            <div class="level-card no-claim">
-                <div class="level-info">
-                    <div class="level-name">Level 6</div>
-                    <div class="level-progress" id="level6Progress">0/243</div>
-                </div>
-            </div>
-            
-            <div class="level-card">
-                <div class="level-info">
-                    <div class="level-name">Level 7</div>
-                    <div class="level-progress" id="level7Progress">0/729</div>
-                </div>
-                <div class="level-rewards">
-                    <div class="reward-amount">$1,800</div>
-                    <button class="claim-button" disabled id="claim7Button" onclick="claimReward(7)">Premium Required</button>
-                </div>
-            </div>
-            
-            <div class="level-card no-claim">
-                <div class="level-info">
-                    <div class="level-name">Level 8</div>
-                    <div class="level-progress" id="level8Progress">0/2187</div>
-                </div>
-            </div>
-            
-            <div class="level-card">
-                <div class="level-info">
-                    <div class="level-name">Level 9</div>
-                    <div class="level-progress" id="level9Progress">0/6561</div>
-                </div>
-                <div class="level-rewards">
-                    <div class="reward-amount">$20,000</div>
-                    <button class="claim-button" disabled id="claim9Button" onclick="claimReward(9)">Premium Required</button>
-                </div>
-            </div>
-            
-            <div class="level-card no-claim">
-                <div class="level-info">
-                    <div class="level-name">Level 10</div>
-                    <div class="level-progress" id="level10Progress">0/19683</div>
-                </div>
-            </div>
-            
-            <div class="level-card no-claim">
-                <div class="level-info">
-                    <div class="level-name">Level 11</div>
-                    <div class="level-progress" id="level11Progress">0/59049</div>
-                </div>
-            </div>
-            
-            <div class="level-card">
-                <div class="level-info">
-                    <div class="level-name">Level 12</div>
-                    <div class="level-progress" id="level12Progress">0/177147</div>
-                </div>
-                <div class="level-rewards">
-                    <div class="reward-amount">$222,000</div>
-                    <button class="claim-button" disabled id="claim12Button" onclick="claimReward(12)">Premium Required</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let tonConnectUI;
-        let currentWallet = null;
-        let currentUser = null;
-        
-        const API_BASE = window.location.origin + '/api' || window.location.origin + '/.netlify/functions/api';
-        
-        // FAQAT SIZNING HAMYONINGIZ - hardcoded
-        const OWNER_USDT_ADDRESS = "UQCpLxU30SVhlQ049kja71GohOM43YR3emTT3igMHsntmlkI";
-        const USDT_AMOUNT = 11;
-
-        const elements = {
-            apiStatus: document.getElementById('apiStatus'),
-            walletInfo: document.getElementById('walletInfo'),
-            walletAddress: document.getElementById('walletAddress'),
-            walletBalance: document.getElementById('walletBalance'),
-            transactionSection: document.getElementById('transactionSection'),
-            statusMessage: document.getElementById('statusMessage'),
-            tokenBalance: document.getElementById('tokenBalance'),
-            mainScreen: document.getElementById('mainScreen'),
-            frensScreen: document.getElementById('frensScreen'),
-            frensButton: document.getElementById('frensButton'),
-            frensBackButton: document.getElementById('frensBackButton'),
-            copyButton: document.getElementById('copyButton'),
-            shareButton: document.getElementById('shareButton'),
-            userName: document.getElementById('userName'),
-            tokensEarned: document.getElementById('tokensEarned'),
-            referralInput: document.getElementById('referralInput'),
-            directReferrals: document.getElementById('directReferrals'),
-            usdtPaymentModal: document.getElementById('usdtPaymentModal'),
-            closeUsdtModal: document.getElementById('closeUsdtModal'),
-            premiumStatusDiv: document.getElementById('premiumStatusDiv'),
-            premiumStatusText: document.getElementById('premiumStatusText'),
-            premiumButton: document.getElementById('premiumButton'),
-            walletRequiredSection: document.getElementById('walletRequiredSection'),
-            paymentFormSection: document.getElementById('paymentFormSection')
-        };
-
-        async function makeAPIRequest(endpoint, options = {}) {
-            const url = `${API_BASE}${endpoint}`;
-            const defaultOptions = {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                ...options
-            };
-
-            try {
-                const response = await fetch(url, defaultOptions);
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-                const data = await response.json();
-                return { success: true, data };
-            } catch (error) {
-                return { success: false, error: error.message };
-            }
-        }
-
-        async function checkAPIHealth() {
-            elements.apiStatus.textContent = 'API: Testing...';
-            elements.apiStatus.className = 'api-status testing';
-            
-            const result = await makeAPIRequest('/health');
-            
-            if (result.success) {
-                elements.apiStatus.textContent = `API: Online (${result.data.users || 'Ready'})`;
-                elements.apiStatus.className = 'api-status online';
-                return true;
-            } else {
-                elements.apiStatus.textContent = 'API: Offline';
-                elements.apiStatus.className = 'api-status offline';
-                return false;
-            }
-        }
-
-        async function initTonConnect() {
-            try {
-                tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-                    manifestUrl: window.location.origin + '/tonconnect-manifest.json',
-                    buttonRootId: 'ton-connect-ui'
-                });
-
-                tonConnectUI.onStatusChange((wallet) => {
-                    if (wallet) {
-                        currentWallet = wallet;
-                        handleWalletConnected(wallet);
-                    } else {
-                        currentWallet = null;
-                        handleWalletDisconnected();
-                    }
-                });
-
-                if (tonConnectUI.wallet) {
-                    currentWallet = tonConnectUI.wallet;
-                    handleWalletConnected(tonConnectUI.wallet);
-                }
-            } catch (error) {
-                showStatus('TON Connect failed to load', 'error');
-            }
-        }
-
-        async function handleWalletConnected(wallet) {
-            const shortAddress = `${wallet.account.address.slice(0, 8)}...${wallet.account.address.slice(-8)}`;
-            elements.walletAddress.textContent = shortAddress;
-            elements.walletInfo.classList.add('active');
-            elements.transactionSection.classList.add('active');
-            
-            await updateWalletBalance(wallet.account.address);
-            showStatus('Wallet connected successfully!', 'success');
-            await notifyBackendWalletConnection(wallet.account.address);
-            
-            // Wallet ulanganidan keyin premium tugmasini enable qilish
-            updatePremiumButtonState();
-        }
-
-        function handleWalletDisconnected() {
-            elements.walletAddress.textContent = 'Not Connected';
-            elements.walletBalance.textContent = '0 TON';
-            elements.walletInfo.classList.remove('active');
-            elements.transactionSection.classList.remove('active');
-            showStatus('Wallet disconnected', 'error');
-            
-            // Wallet uzilganida premium tugmasini disable qilish
-            updatePremiumButtonState();
-        }
-
-        function updatePremiumButtonState() {
-            const premiumButton = elements.premiumButton;
-            if (!currentUser) return;
-            
-            if (currentUser.isPremium) {
-                premiumButton.style.display = 'none';
-                return;
-            }
-            
-            if (!currentWallet) {
-                premiumButton.textContent = 'Connect Wallet First';
-                premiumButton.disabled = true;
-                premiumButton.onclick = () => showStatus('Please connect your TON wallet first', 'error');
-            } else {
-                premiumButton.textContent = 'Pay 11 USDT';
-                premiumButton.disabled = false;
-                premiumButton.onclick = showUSDTPayment;
-            }
-        }
-
-        async function updateWalletBalance(address) {
-            try {
-                const result = await makeAPIRequest('/ton/balance', {
-                    method: 'POST',
-                    body: JSON.stringify({ address })
-                });
-
-                if (result.success) {
-                    elements.walletBalance.textContent = `${result.data.balance} TON`;
-                } else {
-                    elements.walletBalance.textContent = '0 TON';
-                }
-            } catch (error) {
-                elements.walletBalance.textContent = '0 TON';
-            }
-        }
-
-        async function notifyBackendWalletConnection(address) {
-            try {
-                const urlParams = new URLSearchParams(window.location.search);
-                const userId = urlParams.get('user') || '123456789';
-                
-                await makeAPIRequest('/ton/connect', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        telegramId: parseInt(userId),
-                        walletAddress: address
-                    })
-                });
-            } catch (error) {
-                console.error('Backend notification error:', error);
-            }
-        }
-
-        async function sendTransaction() {
-            if (!currentWallet) {
-                showStatus('Please connect your wallet first', 'error');
-                return;
-            }
-
-            const toAddress = document.getElementById('toAddress').value.trim();
-            const amount = document.getElementById('amount').value.trim();
-            const comment = document.getElementById('comment').value.trim();
-
-            if (!toAddress) {
-                showStatus('Please enter recipient address', 'error');
-                return;
-            }
-
-            if (!amount || parseFloat(amount) <= 0) {
-                showStatus('Please enter valid amount', 'error');
-                return;
-            }
-
-            try {
-                showStatus('Preparing transaction...', 'loading');
-                
-                const sendBtn = document.getElementById('sendBtn');
-                sendBtn.disabled = true;
-                sendBtn.textContent = 'Sending...';
-
-                const transaction = {
-                    validUntil: Math.floor(Date.now() / 1000) + 600,
-                    messages: [{
-                        address: toAddress,
-                        amount: (parseFloat(amount) * 1000000000).toString(),
-                        payload: comment ? btoa(comment) : undefined
-                    }]
-                };
-
-                const result = await tonConnectUI.sendTransaction(transaction);
-                showStatus('Transaction sent successfully!', 'success');
-
-                await notifyBackendTransaction({
-                    hash: result.boc,
-                    from: currentWallet.account.address,
-                    to: toAddress,
-                    amount: amount,
-                    comment: comment
-                });
-
-                document.getElementById('toAddress').value = '';
-                document.getElementById('amount').value = '';
-                document.getElementById('comment').value = '';
-
-                setTimeout(() => {
-                    updateWalletBalance(currentWallet.account.address);
-                }, 3000);
-
-            } catch (error) {
-                showStatus(`Transaction failed: ${error.message}`, 'error');
-            } finally {
-                const sendBtn = document.getElementById('sendBtn');
-                sendBtn.disabled = false;
-                sendBtn.textContent = 'Send TON';
-            }
-        }
-
-        async function notifyBackendTransaction(txData) {
-            try {
-                await makeAPIRequest('/ton/transaction', {
-                    method: 'POST',
-                    body: JSON.stringify(txData)
-                });
-            } catch (error) {
-                console.error('Transaction notification error:', error);
-            }
-        }
-
-        // PREMIUM PAYMENT - FAQAT SIZNING HAMYONINGIZGA
-        function showUSDTPayment() {
-            if (!currentWallet) {
-                showStatus('Please connect your TON wallet first!', 'error');
-                return;
-            }
-            
-            const modal = elements.usdtPaymentModal;
-            modal.style.display = 'flex';
-            
-            // Update user ID in comment
-            const urlParams = new URLSearchParams(window.location.search);
-            const userId = urlParams.get('user') || '123456789';
-            document.getElementById('paymentComment').textContent = `NotFrens Premium Payment - User ID: ${userId}`;
-            
-            // Show payment form (wallet already connected)
-            elements.walletRequiredSection.style.display = 'none';
-            elements.paymentFormSection.style.display = 'block';
-            
-            // Show owner address
-            document.getElementById('ownerAddress').textContent = OWNER_USDT_ADDRESS;
-        }
-
-        function connectWalletFirst() {
-            elements.usdtPaymentModal.style.display = 'none';
-            showStatus('Please connect your TON wallet using the button above', 'error');
-        }
-
-        // REAL USDT TRANSACTION - FAQAT SIZNING HAMYONINGIZGA
-        async function sendUSDTPayment() {
-            if (!currentWallet) {
-                showStatus('Wallet not connected!', 'error');
-                return;
-            }
-            
-            try {
-                const payBtn = document.getElementById('usdtPayBtn');
-                payBtn.disabled = true;
-                payBtn.textContent = 'Processing...';
-                
-                showPaymentStatus('processing');
-                
-                // USDT Transaction - FAQAT SIZNING HAMYONINGIZGA
-                const urlParams = new URLSearchParams(window.location.search);
-                const userId = urlParams.get('user') || '123456789';
-                const comment = `NotFrens Premium Payment - User ID: ${userId}`;
-                
-                // TON Network da USDT (TRC-20 emas, TON USDT)
-                const transaction = {
-                    validUntil: Math.floor(Date.now() / 1000) + 600,
-                    messages: [{
-                        address: OWNER_USDT_ADDRESS, // FAQAT SIZNING HAMYONINGIZ
-                        amount: (USDT_AMOUNT * 1000000).toString(), // USDT in micro units
-                        payload: btoa(comment) // Comment with user ID
-                    }]
-                };
-                
-                const result = await tonConnectUI.sendTransaction(transaction);
-                
-                // Backend ga notification yuborish
-                await makeAPIRequest('/payment/usdt', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        telegramId: parseInt(userId),
-                        type: 'usdt_direct',
-                        hash: result.boc,
-                        from: currentWallet.account.address,
-                        to: OWNER_USDT_ADDRESS,
-                        amount: USDT_AMOUNT,
-                        comment: comment,
-                        usdtEquivalent: USDT_AMOUNT
-                    })
-                });
-                
-                showPaymentStatus('success');
-                
-                // Premium activate qilish (5 soniyadan keyin)
-                setTimeout(() => {
-                    updatePremiumStatus(true);
-                    elements.usdtPaymentModal.style.display = 'none';
-                    hidePaymentStatus();
-                    showStatus('🎉 Premium activated! Level progression unlocked!', 'success');
-                }, 5000);
-                
-            } catch (error) {
-                showStatus('Payment failed: ' + error.message, 'error');
-                showPaymentStatus('error');
-                
-                setTimeout(() => {
-                    hidePaymentStatus();
-                }, 3000);
-            } finally {
-                const payBtn = document.getElementById('usdtPayBtn');
-                payBtn.disabled = false;
-                payBtn.textContent = '💎 Send 11 USDT Payment';
-            }
-        }
-
-        function showPaymentStatus(status) {
-            const statusEl = document.getElementById('paymentStatus');
-            const iconEl = statusEl.querySelector('.status-icon');
-            const textEl = statusEl.querySelector('.status-text');
-            const descEl = statusEl.querySelector('.status-desc');
-            
-            statusEl.style.display = 'block';
-            
-            switch(status) {
-                case 'processing':
-                    iconEl.textContent = '⏳';
-                    textEl.textContent = 'Processing USDT Payment...';
-                    descEl.textContent = 'Sending 11 USDT to owner wallet...';
-                    break;
-                    
-                case 'success':
-                    iconEl.textContent = '✅';
-                    textEl.textContent = 'Payment Successful!';
-                    descEl.textContent = 'USDT sent successfully! Premium activating...';
-                    break;
-                    
-                case 'error':
-                    iconEl.textContent = '❌';
-                    textEl.textContent = 'Payment Failed';
-                    descEl.textContent = 'Transaction failed. Please try again.';
-                    break;
-            }
-        }
-
-        function hidePaymentStatus() {
-            document.getElementById('paymentStatus').style.display = 'none';
-        }
-
-        function updatePremiumStatus(isPremium) {
-            if (isPremium) {
-                elements.premiumStatusDiv.className = 'premium-status premium';
-                elements.premiumStatusText.textContent = 'Premium ✅';
-                elements.premiumButton.style.display = 'none';
-                
-                if (currentUser) {
-                    currentUser.isPremium = true;
-                    // Levels ni yangilash
-                    updateLevels(currentUser.levels);
-                }
-            } else {
-                elements.premiumStatusDiv.className = 'premium-status not-premium';
-                elements.premiumStatusText.textContent = 'Premium ❌';
-                updatePremiumButtonState();
-            }
-        }
-
-        elements.closeUsdtModal.addEventListener('click', function() {
-            elements.usdtPaymentModal.style.display = 'none';
-        });
-
-        window.addEventListener('click', function(event) {
-            if (event.target === elements.usdtPaymentModal) {
-                elements.usdtPaymentModal.style.display = 'none';
-            }
-        });
-
-        function showStatus(message, type) {
-            const statusEl = elements.statusMessage;
-            statusEl.className = `status-message ${type}`;
-            
-            if (type === 'loading') {
-                statusEl.innerHTML = `<span class="loading-spinner"></span>${message}`;
-            } else {
-                statusEl.textContent = message;
-            }
-            
-            statusEl.style.display = 'block';
-
-            if (type !== 'loading') {
-                setTimeout(() => {
-                    statusEl.style.display = 'none';
-                }, 5000);
-            }
-        }
-
-        async function loadUserData() {
-            try {
-                const urlParams = new URLSearchParams(window.location.search);
-                const userId = urlParams.get('user') || '123456789';
-                
-                const result = await makeAPIRequest(`/telegram-user/${userId}`);
-                
-                if (result.success) {
-                    currentUser = result.data.user;
-                    updateUserInterface(currentUser);
-                    return true;
-                } else {
-                    loadDemoData();
-                    return false;
-                }
-            } catch (error) {
-                loadDemoData();
-                return false;
-            }
-        }
-
-        function loadDemoData() {
-            currentUser = {
-                telegramId: 123456789,
-                username: 'DemoUser',
-                totalDirectReferrals: 2,
-                referralLink: 'https://t.me/not_frens_bot?start=123456789',
-                isPremium: false,
-                levels: {
-                    1: { current: 2, required: 1, completed: true, reward: 0 },
-                    2: { current: 2, required: 3, completed: false, reward: 0 },
-                    3: { current: 2, required: 9, completed: false, reward: 30 },
-                    4: { current: 2, required: 27, completed: false, reward: 0 },
-                    5: { current: 2, required: 81, completed: false, reward: 300 },
-                    6: { current: 2, required: 243, completed: false, reward: 0 },
-                    7: { current: 2, required: 729, completed: false, reward: 1800 },
-                    8: { current: 2, required: 2187, completed: false, reward: 0 },
-                    9: { current: 2, required: 6561, completed: false, reward: 20000 },
-                    10: { current: 2, required: 19683, completed: false, reward: 0 },
-                    11: { current: 2, required: 59049, completed: false, reward: 0 },
-                    12: { current: 2, required: 177147, completed: false, reward: 222000 }
-                },
-                directReferrals: [
-                    { username: 'Friend1', telegramId: 987654321 },
-                    { username: 'Friend2', telegramId: 555666777 }
-                ]
-            };
-            
-            updateUserInterface(currentUser);
-        }
-
-        function updateUserInterface(user) {
-            if (!user) return;
-            
-            const totalTokens = user.totalDirectReferrals * 100;
-            elements.tokenBalance.textContent = `${totalTokens.toLocaleString()} NOTF`;
-            
-            elements.userName.textContent = `@${user.username}`;
-            elements.tokensEarned.textContent = `${totalTokens} Tokens Earned from Referrals`;
-            elements.referralInput.value = user.referralLink || `https://t.me/not_frens_bot?start=${user.telegramId}`;
-            
-            updatePremiumStatus(user.isPremium);
-            updateDirectReferrals(user.directReferrals || []);
-            
-            if (user.levels) {
-                updateLevels(user.levels);
-            }
-        }
-
-        function updateDirectReferrals(referrals) {
-            elements.directReferrals.innerHTML = '';
-            
-            for (let i = 0; i < 3; i++) {
-                const referral = referrals[i];
-                const card = document.createElement('div');
-                card.className = 'referral-card';
-                
-                if (referral) {
-                    card.innerHTML = `
-                        <div class="referral-name">@${referral.username}</div>
-                        <div class="referral-status added">Added (+100 tokens)</div>
-                    `;
-                } else {
-                    card.innerHTML = `
-                        <div class="referral-name">Slot ${i + 1}</div>
-                        <div class="referral-status not-added">Empty</div>
-                    `;
-                }
-                
-                elements.directReferrals.appendChild(card);
-            }
-        }
-
-        function updateLevels(levels) {
-            Object.keys(levels).forEach(levelNum => {
-                const level = levels[levelNum];
-                const progressElement = document.getElementById(`level${levelNum}Progress`);
-                const claimButton = document.getElementById(`claim${levelNum}Button`);
-                
-                if (progressElement) {
-                    progressElement.textContent = `${level.current}/${level.required}`;
-                    
-                    // FAQAT PREMIUM USERLAR LEVEL PROGRESSION QILA OLADI
-                    if (level.completed && currentUser && currentUser.isPremium) {
-                        progressElement.style.color = '#55ff7f';
-                        
-                        if (claimButton && level.reward > 0) {
-                            claimButton.disabled = false;
-                            claimButton.textContent = 'Claim';
-                            claimButton.style.opacity = '1';
-                            claimButton.style.background = 'rgba(255, 215, 0, 0.3)';
-                        }
-                    } else if (level.completed && currentUser && !currentUser.isPremium) {
-                        progressElement.style.color = '#ff9500';
-                        
-                        if (claimButton && level.reward > 0) {
-                            claimButton.textContent = 'Premium Required';
-                            claimButton.disabled = true;
-                            claimButton.style.opacity = '0.5';
-                        }
-                    } else {
-                        // Level incomplete
-                        if (claimButton && level.reward > 0) {
-                            claimButton.textContent = currentUser && currentUser.isPremium ? 'Not Complete' : 'Premium Required';
-                            claimButton.disabled = true;
-                            claimButton.style.opacity = '0.5';
-                        }
-                    }
-                }
-            });
-        }
-
-        async function claimReward(level) {
-            if (!currentUser) {
-                showStatus('Please load user data first!', 'error');
-                return;
-            }
-
-            if (!currentUser.isPremium) {
-                showStatus('Premium required for claiming rewards!', 'error');
-                showUSDTPayment();
-                return;
-            }
-            
-            const button = document.getElementById(`claim${level}Button`);
-            const originalText = button.textContent;
-            
-            button.textContent = 'Claiming...';
-            button.disabled = true;
-
-            const result = await makeAPIRequest('/telegram-claim', {
-                method: 'POST',
-                body: JSON.stringify({
-                    telegramId: currentUser.telegramId,
-                    level: level
-                })
-            });
-
-            if (result.success) {
-                const claimData = result.data.claimRequest;
-                showStatus(`✅ Claim submitted! Level ${claimData.level}: ${claimData.amount.toLocaleString()}`, 'success');
-                button.textContent = 'Claimed ✓';
-                button.style.background = 'rgba(46, 204, 113, 0.3)';
-                button.style.borderColor = 'rgba(46, 204, 113, 0.6)';
-            } else {
-                showStatus(`❌ Claim failed: ${result.error}`, 'error');
-                button.textContent = originalText;
-                button.disabled = false;
-            }
-        }
-
-        function setupEventListeners() {
-            elements.frensButton?.addEventListener('click', function() {
-                elements.mainScreen.style.display = 'none';
-                elements.frensScreen.style.display = 'flex';
-            });
-            
-            elements.frensBackButton?.addEventListener('click', function() {
-                elements.frensScreen.style.display = 'none';
-                elements.mainScreen.style.display = 'flex';
-            });
-            
-            elements.copyButton?.addEventListener('click', function() {
-                const referralInput = elements.referralInput;
-                referralInput.select();
-                referralInput.setSelectionRange(0, 99999);
-                
-                try {
-                    document.execCommand('copy');
-                    this.textContent = 'Copied!';
-                    this.style.background = 'rgba(46, 204, 113, 0.3)';
-                    
-                    setTimeout(() => {
-                        this.textContent = 'Copy';
-                        this.style.background = 'rgba(255, 215, 0, 0.2)';
-                    }, 2000);
-                } catch (err) {
-                    navigator.clipboard.writeText(referralInput.value);
-                }
-            });
-            
-            elements.shareButton?.addEventListener('click', function() {
-                const referralLink = elements.referralInput.value;
-                
-                if (navigator.share) {
-                    navigator.share({
-                        title: 'Join NotFrens',
-                        text: 'Check out this awesome crypto project! Use my referral link:',
-                        url: referralLink
-                    });
-                } else {
-                    navigator.clipboard.writeText(referralLink);
-                    this.textContent = 'Copied!';
-                    this.style.background = 'rgba(46, 204, 113, 0.3)';
-                    
-                    setTimeout(() => {
-                        this.textContent = 'Share';
-                        this.style.background = 'rgba(255, 215, 0, 0.2)';
-                    }, 2000);
-                }
-            });
-        }
-
-        async function initializeApp() {
-            setupEventListeners();
-            await initTonConnect();
-            
-            const apiHealthy = await checkAPIHealth();
-            
-            if (apiHealthy) {
-                setTimeout(() => {
-                    loadUserData();
-                }, 1000);
-            } else {
-                setTimeout(() => {
-                    loadDemoData();
-                }, 2000);
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeApp();
-        });
-
-        // Global functions
-        window.sendTransaction = sendTransaction;
-        window.claimReward = claimReward;
-        window.loadUserData = loadUserData;
-        window.checkAPIHealth = checkAPIHealth;
-        window.showUSDTPayment = showUSDTPayment;
-        window.connectWalletFirst = connectWalletFirst;
-        window.sendUSDTPayment = sendUSDTPayment;
-    </script>
-</body>
-</html><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -1483,6 +412,7 @@
             }
         }
 
+        /* MODAL STYLES */
         .modal {
             display: none;
             position: fixed;
@@ -1540,201 +470,7 @@
             color: #FFD700;
         }
 
-        .usdt-payment-content {
-            padding: 20px 0;
-        }
-
-        .payment-info {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .payment-amount {
-            background: linear-gradient(45deg, #FFD700, #FFA500);
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .payment-amount .currency {
-            font-size: 24px;
-        }
-
-        .payment-amount .amount {
-            font-size: 28px;
-            font-weight: bold;
-            color: #000;
-        }
-
-        .payment-amount .description {
-            font-size: 16px;
-            color: #333;
-        }
-
-        .payment-benefits {
-            background: rgba(20, 20, 20, 0.8);
-            padding: 15px;
-            border-radius: 10px;
-            text-align: left;
-        }
-
-        .payment-benefits h4 {
-            color: #FFD700;
-            margin-bottom: 10px;
-        }
-
-        .payment-benefits ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .payment-benefits li {
-            margin: 8px 0;
-            color: #fff;
-        }
-
-        .wallet-required {
-            background: rgba(255, 193, 7, 0.1);
-            border: 1px solid rgba(255, 193, 7, 0.3);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            margin: 20px 0;
-        }
-
-        .wallet-required h4 {
-            color: #FFC107;
-            margin-bottom: 10px;
-        }
-
-        .wallet-required p {
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 15px;
-        }
-
-        .connect-wallet-btn {
-            background: linear-gradient(45deg, #FFC107, #FF9800);
-            color: #000;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .connect-wallet-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
-        }
-
-        .payment-form {
-            background: rgba(20, 20, 20, 0.8);
-            padding: 20px;
-            border-radius: 15px;
-            margin: 20px 0;
-        }
-
-        .recipient-info,
-        .amount-info,
-        .comment-info {
-            margin: 15px 0;
-        }
-
-        .recipient-info label,
-        .amount-info label,
-        .comment-info label {
-            display: block;
-            margin-bottom: 8px;
-            color: #FFD700;
-            font-weight: 500;
-        }
-
-        .address-display {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            padding: 12px;
-            color: #0098ea;
-            font-family: monospace;
-            font-size: 12px;
-            word-break: break-all;
-        }
-
-        .amount-display {
-            background: rgba(255, 215, 0, 0.1);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            padding: 12px;
-            border-radius: 8px;
-            color: #FFD700;
-            font-size: 18px;
-            font-weight: 600;
-            text-align: center;
-        }
-
-        .comment-display {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            padding: 12px;
-            color: #fff;
-            font-size: 14px;
-            word-break: break-all;
-        }
-
-        .payment-btn {
-            width: 100%;
-            background: linear-gradient(45deg, #FFD700, #FFA500);
-            color: #000;
-            border: none;
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: all 0.3s ease;
-        }
-
-        .payment-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
-        }
-
-        .payment-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .payment-status {
-            text-align: center;
-            padding: 30px;
-            background: rgba(20, 20, 20, 0.8);
-            border-radius: 15px;
-        }
-
-        .status-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
-        }
-
-        .status-text {
-            font-size: 18px;
-            font-weight: 600;
-            color: #FFD700;
-            margin-bottom: 10px;
-        }
-
-        .status-desc {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 14px;
-        }
-
+        /* FRENS SCREEN STYLES */
         .frens-screen {
             width: 100%;
             height: 100vh;
@@ -1950,6 +686,13 @@
             font-weight: 500;
         }
 
+        .tokens-earned {
+            font-size: 14px;
+            color: #FFD700;
+            margin-top: 5px;
+            font-weight: 500;
+        }
+
         .direct-referrals {
             display: flex;
             justify-content: space-between;
@@ -1989,6 +732,47 @@
             color: #ff5555;
         }
 
+        .referral-info-box {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #FFD700;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .info-list {
+            list-style: none;
+        }
+
+        .info-list li {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: baseline;
+        }
+
+        .info-list li:before {
+            content: "•";
+            color: #FFD700;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .highlight {
+            color: #FFD700;
+            font-weight: 600;
+        }
+
         .levels-container {
             display: flex;
             flex-direction: column;
@@ -2007,6 +791,10 @@
             align-items: center;
             width: 100%;
             min-height: 70px;
+        }
+
+        .level-card.no-claim {
+            padding: 15px;
         }
 
         .level-info {
@@ -2061,4 +849,815 @@
             cursor: not-allowed;
         }
 
-        .level-card.
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .form-input {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="api-status" id="apiStatus">API: Checking...</div>
+    
+    <div class="container" id="mainScreen">
+        <div class="bg-glow bg-glow-1"></div>
+        <div class="bg-glow bg-glow-2"></div>
+        
+        <div class="wallet-connect-area">
+            <div id="ton-connect-ui"></div>
+        </div>
+        
+        <div class="wallet-info" id="walletInfo">
+            <div class="wallet-address" id="walletAddress">Not Connected</div>
+            <div class="wallet-balance" id="walletBalance">0 TON</div>
+        </div>
+        
+        <div class="transaction-section" id="transactionSection">
+            <div class="transaction-form">
+                <div class="transaction-title">💰 Send TON</div>
+                <div class="form-group">
+                    <label class="form-label">To Address:</label>
+                    <input type="text" class="form-input" id="toAddress" placeholder="EQD..." />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Amount (TON):</label>
+                    <input type="number" class="form-input" id="amount" step="0.001" min="0.001" placeholder="0.1" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Comment (optional):</label>
+                    <input type="text" class="form-input" id="comment" placeholder="Payment comment" />
+                </div>
+                <button class="send-btn" id="sendBtn" onclick="sendTransaction()">Send TON</button>
+            </div>
+        </div>
+        
+        <div class="status-message" id="statusMessage"></div>
+        
+        <div class="logo-container">
+            <div class="logo">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <path class="logo-path" d="M50 10 L10 80 L90 80 Z" />
+                    <path class="logo-path" d="M50 10 L50 80" />
+                    <path class="logo-path" d="M50 10 L10 80" />
+                    <path class="logo-path" d="M50 10 L90 80" />
+                    <circle class="logo-node" cx="50" cy="10" r="5" />
+                    <circle class="logo-node" cx="10" cy="80" r="5" />
+                    <circle class="logo-node" cx="90" cy="80" r="5" />
+                    <circle class="logo-node" cx="50" cy="80" r="5" />
+                </svg>
+            </div>
+        </div>
+        
+        <div class="token-display pulse-animation">
+            <div class="token-label">Your Notfrens Balance</div>
+            <div class="token-amount" id="tokenBalance">0 NOTF</div>
+        </div>
+        
+        <div class="button-container">
+            <div class="nav-button">
+                <div class="button-icon">🏆</div>
+                <div class="button-label">Rank</div>
+            </div>
+            
+            <div class="nav-button" id="frensButton">
+                <div class="button-icon">👥</div>
+                <div class="button-label">Frens</div>
+            </div>
+            
+            <div class="nav-button">
+                <div class="button-icon">✅</div>
+                <div class="button-label">Tasks</div>
+            </div>
+            
+            <div class="nav-button coming-soon">
+                <div class="button-icon">🎨</div>
+                <div class="button-label">Trade (NFT)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FRENS SCREEN -->
+    <div class="frens-screen" id="frensScreen">
+        <div class="screen-header">
+            <button class="back-button" id="frensBackButton">
+                <span class="back-icon">&#10094;</span> Back
+            </button>
+            <h2 class="screen-title">Frens</h2>
+        </div>
+        
+        <div class="stats-container">
+            <div class="stats-box">
+                <div class="stats-label">Total</div>
+                <div class="stats-value" id="totalEarned">$0</div>
+            </div>
+            <div class="stats-box">
+                <div class="stats-label">Withdrawn</div>
+                <div class="stats-value" id="withdrawn">$0</div>
+            </div>
+        </div>
+        
+        <div class="referral-link-container">
+            <div class="link-label">Referral Link</div>
+            <div class="link-actions">
+                <input type="text" class="referral-input" id="referralInput" value="Loading..." readonly>
+                <div class="link-buttons">
+                    <button class="link-button" id="copyButton">Copy</button>
+                    <button class="link-button" id="shareButton">Share</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="premium-status not-premium" id="premiumStatusDiv">
+            <span class="status-text" id="premiumStatusText">Premium ❌</span>
+            <button class="premium-button" id="premiumButton" onclick="showUSDTPayment()">Pay 11 USDT</button>
+        </div>
+        
+        <div class="user-tree">
+            <div class="user-profile">
+                <div class="user-avatar" id="userAvatar">👤</div>
+                <div class="user-name" id="userName">Loading...</div>
+                <div class="tokens-earned" id="tokensEarned">0 Tokens Earned from Referrals</div>
+            </div>
+            
+            <div class="direct-referrals" id="directReferrals">
+                <div class="referral-card">
+                    <div class="referral-name">Slot 1</div>
+                    <div class="referral-status not-added">Empty</div>
+                </div>
+                <div class="referral-card">
+                    <div class="referral-name">Slot 2</div>
+                    <div class="referral-status not-added">Empty</div>
+                </div>
+                <div class="referral-card">
+                    <div class="referral-name">Slot 3</div>
+                    <div class="referral-status not-added">Empty</div>
+                </div>
+            </div>
+            
+            <div class="referral-info-box">
+                <div class="info-title">💎 Premium Required for Progression 💎</div>
+                <ul class="info-list">
+                    <li><span class="highlight">100 NOTF tokens</span> for every direct referral</li>
+                    <li><span class="highlight">Premium subscription</span> required for level progression</li>
+                    <li><span class="highlight">Only premium users</span> can advance through levels</li>
+                    <li>Claim payments when levels are complete</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="levels-container" id="levelsContainer">
+            <div class="level-card">
+                <div class="level-info">
+                    <div class="level-name">Level 3</div>
+                    <div class="level-progress" id="level3Progress">0/9</div>
+                </div>
+                <div class="level-rewards">
+                    <div class="reward-amount">$30</div>
+                    <button class="claim-button" disabled id="claim3Button" onclick="claimReward(3)">Premium Required</button>
+                </div>
+            </div>
+            
+            <div class="level-card no-claim">
+                <div class="level-info">
+                    <div class="level-name">Level 4</div>
+                    <div class="level-progress" id="level4Progress">0/27</div>
+                </div>
+            </div>
+            
+            <div class="level-card">
+                <div class="level-info">
+                    <div class="level-name">Level 5</div>
+                    <div class="level-progress" id="level5Progress">0/81</div>
+                </div>
+                <div class="level-rewards">
+                    <div class="reward-amount">$300</div>
+                    <button class="claim-button" disabled id="claim5Button" onclick="claimReward(5)">Premium Required</button>
+                </div>
+            </div>
+            
+            <div class="level-card no-claim">
+                <div class="level-info">
+                    <div class="level-name">Level 6</div>
+                    <div class="level-progress" id="level6Progress">0/243</div>
+                </div>
+            </div>
+            
+            <div class="level-card">
+                <div class="level-info">
+                    <div class="level-name">Level 7</div>
+                    <div class="level-progress" id="level7Progress">0/729</div>
+                </div>
+                <div class="level-rewards">
+                    <div class="reward-amount">$1,800</div>
+                    <button class="claim-button" disabled id="claim7Button" onclick="claimReward(7)">Premium Required</button>
+                </div>
+            </div>
+            
+            <div class="level-card no-claim">
+                <div class="level-info">
+                    <div class="level-name">Level 8</div>
+                    <div class="level-progress" id="level8Progress">0/2187</div>
+                </div>
+            </div>
+            
+            <div class="level-card">
+                <div class="level-info">
+                    <div class="level-name">Level 9</div>
+                    <div class="level-progress" id="level9Progress">0/6561</div>
+                </div>
+                <div class="level-rewards">
+                    <div class="reward-amount">$20,000</div>
+                    <button class="claim-button" disabled id="claim9Button" onclick="claimReward(9)">Premium Required</button>
+                </div>
+            </div>
+            
+            <div class="level-card no-claim">
+                <div class="level-info">
+                    <div class="level-name">Level 10</div>
+                    <div class="level-progress" id="level10Progress">0/19683</div>
+                </div>
+            </div>
+            
+            <div class="level-card no-claim">
+                <div class="level-info">
+                    <div class="level-name">Level 11</div>
+                    <div class="level-progress" id="level11Progress">0/59049</div>
+                </div>
+            </div>
+            
+            <div class="level-card">
+                <div class="level-info">
+                    <div class="level-name">Level 12</div>
+                    <div class="level-progress" id="level12Progress">0/177147</div>
+                </div>
+                <div class="level-rewards">
+                    <div class="reward-amount">$222,000</div>
+                    <button class="claim-button" disabled id="claim12Button" onclick="claimReward(12)">Premium Required</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let tonConnectUI;
+        let currentWallet = null;
+        let currentUser = null;
+        
+        // FIXED API URL - will work when deployed to notfrens.app
+        const API_BASE = 'https://notfrens.app/api';
+        
+        // Configuration
+        const OWNER_USDT_ADDRESS = "UQCpLxU30SVhlQ049kja71GohOM43YR3emTT3igMHsntmlkI";
+        const USDT_AMOUNT = 11;
+
+        const elements = {
+            apiStatus: document.getElementById('apiStatus'),
+            walletInfo: document.getElementById('walletInfo'),
+            walletAddress: document.getElementById('walletAddress'),
+            walletBalance: document.getElementById('walletBalance'),
+            transactionSection: document.getElementById('transactionSection'),
+            statusMessage: document.getElementById('statusMessage'),
+            tokenBalance: document.getElementById('tokenBalance'),
+            mainScreen: document.getElementById('mainScreen'),
+            frensScreen: document.getElementById('frensScreen'),
+            frensButton: document.getElementById('frensButton'),
+            frensBackButton: document.getElementById('frensBackButton'),
+            copyButton: document.getElementById('copyButton'),
+            shareButton: document.getElementById('shareButton'),
+            userName: document.getElementById('userName'),
+            tokensEarned: document.getElementById('tokensEarned'),
+            referralInput: document.getElementById('referralInput'),
+            directReferrals: document.getElementById('directReferrals'),
+            premiumStatusDiv: document.getElementById('premiumStatusDiv'),
+            premiumStatusText: document.getElementById('premiumStatusText'),
+            premiumButton: document.getElementById('premiumButton')
+        };
+
+        async function makeAPIRequest(endpoint, options = {}) {
+            const url = `${API_BASE}${endpoint}`;
+            const defaultOptions = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                ...options
+            };
+
+            try {
+                const response = await fetch(url, defaultOptions);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                const data = await response.json();
+                return { success: true, data };
+            } catch (error) {
+                console.log('API Error:', error.message);
+                return { success: false, error: error.message };
+            }
+        }
+
+        async function checkAPIHealth() {
+            elements.apiStatus.textContent = 'API: Testing...';
+            elements.apiStatus.className = 'api-status testing';
+            
+            const result = await makeAPIRequest('/health');
+            
+            if (result.success) {
+                elements.apiStatus.textContent = `API: Online (${result.data.users || 'Ready'})`;
+                elements.apiStatus.className = 'api-status online';
+                return true;
+            } else {
+                elements.apiStatus.textContent = 'API: Demo Mode';
+                elements.apiStatus.className = 'api-status offline';
+                return false;
+            }
+        }
+
+        async function initTonConnect() {
+            try {
+                tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+                    manifestUrl: 'https://notfrens.app/tonconnect-manifest.json',
+                    buttonRootId: 'ton-connect-ui'
+                });
+
+                tonConnectUI.onStatusChange((wallet) => {
+                    if (wallet) {
+                        currentWallet = wallet;
+                        handleWalletConnected(wallet);
+                    } else {
+                        currentWallet = null;
+                        handleWalletDisconnected();
+                    }
+                });
+
+                if (tonConnectUI.wallet) {
+                    currentWallet = tonConnectUI.wallet;
+                    handleWalletConnected(tonConnectUI.wallet);
+                }
+            } catch (error) {
+                showStatus('TON Connect failed to load', 'error');
+            }
+        }
+
+        async function handleWalletConnected(wallet) {
+            const shortAddress = `${wallet.account.address.slice(0, 8)}...${wallet.account.address.slice(-8)}`;
+            elements.walletAddress.textContent = shortAddress;
+            elements.walletInfo.classList.add('active');
+            elements.transactionSection.classList.add('active');
+            
+            await updateWalletBalance(wallet.account.address);
+            showStatus('Wallet connected successfully!', 'success');
+            await notifyBackendWalletConnection(wallet.account.address);
+        }
+
+        function handleWalletDisconnected() {
+            elements.walletAddress.textContent = 'Not Connected';
+            elements.walletBalance.textContent = '0 TON';
+            elements.walletInfo.classList.remove('active');
+            elements.transactionSection.classList.remove('active');
+            showStatus('Wallet disconnected', 'error');
+        }
+
+        async function updateWalletBalance(address) {
+            try {
+                const result = await makeAPIRequest('/ton/balance', {
+                    method: 'POST',
+                    body: JSON.stringify({ address })
+                });
+
+                if (result.success) {
+                    elements.walletBalance.textContent = `${result.data.balance} TON`;
+                } else {
+                    elements.walletBalance.textContent = '0 TON';
+                }
+            } catch (error) {
+                elements.walletBalance.textContent = '0 TON';
+            }
+        }
+
+        async function notifyBackendWalletConnection(address) {
+            try {
+                const userId = getTelegramUserId();
+                
+                await makeAPIRequest('/ton/connect', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        telegramId: parseInt(userId),
+                        walletAddress: address
+                    })
+                });
+            } catch (error) {
+                console.error('Backend notification error:', error);
+            }
+        }
+
+        function getTelegramUserId() {
+            // Try to get user ID from Telegram WebApp
+            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
+                const user = window.Telegram.WebApp.initDataUnsafe.user;
+                if (user && user.id) {
+                    return user.id.toString();
+                }
+            }
+            
+            // Fallback to URL parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('user') || '123456789';
+        }
+
+        function getTelegramUserData() {
+            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
+                const user = window.Telegram.WebApp.initDataUnsafe.user;
+                if (user) {
+                    return {
+                        id: user.id,
+                        username: user.username || 'User',
+                        first_name: user.first_name || 'Unknown',
+                        last_name: user.last_name || ''
+                    };
+                }
+            }
+            
+            return {
+                id: 123456789,
+                username: 'DemoUser',
+                first_name: 'Demo',
+                last_name: 'User'
+            };
+        }
+
+        async function sendTransaction() {
+            if (!currentWallet) {
+                showStatus('Please connect your wallet first', 'error');
+                return;
+            }
+
+            const toAddress = document.getElementById('toAddress').value.trim();
+            const amount = document.getElementById('amount').value.trim();
+            const comment = document.getElementById('comment').value.trim();
+
+            if (!toAddress) {
+                showStatus('Please enter recipient address', 'error');
+                return;
+            }
+
+            if (!amount || parseFloat(amount) <= 0) {
+                showStatus('Please enter valid amount', 'error');
+                return;
+            }
+
+            try {
+                showStatus('Preparing transaction...', 'loading');
+                
+                const sendBtn = document.getElementById('sendBtn');
+                sendBtn.disabled = true;
+                sendBtn.textContent = 'Sending...';
+
+                const transaction = {
+                    validUntil: Math.floor(Date.now() / 1000) + 600,
+                    messages: [{
+                        address: toAddress,
+                        amount: (parseFloat(amount) * 1000000000).toString(),
+                        payload: comment ? btoa(comment) : undefined
+                    }]
+                };
+
+                const result = await tonConnectUI.sendTransaction(transaction);
+                showStatus('Transaction sent successfully!', 'success');
+
+                await notifyBackendTransaction({
+                    hash: result.boc,
+                    from: currentWallet.account.address,
+                    to: toAddress,
+                    amount: amount,
+                    comment: comment
+                });
+
+                document.getElementById('toAddress').value = '';
+                document.getElementById('amount').value = '';
+                document.getElementById('comment').value = '';
+
+                setTimeout(() => {
+                    updateWalletBalance(currentWallet.account.address);
+                }, 3000);
+
+            } catch (error) {
+                showStatus(`Transaction failed: ${error.message}`, 'error');
+            } finally {
+                const sendBtn = document.getElementById('sendBtn');
+                sendBtn.disabled = false;
+                sendBtn.textContent = 'Send TON';
+            }
+        }
+
+        async function notifyBackendTransaction(txData) {
+            try {
+                await makeAPIRequest('/ton/transaction', {
+                    method: 'POST',
+                    body: JSON.stringify(txData)
+                });
+            } catch (error) {
+                console.error('Transaction notification error:', error);
+            }
+        }
+
+        function showUSDTPayment() {
+            showStatus('Premium payment feature will be available when server is deployed!', 'error');
+        }
+
+        function showStatus(message, type) {
+            const statusEl = elements.statusMessage;
+            statusEl.className = `status-message ${type}`;
+            
+            if (type === 'loading') {
+                statusEl.innerHTML = `<span class="loading-spinner"></span>${message}`;
+            } else {
+                statusEl.textContent = message;
+            }
+            
+            statusEl.style.display = 'block';
+
+            if (type !== 'loading') {
+                setTimeout(() => {
+                    statusEl.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        async function loadUserData() {
+            try {
+                const userId = getTelegramUserId();
+                const userData = getTelegramUserData();
+                
+                const result = await makeAPIRequest(`/telegram-user/${userId}`);
+                
+                if (result.success) {
+                    currentUser = result.data.user;
+                    updateUserInterface(currentUser);
+                    return true;
+                } else {
+                    // Load demo data with real Telegram user info
+                    loadDemoData(userData);
+                    return false;
+                }
+            } catch (error) {
+                const userData = getTelegramUserData();
+                loadDemoData(userData);
+                return false;
+            }
+        }
+
+        function loadDemoData(userData = null) {
+            const user = userData || getTelegramUserData();
+            
+            currentUser = {
+                telegramId: user.id,
+                username: user.username,
+                firstName: user.first_name,
+                lastName: user.last_name,
+                totalDirectReferrals: 2,
+                referralLink: `https://t.me/not_frens_bot/notfrens?startapp=${user.id}`,
+                isPremium: false,
+                levels: {
+                    1: { current: 2, required: 1, completed: true, reward: 0 },
+                    2: { current: 2, required: 3, completed: false, reward: 0 },
+                    3: { current: 2, required: 9, completed: false, reward: 30 },
+                    4: { current: 2, required: 27, completed: false, reward: 0 },
+                    5: { current: 2, required: 81, completed: false, reward: 300 },
+                    6: { current: 2, required: 243, completed: false, reward: 0 },
+                    7: { current: 2, required: 729, completed: false, reward: 1800 },
+                    8: { current: 2, required: 2187, completed: false, reward: 0 },
+                    9: { current: 2, required: 6561, completed: false, reward: 20000 },
+                    10: { current: 2, required: 19683, completed: false, reward: 0 },
+                    11: { current: 2, required: 59049, completed: false, reward: 0 },
+                    12: { current: 2, required: 177147, completed: false, reward: 222000 }
+                },
+                directReferrals: [
+                    { username: 'Friend1', telegramId: 987654321 },
+                    { username: 'Friend2', telegramId: 555666777 }
+                ]
+            };
+            
+            updateUserInterface(currentUser);
+        }
+
+        function updateUserInterface(user) {
+            if (!user) return;
+            
+            const totalTokens = user.totalDirectReferrals * 100;
+            elements.tokenBalance.textContent = `${totalTokens.toLocaleString()} NOTF`;
+            
+            elements.userName.textContent = `@${user.username}`;
+            elements.tokensEarned.textContent = `${totalTokens} Tokens Earned from Referrals`;
+            elements.referralInput.value = user.referralLink || `https://t.me/not_frens_bot/notfrens?startapp=${user.telegramId}`;
+            
+            updatePremiumStatus(user.isPremium);
+            updateDirectReferrals(user.directReferrals || []);
+            
+            if (user.levels) {
+                updateLevels(user.levels);
+            }
+        }
+
+        function updatePremiumStatus(isPremium) {
+            if (isPremium) {
+                elements.premiumStatusDiv.className = 'premium-status premium';
+                elements.premiumStatusText.textContent = 'Premium ✅';
+                elements.premiumButton.style.display = 'none';
+            } else {
+                elements.premiumStatusDiv.className = 'premium-status not-premium';
+                elements.premiumStatusText.textContent = 'Premium ❌';
+                elements.premiumButton.style.display = 'block';
+            }
+        }
+
+        function updateDirectReferrals(referrals) {
+            elements.directReferrals.innerHTML = '';
+            
+            for (let i = 0; i < 3; i++) {
+                const referral = referrals[i];
+                const card = document.createElement('div');
+                card.className = 'referral-card';
+                
+                if (referral) {
+                    card.innerHTML = `
+                        <div class="referral-name">@${referral.username}</div>
+                        <div class="referral-status added">Added (+100 tokens)</div>
+                    `;
+                } else {
+                    card.innerHTML = `
+                        <div class="referral-name">Slot ${i + 1}</div>
+                        <div class="referral-status not-added">Empty</div>
+                    `;
+                }
+                
+                elements.directReferrals.appendChild(card);
+            }
+        }
+
+        function updateLevels(levels) {
+            Object.keys(levels).forEach(levelNum => {
+                const level = levels[levelNum];
+                const progressElement = document.getElementById(`level${levelNum}Progress`);
+                const claimButton = document.getElementById(`claim${levelNum}Button`);
+                
+                if (progressElement) {
+                    progressElement.textContent = `${level.current}/${level.required}`;
+                    
+                    if (level.completed && currentUser && currentUser.isPremium) {
+                        progressElement.style.color = '#55ff7f';
+                        
+                        if (claimButton && level.reward > 0) {
+                            claimButton.disabled = false;
+                            claimButton.textContent = 'Claim';
+                            claimButton.style.opacity = '1';
+                            claimButton.style.background = 'rgba(255, 215, 0, 0.3)';
+                        }
+                    } else if (level.completed && currentUser && !currentUser.isPremium) {
+                        progressElement.style.color = '#ff9500';
+                        
+                        if (claimButton && level.reward > 0) {
+                            claimButton.textContent = 'Premium Required';
+                            claimButton.disabled = true;
+                            claimButton.style.opacity = '0.5';
+                        }
+                    } else {
+                        if (claimButton && level.reward > 0) {
+                            claimButton.textContent = currentUser && currentUser.isPremium ? 'Not Complete' : 'Premium Required';
+                            claimButton.disabled = true;
+                            claimButton.style.opacity = '0.5';
+                        }
+                    }
+                }
+            });
+        }
+
+        async function claimReward(level) {
+            if (!currentUser) {
+                showStatus('Please load user data first!', 'error');
+                return;
+            }
+
+            if (!currentUser.isPremium) {
+                showStatus('Premium required for claiming rewards!', 'error');
+                showUSDTPayment();
+                return;
+            }
+            
+            const button = document.getElementById(`claim${level}Button`);
+            const originalText = button.textContent;
+            
+            button.textContent = 'Claiming...';
+            button.disabled = true;
+
+            const result = await makeAPIRequest('/telegram-claim', {
+                method: 'POST',
+                body: JSON.stringify({
+                    telegramId: currentUser.telegramId,
+                    level: level
+                })
+            });
+
+            if (result.success) {
+                const claimData = result.data.claimRequest;
+                showStatus(`🎉 Claim submitted! Level ${claimData.level}: ${claimData.amount.toLocaleString()}`, 'success');
+                button.textContent = 'Claimed ✅';
+                button.style.background = 'rgba(46, 204, 113, 0.3)';
+                button.style.borderColor = 'rgba(46, 204, 113, 0.6)';
+            } else {
+                showStatus(`❌ Claim failed: ${result.error}`, 'error');
+                button.textContent = originalText;
+                button.disabled = false;
+            }
+        }
+
+        function setupEventListeners() {
+            elements.frensButton?.addEventListener('click', function() {
+                elements.mainScreen.style.display = 'none';
+                elements.frensScreen.style.display = 'flex';
+            });
+            
+            elements.frensBackButton?.addEventListener('click', function() {
+                elements.frensScreen.style.display = 'none';
+                elements.mainScreen.style.display = 'flex';
+            });
+            
+            elements.copyButton?.addEventListener('click', function() {
+                const referralInput = elements.referralInput;
+                referralInput.select();
+                referralInput.setSelectionRange(0, 99999);
+                
+                try {
+                    document.execCommand('copy');
+                    this.textContent = 'Copied!';
+                    this.style.background = 'rgba(46, 204, 113, 0.3)';
+                    
+                    setTimeout(() => {
+                        this.textContent = 'Copy';
+                        this.style.background = 'rgba(255, 215, 0, 0.2)';
+                    }, 2000);
+                } catch (err) {
+                    navigator.clipboard.writeText(referralInput.value);
+                }
+            });
+            
+            elements.shareButton?.addEventListener('click', function() {
+                const referralLink = elements.referralInput.value;
+                
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Join NotFrens',
+                        text: 'Check out this awesome crypto project! Use my referral link:',
+                        url: referralLink
+                    });
+                } else {
+                    navigator.clipboard.writeText(referralLink);
+                    this.textContent = 'Copied!';
+                    this.style.background = 'rgba(46, 204, 113, 0.3)';
+                    
+                    setTimeout(() => {
+                        this.textContent = 'Share';
+                        this.style.background = 'rgba(255, 215, 0, 0.2)';
+                    }, 2000);
+                }
+            });
+        }
+
+        async function initializeApp() {
+            setupEventListeners();
+            await initTonConnect();
+            
+            // Initialize Telegram WebApp
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.ready();
+                window.Telegram.WebApp.expand();
+                
+                // Get user data from Telegram
+                const telegramUser = getTelegramUserData();
+                console.log('Telegram User:', telegramUser);
+            }
+            
+            const apiHealthy = await checkAPIHealth();
+            
+            setTimeout(() => {
+                loadUserData();
+            }, 1000);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        // Global functions
+        window.sendTransaction = sendTransaction;
+        window.claimReward = claimReward;
+        window.loadUserData = loadUserData;
+        window.checkAPIHealth = checkAPIHealth;
+        window.showUSDTPayment = showUSDTPayment;
+    </script>
+</body>
+</html>
