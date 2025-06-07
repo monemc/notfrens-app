@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NotFrens Admin Panel</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(20, 20, 40, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #FFD700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 16px;
+        }
+
+        .login-form {
+            background: rgba(20, 20, 40, 0.9);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 400px;
+            margin: 50px auto;
+            text-align: center;
+        }
+
+        .login-form h2 {
+            color: #FFD700;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #FFD700;
+            box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
+        }
+
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #000;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(20, 20, 40, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 215, 0, 0.5);
+        }
+
+        .stat-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #FFD700;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(20, 20, 40, 0.8);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 15px;
+            padding: 10px;
+            margin-bottom: 30px;
+            gap: 10px;
+        }
+
+        .tab {
+            flex: 1;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.7);
+            border: none;
+            padding: 15px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            background: rgba(255, 215, 0, 0.2);
+            color: #FFD700;
+            border: 1px solid rgba(255, 215, 0, 0.4);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .data-table {
+            background: rgba(20, 20, 40, 0.8);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            background: rgba(255, 215, 0, 0.1);
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .table-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #FFD700;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .table th {
+            background: rgba(0, 0, 0, 0.2);
+            color: #FFD700;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .table td {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+        }
+
+        .table tr:hover td {
+            background: rgba(255, 215, 0, 0.05);
+        }
+
+        .status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status.active {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+        }
+
+        .status.pending {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+        }
+
+        .status.inactive {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            background: rgba(255, 215, 0, 0.2);
+            color: #FFD700;
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 215, 0, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .refresh-btn {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+            border: 1px solid rgba(46, 204, 113, 0.4);
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-btn:hover {
+            background: rgba(46, 204, 113, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid #FFD700;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+
+        .alert.success {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+            border: 1px solid rgba(46, 204, 113, 0.3);
+        }
+
+        .alert.error {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+        }
+
+        .admin-panel {
+            display: none;
+        }
+
+        .admin-panel.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .admin-container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Form -->
+    <div class="login-form" id="loginForm">
+        <h2>🔐 Admin Login</h2>
+        <div class="form-group">
+            <label class="form-label">Username:</label>
+            <input type="text" class="form-input" id="username" placeholder="Enter admin username">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Password:</label>
+            <input type="password" class="form-input" id="password" placeholder="Enter admin password">
+        </div>
+        <button class="login-btn" onclick="adminLogin()">Login to Admin Panel</button>
+        <div id="loginAlert"></div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div class="admin-panel" id="adminPanel">
+        <div class="admin-container">
+            <!-- Header -->
+            <div class="header">
+                <h1>🚀 NotFrens Admin Panel</h1>
+                <p>Monitor your Web3 referral platform performance</p>
+                <button class="refresh-btn" onclick="loadDashboard()">🔄 Refresh Data</button>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-value" id="totalUsers">-</div>
+                    <div class="stat-label">Total Users</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-value" id="premiumUsers">-</div>
+                    <div class="stat-label">Premium Users</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-value" id="totalRevenue">$-</div>
+                    <div class="stat-label">Total Revenue</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🔗</div>
+                    <div class="stat-value" id="totalReferrals">-</div>
+                    <div class="stat-label">Total Referrals</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💳</div>
+                    <div class="stat-value" id="totalPayments">-</div>
+                    <div class="stat-label">USDT Payments</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🏆</div>
+                    <div class="stat-value" id="totalClaims">-</div>
+                    <div class="stat-label">Pending Claims</div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('users')">👥 Users</button>
+                <button class="tab" onclick="showTab('payments')">💰 Payments</button>
+                <button class="tab" onclick="showTab('claims')">🏆 Claims</button>
+                <button class="tab" onclick="showTab('referrals')">🔗 Referrals</button>
+                <button class="tab" onclick="showTab('analytics')">📊 Analytics</button>
+            </div>
+
+            <!-- Tab Contents -->
+            <div class="tab-content active" id="users">
+                <div class="data-table">
+                    <div class="table-header">
+                        <div class="table-title">👥 User Management</div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>Username</th>
+                                    <th>Premium</th>
+                                    <th>Referrals</th>
+                                    <th>Tokens</th>
+                                    <th>Joined</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTable">
+                                <tr>
+                                    <td colspan="7" class="loading">
+                                        <span class="loading-spinner"></span>Loading users...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="payments">
+                <div class="data-table">
+                    <div class="table-header">
+                        <div class="table-title">💰 USDT Payments</div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Payment ID</th>
+                                    <th>User ID</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Hash</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="paymentsTable">
+                                <tr>
+                                    <td colspan="7" class="loading">
+                                        <span class="loading-spinner"></span>Loading payments...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="claims">
+                <div class="data-table">
+                    <div class="table-header">
+                        <div class="table-title">🏆 Reward Claims</div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Claim ID</th>
+                                    <th>User ID</th>
+                                    <th>Level</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="claimsTable">
+                                <tr>
+                                    <td colspan="7" class="loading">
+                                        <span class="loading-spinner"></span>Loading claims...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="referrals">
+                <div class="data-table">
+                    <div class="table-header">
+                        <div class="table-title">🔗 Referral Network</div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Referrer ID</th>
+                                    <th>Referrer</th>
+                                    <th>Referred ID</th>
+                                    <th>Referred</th>
+                                    <th>Position</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="referralsTable">
+                                <tr>
+                                    <td colspan="7" class="loading">
+                                        <span class="loading-spinner"></span>Loading referrals...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="analytics">
+                <div class="data-table">
+                    <div class="table-header">
+                        <div class="table-title">📊 Analytics & Insights</div>
+                    </div>
+                    <div style="padding: 30px;">
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-icon">📈</div>
+                                <div class="stat-value" id="conversionRate">-%</div>
+                                <div class="stat-label">Conversion Rate</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">💵</div>
+                                <div class="stat-value" id="avgRevenue">$-</div>
+                                <div class="stat-label">Avg Revenue/User</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">🎯</div>
+                                <div class="stat-value" id="topReferrer">-</div>
+                                <div class="stat-label">Top Referrer</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">⏱️</div>
+                                <div class="stat-value" id="avgTime">-</div>
+                                <div class="stat-label">Avg Session Time</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE = 'https://notfrens.app/api';
+        let isLoggedIn = false;
+
+        // Admin login
+        async function adminLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const alertDiv = document.getElementById('loginAlert');
+            
+            // Simple auth (replace with real authentication)
+            if (username === 'Guzal' && password === 'guzalm1445') {
+                isLoggedIn = true;
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('adminPanel').classList.add('active');
+                loadDashboard();
+            } else {
+                alertDiv.innerHTML = '<div class="alert error">❌ Invalid credentials!</div>';
+                setTimeout(() => alertDiv.innerHTML = '', 3000);
+            }
+        }
+
+        // Load dashboard data
+        async function loadDashboard() {
+            if (!isLoggedIn) return;
+            
+            try {
+                showLoading();
+                
+                // Load stats
+                const response = await fetch(`${API_BASE}/admin/stats`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateStats(data.stats);
+                    await loadUsers();
+                    await loadPayments();
+                    await loadClaims();
+                    await loadReferrals();
+                    updateAnalytics(data.stats);
+                } else {
+                    throw new Error('Failed to load stats');
+                }
+                
+            } catch (error) {
+                console.error('Dashboard load error:', error);
+                showError('Failed to load dashboard data');
+            }
+        }
+
+        // Update stats cards
+        function updateStats(stats) {
+            document.getElementById('totalUsers').textContent = stats.users.total || 0;
+            document.getElementById('premiumUsers').textContent = stats.users.premium || 0;
+            document.getElementById('totalRevenue').textContent = `$${(stats.payments.totalRevenue || 0).toLocaleString()}`;
+            document.getElementById('totalReferrals').textContent = stats.users.total - 1 || 0;
+            document.getElementById('totalPayments').textContent = stats.payments.totalUSDTPayments || 0;
+            document.getElementById('totalClaims').textContent = stats.claims.pending || 0;
+        }
+
+        // Load users data
+        async function loadUsers() {
+            try {
+                // Simulate API call (replace with real data)
+                const users = [
+                    {
+                        telegramId: 123456789,
+                        username: 'DemoUser',
+                        isPremium: false,
+                        referrals: 2,
+                        tokens: 200,
+                        createdAt: '2025-01-01'
+                    },
+                    {
+                        telegramId: 987654321,
+                        username: 'Friend1',
+                        isPremium: true,
+                        referrals: 0,
+                        tokens: 0,
+                        createdAt: '2025-01-02'
+                    }
+                ];
+                
+                const tableBody = document.getElementById('usersTable');
+                tableBody.innerHTML = users.map(user => `
+                    <tr>
+                        <td>${user.telegramId}</td>
+                        <td>@${user.username}</td>
+                        <td><span class="status ${user.isPremium ? 'active' : 'inactive'}">${user.isPremium ? 'Premium' : 'Free'}</span></td>
+                        <td>${user.referrals}</td>
+                        <td>${user.tokens} NOTF</td>
+                        <td>${new Date(user.createdAt).toLocaleDateString()}</td>
+                        <td>
+                            <button class="action-btn" onclick="viewUser(${user.telegramId})">View</button>
+                            ${!user.isPremium ? `<button class="action-btn" onclick="activatePremium(${user.telegramId})">Activate Premium</button>` : ''}
+                        </td>
+                    </tr>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Load users error:', error);
+            }
+        }
+
+        // Load payments data
+        async function loadPayments() {
+            try {
+                // Simulate payments data
+                const payments = [
+                    {
+                        id: 1,
+                        telegramId: 123456789,
+                        amount: 11,
+                        status: 'verified',
+                        hash: 'abc123...def456',
+                        timestamp: '2025-01-01T10:00:00Z'
+                    }
+                ];
+                
+                const tableBody = document.getElementById('paymentsTable');
+                tableBody.innerHTML = payments.map(payment => `
+                    <tr>
+                        <td>#${payment.id}</td>
+                        <td>${payment.telegramId}</td>
+                        <td>$${payment.amount} USDT</td>
+                        <td><span class="status ${payment.status === 'verified' ? 'active' : 'pending'}">${payment.status}</span></td>
+                        <td>${payment.hash.substring(0, 10)}...</td>
+                        <td>${new Date(payment.timestamp).toLocaleDateString()}</td>
+                        <td>
+                            <button class="action-btn" onclick="viewPayment(${payment.id})">View</button>
+                            ${payment.status === 'pending' ? `<button class="action-btn" onclick="verifyPayment(${payment.id})">Verify</button>` : ''}
+                        </td>
+                    </tr>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Load payments error:', error);
+            }
+        }
+
+        // Load claims data
+        async function loadClaims() {
+            try {
+                // Simulate claims data
+                const claims = [
+                    {
+                        id: 1,
+                        telegramId: 123456789,
+                        level: 3,
+                        amount: 30,
+                        status: 'pending',
+                        requestedAt: '2025-01-01T12:00:00Z'
+                    }
+                ];
+                
+                const tableBody = document.getElementById('claimsTable');
+                tableBody.innerHTML = claims.map(claim => `
+                    <tr>
+                        <td>#${claim.id}</td>
+                        <td>${claim.telegramId}</td>
+                        <td>Level ${claim.level}</td>
+                        <td>$${claim.amount.toLocaleString()}</td>
+                        <td><span class="status ${claim.status === 'processed' ? 'active' : 'pending'}">${claim.status}</span></td>
+                        <td>${new Date(claim.requestedAt).toLocaleDateString()}</td>
+                        <td>
+                            <button class="action-btn" onclick="viewClaim(${claim.id})">View</button>
+                            ${claim.status === 'pending' ? `<button class="action-btn" onclick="processClaim(${claim.id})">Process</button>` : ''}
+                        </td>
+                    </tr>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Load claims error:', error);
+            }
+        }
+
+        // Load referrals data
+        async function loadReferrals() {
+            try {
+                // Simulate referrals data
+                const referrals = [
+                    {
+                        referrerId: 123456789,
+                        referrerName: 'DemoUser',
+                        referralId: 987654321,
+                        referralName: 'Friend1',
+                        position: 1,
+                        timestamp: '2025-01-01T08:00:00Z'
+                    }
+                ];
+                
+                const tableBody = document.getElementById('referralsTable');
+                tableBody.innerHTML = referrals.map(ref => `
+                    <tr>
+                        <td>${ref.referrerId}</td>
+                        <td>@${ref.referrerName}</td>
+                        <td>${ref.referralId}</td>
+                        <td>@${ref.referralName}</td>
+                        <td>#${ref.position}</td>
+                        <td>${new Date(ref.timestamp).toLocaleDateString()}</td>
+                        <td><span class="status active">Active</span></td>
+                    </tr>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Load referrals error:', error);
+            }
+        }
+
+        // Update analytics
+        function updateAnalytics(stats) {
+            const conversionRate = stats.users.total > 0 ? ((stats.users.premium / stats.users.total) * 100).toFixed(1) : 0;
+            const avgRevenue = stats.users.premium > 0 ? (stats.payments.totalRevenue / stats.users.premium).toFixed(0) : 0;
+            
+            document.getElementById('conversionRate').textContent = `${conversionRate}%`;
+            document.getElementById('avgRevenue').textContent = `$${avgRevenue}`;
+            document.getElementById('topReferrer').textContent = 'DemoUser';
+            document.getElementById('avgTime').textContent = '5m 30s';
+        }
+
+        // Tab switching
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Show selected tab
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // Action functions
+        function viewUser(userId) {
+            alert(`View user ${userId} - Feature coming soon!`);
+        }
+
+        function activatePremium(userId) {
+            if (confirm(`Activate premium for user ${userId}?`)) {
+                alert(`Premium activated for user ${userId}!`);
+                loadUsers();
+            }
+        }
+
+        function viewPayment(paymentId) {
+            alert(`View payment ${paymentId} - Feature coming soon!`);
+        }
+
+        function verifyPayment(paymentId) {
+            if (confirm(`Verify payment ${paymentId}?`)) {
+                alert(`Payment ${paymentId} verified!`);
+                loadPayments();
+            }
+        }
+
+        function viewClaim(claimId) {
+            alert(`View claim ${claimId} - Feature coming soon!`);
+        }
+
+        function processClaim(claimId) {
+            if (confirm(`Process claim ${claimId}?`)) {
+                alert(`Claim ${claimId} processed!`);
+                loadClaims();
+            }
+        }
+
+        // Utility functions
+        function showLoading() {
+            // Show loading state for all tables
+            const tables = ['usersTable', 'paymentsTable', 'claimsTable', 'referralsTable'];
+            tables.forEach(tableId => {
+                const table = document.getElementById(tableId);
+                if (table) {
+                    table.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="loading">
+                                <span class="loading-spinner"></span>Loading data...
+                            </td>
+                        </tr>
+                    `;
+                }
+            });
+        }
+
+        function showError(message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert error';
+            alertDiv.textContent = `❌ ${message}`;
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                document.body.removeChild(alertDiv);
+            }, 5000);
+        }
+
+        // Real-time updates (every 30 seconds)
+        setInterval(() => {
+            if (isLoggedIn) {
+                loadDashboard();
+            }
+        }, 30000);
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && isLoggedIn) {
+                // Logout shortcut
+                if (confirm('Logout from admin panel?')) {
+                    isLoggedIn = false;
+                    document.getElementById('adminPanel').classList.remove('active');
+                    document.getElementById('loginForm').style.display = 'block';
+                    document.getElementById('username').value = '';
+                    document.getElementById('password').value = '';
+                }
+            }
+        });
+
+        // Enter key login
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('password').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    adminLogin();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
