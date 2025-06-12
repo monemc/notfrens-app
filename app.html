@@ -59,34 +59,6 @@
             right: -50px;
         }
 
-        .api-status {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            background: rgba(20, 20, 20, 0.9);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 8px;
-            padding: 8px 12px;
-            font-size: 12px;
-            z-index: 1000;
-            cursor: pointer;
-        }
-
-        .api-status.online {
-            border-color: #55ff7f;
-            color: #55ff7f;
-        }
-
-        .api-status.offline {
-            border-color: #ff5555;
-            color: #ff5555;
-        }
-
-        .api-status.testing {
-            border-color: #FFD700;
-            color: #FFD700;
-        }
-
         .wallet-connect-area {
             width: 100%;
             display: flex;
@@ -810,8 +782,6 @@
     </style>
 </head>
 <body>
-    <div class="api-status" id="apiStatus">API: Checking...</div>
-    
     <div class="container" id="mainScreen">
         <div class="bg-glow bg-glow-1"></div>
         <div class="bg-glow bg-glow-2"></div>
@@ -900,7 +870,7 @@
             </button>
             
             <div style="margin-top: 15px; padding: 10px; background: rgba(255, 193, 7, 0.1); border-radius: 8px; font-size: 12px; color: rgba(255, 255, 255, 0.8);">
-                ⚠️ <strong>Important:</strong> Payment will be sent to owner's wallet. After confirmation, premium will be activated automatically.
+                ⚠️ <strong>Important:</strong> Payment will be sent to owner's wallet.
             </div>
         </div>
     </div>
@@ -1072,7 +1042,7 @@
         let currentWallet = null;
         let currentUser = null;
         
-        // API BASE URL - O'Z DOMENINGIZGA O'ZGARTIRING
+        // API BASE URL - Production Ready
         const API_BASE = 'https://notfrens-app-production.up.railway.app';
         
         // Configuration
@@ -1080,7 +1050,6 @@
         const USDT_AMOUNT = 11;
 
         const elements = {
-            apiStatus: document.getElementById('apiStatus'),
             walletInfo: document.getElementById('walletInfo'),
             walletAddress: document.getElementById('walletAddress'),
             walletBalance: document.getElementById('walletBalance'),
@@ -1119,7 +1088,6 @@
             };
 
             try {
-                console.log('API Request:', url, defaultOptions.method);
                 const response = await fetch(url, defaultOptions);
                 
                 if (!response.ok) {
@@ -1131,27 +1099,6 @@
             } catch (error) {
                 console.error('API Error:', error.message);
                 return { success: false, error: error.message };
-            }
-        }
-
-        async function checkAPIHealth() {
-            elements.apiStatus.textContent = 'API: Testing...';
-            elements.apiStatus.className = 'api-status testing';
-            
-            try {
-                const result = await makeAPIRequest('/api/health');
-                
-                if (result.success) {
-                    elements.apiStatus.textContent = `API: Online (${result.data.users || 0} users)`;
-                    elements.apiStatus.className = 'api-status online';
-                    return true;
-                } else {
-                    throw new Error(result.error);
-                }
-            } catch (error) {
-                elements.apiStatus.textContent = 'API: Offline';
-                elements.apiStatus.className = 'api-status offline';
-                return false;
             }
         }
 
@@ -1256,9 +1203,9 @@
             }
             
             return {
-                id: 123456789,
-                username: 'DemoUser',
-                first_name: 'Demo',
+                id: parseInt(getTelegramUserId()),
+                username: 'User',
+                first_name: 'New',
                 last_name: 'User'
             };
         }
@@ -1288,11 +1235,13 @@
                 const userId = getTelegramUserId();
                 const comment = `NotFrens Premium Payment - User ID: ${userId}`;
                 
+                // FIXED: Transaction configuration for proper TON
                 const transaction = {
-                    validUntil: Math.floor(Date.now() / 1000) + 600,
+                    validUntil: Math.floor(Date.now() / 1000) + 300, // 5 minutes
                     messages: [{
                         address: OWNER_USDT_ADDRESS,
-                        amount: (USDT_AMOUNT * 1000000).toString(),
+                        amount: "11000000", // 11 USDT in nano units
+                        bounce: false, // Important for USDT
                         payload: btoa(comment)
                     }]
                 };
@@ -1321,7 +1270,7 @@
                     updatePremiumStatus(true);
                     showStatus('🎉 Premium activated! Level progression unlocked!', 'success');
                     loadUserData();
-                }, 3000);
+                }, 2000);
                 
             } catch (error) {
                 showStatus('Payment failed: ' + error.message, 'error');
@@ -1363,17 +1312,19 @@
                     updateUserInterface(currentUser);
                     return true;
                 } else {
-                    loadDemoData(userData);
+                    // Start with empty data - Real production
+                    loadEmptyData(userData);
                     return false;
                 }
             } catch (error) {
                 const userData = getTelegramUserData();
-                loadDemoData(userData);
+                loadEmptyData(userData);
                 return false;
             }
         }
 
-        function loadDemoData(userData = null) {
+        // FIXED: Start with 0 referrals and tokens
+        function loadEmptyData(userData = null) {
             const user = userData || getTelegramUserData();
             
             currentUser = {
@@ -1381,27 +1332,24 @@
                 username: user.username,
                 firstName: user.first_name,
                 lastName: user.last_name,
-                totalDirectReferrals: 2,
+                totalDirectReferrals: 0, // Start with 0
                 referralLink: `https://t.me/not_frens_bot?start=ref${user.id}`,
                 isPremium: false,
                 levels: {
-                    1: { current: 2, required: 1, completed: true, reward: 0 },
-                    2: { current: 2, required: 3, completed: false, reward: 0 },
-                    3: { current: 2, required: 9, completed: false, reward: 30 },
-                    4: { current: 2, required: 27, completed: false, reward: 0 },
-                    5: { current: 2, required: 81, completed: false, reward: 300 },
-                    6: { current: 2, required: 243, completed: false, reward: 0 },
-                    7: { current: 2, required: 729, completed: false, reward: 1800 },
-                    8: { current: 2, required: 2187, completed: false, reward: 0 },
-                    9: { current: 2, required: 6561, completed: false, reward: 20000 },
-                    10: { current: 2, required: 19683, completed: false, reward: 0 },
-                    11: { current: 2, required: 59049, completed: false, reward: 0 },
-                    12: { current: 2, required: 177147, completed: false, reward: 222000 }
+                    1: { current: 0, required: 1, completed: false, reward: 0 },
+                    2: { current: 0, required: 3, completed: false, reward: 0 },
+                    3: { current: 0, required: 9, completed: false, reward: 30 },
+                    4: { current: 0, required: 27, completed: false, reward: 0 },
+                    5: { current: 0, required: 81, completed: false, reward: 300 },
+                    6: { current: 0, required: 243, completed: false, reward: 0 },
+                    7: { current: 0, required: 729, completed: false, reward: 1800 },
+                    8: { current: 0, required: 2187, completed: false, reward: 0 },
+                    9: { current: 0, required: 6561, completed: false, reward: 20000 },
+                    10: { current: 0, required: 19683, completed: false, reward: 0 },
+                    11: { current: 0, required: 59049, completed: false, reward: 0 },
+                    12: { current: 0, required: 177147, completed: false, reward: 222000 }
                 },
-                directReferrals: [
-                    { username: 'Friend1', telegramId: 987654321 },
-                    { username: 'Friend2', telegramId: 555666777 }
-                ]
+                directReferrals: [] // Start with empty referrals
             };
             
             updateUserInterface(currentUser);
@@ -1449,6 +1397,7 @@
         function updateUserInterface(user) {
             if (!user) return;
             
+            // FIXED: Correct token calculation - 100 per referral
             const totalTokens = user.totalDirectReferrals * 100;
             elements.tokenBalance.textContent = `${totalTokens.toLocaleString()} NOTF`;
             
@@ -1611,23 +1560,12 @@
             if (window.Telegram && window.Telegram.WebApp) {
                 window.Telegram.WebApp.ready();
                 window.Telegram.WebApp.expand();
-                
-                const telegramUser = getTelegramUserData();
-                console.log('Telegram User:', telegramUser);
             }
             
-            const apiHealthy = await checkAPIHealth();
-            
-            if (apiHealthy) {
-                setTimeout(() => {
-                    loadUserData();
-                }, 1000);
-            } else {
-                setTimeout(() => {
-                    const userData = getTelegramUserData();
-                    loadDemoData(userData);
-                }, 1000);
-            }
+            // Load user data
+            setTimeout(() => {
+                loadUserData();
+            }, 1000);
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -1639,7 +1577,6 @@
         window.sendUSDTPayment = sendUSDTPayment;
         window.claimReward = claimReward;
         window.loadUserData = loadUserData;
-        window.checkAPIHealth = checkAPIHealth;
     </script>
 </body>
 </html>
