@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NotFrens - Web3 Platform</title>
+    <title>NotFrens - Premium Web3 Platform</title>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Space+Grotesk:wght@300;400;500;700&display=swap');
@@ -70,7 +70,7 @@
         }
 
         .wallet-info {
-            background: rgba(20, 20, 20, 0.8);
+            background: linear-gradient(135deg, rgba(20, 20, 20, 0.9), rgba(40, 40, 40, 0.8));
             backdrop-filter: blur(10px);
             border-radius: 15px;
             padding: 15px;
@@ -86,14 +86,32 @@
             display: block;
         }
 
+        .wallet-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .wallet-icon {
+            font-size: 18px;
+            color: #0098ea;
+        }
+
+        .wallet-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+
         .wallet-address {
             font-family: 'Orbitron', monospace;
-            font-size: 14px;
+            font-size: 12px;
             color: #0098ea;
-            margin: 5px 0;
-            word-break: break-all;
+            margin: 8px 0;
             background: rgba(0, 152, 234, 0.1);
-            padding: 8px;
+            padding: 8px 12px;
             border-radius: 8px;
             border: 1px solid rgba(0, 152, 234, 0.2);
         }
@@ -103,6 +121,10 @@
             color: #FFD700;
             font-weight: 600;
             margin: 8px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
         }
 
         .logo-container {
@@ -542,9 +564,20 @@
             border-radius: 12px;
             padding: 15px;
             margin-bottom: 20px;
+        }
+
+        .premium-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .premium-slots {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            text-align: center;
+            margin-top: 8px;
         }
 
         .not-premium .status-text {
@@ -637,6 +670,11 @@
             min-height: 80px;
         }
 
+        .referral-card.premium {
+            border-color: rgba(255, 215, 0, 0.6);
+            background: rgba(255, 215, 0, 0.05);
+        }
+
         .referral-name {
             font-size: 14px;
             color: #fff;
@@ -649,11 +687,11 @@
             font-weight: 500;
         }
 
-        .referral-status.added {
+        .referral-status.premium-filled {
             color: #55ff7f;
         }
 
-        .referral-status.not-added {
+        .referral-status.empty {
             color: #ff5555;
         }
 
@@ -791,8 +829,15 @@
         </div>
         
         <div class="wallet-info" id="walletInfo">
+            <div class="wallet-header">
+                <span class="wallet-icon">💳</span>
+                <span class="wallet-label">TON Wallet Connected</span>
+            </div>
             <div class="wallet-address" id="walletAddress">Not Connected</div>
-            <div class="wallet-balance" id="walletBalance">0 TON</div>
+            <div class="wallet-balance" id="walletBalance">
+                <span>💎</span>
+                <span>0 TON</span>
+            </div>
         </div>
         
         <div class="status-message" id="statusMessage"></div>
@@ -857,11 +902,11 @@
             <div style="margin-bottom: 20px;">
                 <h4 style="color: #FFD700; margin-bottom: 10px;">Premium Benefits:</h4>
                 <ul style="list-style: none; padding: 0;">
-                    <li style="margin: 8px 0; color: #fff;">🔓 Level progression unlocked</li>
-                    <li style="margin: 8px 0; color: #fff;">💰 Referral rewards enabled</li>
-                    <li style="margin: 8px 0; color: #fff;">🏆 Priority support</li>
-                    <li style="margin: 8px 0; color: #fff;">📊 Advanced analytics</li>
-                    <li style="margin: 8px 0; color: #fff;">⚡ Higher token rewards</li>
+                    <li style="margin: 8px 0; color: #fff;">🔓 All 12 levels unlocked</li>
+                    <li style="margin: 8px 0; color: #fff;">👥 Invite up to 3 premium users</li>
+                    <li style="margin: 8px 0; color: #fff;">💰 100 NOTF per referral</li>
+                    <li style="margin: 8px 0; color: #fff;">🏆 Claim up to $222,000</li>
+                    <li style="margin: 8px 0; color: #fff;">⚡ Priority support</li>
                 </ul>
             </div>
             
@@ -870,7 +915,7 @@
             </button>
             
             <div style="margin-top: 15px; padding: 10px; background: rgba(255, 193, 7, 0.1); border-radius: 8px; font-size: 12px; color: rgba(255, 255, 255, 0.8);">
-                ⚠️ <strong>Important:</strong> Payment will be sent to owner's wallet.
+                ⚠️ <strong>Important:</strong> Payment will be sent to owner's wallet. Premium activates immediately.
             </div>
         </div>
     </div>
@@ -881,22 +926,22 @@
             <button class="back-button" id="frensBackButton">
                 <span class="back-icon">&#10094;</span> Back
             </button>
-            <h2 class="screen-title">Frens</h2>
+            <h2 class="screen-title">Premium Frens</h2>
         </div>
         
         <div class="stats-container">
             <div class="stats-box">
-                <div class="stats-label">Total</div>
+                <div class="stats-label">Total Earned</div>
                 <div class="stats-value" id="totalEarned">$0</div>
             </div>
             <div class="stats-box">
-                <div class="stats-label">Withdrawn</div>
+                <div class="stats-label">Claimed</div>
                 <div class="stats-value" id="withdrawn">$0</div>
             </div>
         </div>
         
         <div class="referral-link-container">
-            <div class="link-label">Referral Link</div>
+            <div class="link-label">Premium Referral Link</div>
             <div class="link-actions">
                 <input type="text" class="referral-input" id="referralInput" value="Loading..." readonly>
                 <div class="link-buttons">
@@ -907,8 +952,13 @@
         </div>
         
         <div class="premium-status not-premium" id="premiumStatusDiv">
-            <span class="status-text" id="premiumStatusText">Premium ❌</span>
-            <button class="premium-button" id="premiumButton" onclick="showUSDTPayment()">Pay 11 USDT</button>
+            <div class="premium-header">
+                <span class="status-text" id="premiumStatusText">Premium ❌</span>
+                <button class="premium-button" id="premiumButton" onclick="showUSDTPayment()">Get Premium</button>
+            </div>
+            <div class="premium-slots" id="premiumSlots">
+                Referral Slots: 0/3 used
+            </div>
         </div>
         
         <div class="user-tree">
@@ -920,26 +970,27 @@
             
             <div class="direct-referrals" id="directReferrals">
                 <div class="referral-card">
-                    <div class="referral-name">Slot 1</div>
-                    <div class="referral-status not-added">Empty</div>
+                    <div class="referral-name">Premium Slot 1</div>
+                    <div class="referral-status empty">Empty</div>
                 </div>
                 <div class="referral-card">
-                    <div class="referral-name">Slot 2</div>
-                    <div class="referral-status not-added">Empty</div>
+                    <div class="referral-name">Premium Slot 2</div>
+                    <div class="referral-status empty">Empty</div>
                 </div>
                 <div class="referral-card">
-                    <div class="referral-name">Slot 3</div>
-                    <div class="referral-status not-added">Empty</div>
+                    <div class="referral-name">Premium Slot 3</div>
+                    <div class="referral-status empty">Empty</div>
                 </div>
             </div>
             
             <div class="referral-info-box">
-                <div class="info-title">💎 Premium Required for Progression 💎</div>
+                <div class="info-title">💎 Premium Referral System 💎</div>
                 <ul class="info-list">
-                    <li><span class="highlight">100 NOTF tokens</span> for every direct referral</li>
-                    <li><span class="highlight">Premium subscription</span> required for level progression</li>
-                    <li><span class="highlight">Only premium users</span> can advance through levels</li>
-                    <li>Claim payments when levels are complete</li>
+                    <li><span class="highlight">Premium required</span> to invite users</li>
+                    <li><span class="highlight">Max 3 referrals</span> per premium user</li>
+                    <li><span class="highlight">100 NOTF tokens</span> per successful referral</li>
+                    <li><span class="highlight">3x3 system</span> - each of your 3 can invite 3 more</li>
+                    <li>Complete levels to claim cash rewards</li>
                 </ul>
             </div>
         </div>
@@ -1042,10 +1093,7 @@
         let currentWallet = null;
         let currentUser = null;
         
-        // API BASE URL - Production Ready
-        const API_BASE = 'https://notfrens-app-production.up.railway.app';
-        
-        // Configuration
+        const API_BASE = 'https://notfrens.app';
         const OWNER_USDT_ADDRESS = "UQCpLxU30SVhlQ049kja71GohOM43YR3emTT3igMHsntmlkI";
         const USDT_AMOUNT = 11;
 
@@ -1068,6 +1116,7 @@
             premiumStatusDiv: document.getElementById('premiumStatusDiv'),
             premiumStatusText: document.getElementById('premiumStatusText'),
             premiumButton: document.getElementById('premiumButton'),
+            premiumSlots: document.getElementById('premiumSlots'),
             usdtPaymentModal: document.getElementById('usdtPaymentModal'),
             closeUsdtModal: document.getElementById('closeUsdtModal')
         };
@@ -1129,7 +1178,8 @@
         }
 
         async function handleWalletConnected(wallet) {
-            elements.walletAddress.textContent = wallet.account.address;
+            const shortAddress = wallet.account.address.substring(0, 6) + '...' + wallet.account.address.substring(wallet.account.address.length - 4);
+            elements.walletAddress.textContent = shortAddress;
             elements.walletInfo.classList.add('active');
             
             await updateWalletBalance(wallet.account.address);
@@ -1139,7 +1189,7 @@
 
         function handleWalletDisconnected() {
             elements.walletAddress.textContent = 'Not Connected';
-            elements.walletBalance.textContent = '0 TON';
+            elements.walletBalance.innerHTML = '<span>💎</span><span>0 TON</span>';
             elements.walletInfo.classList.remove('active');
             showStatus('Wallet disconnected', 'error');
         }
@@ -1152,12 +1202,12 @@
                 });
 
                 if (result.success) {
-                    elements.walletBalance.textContent = `${result.data.balance} TON`;
+                    elements.walletBalance.innerHTML = `<span>💎</span><span>${result.data.balance} TON</span>`;
                 } else {
-                    elements.walletBalance.textContent = '0 TON';
+                    elements.walletBalance.innerHTML = '<span>💎</span><span>0 TON</span>';
                 }
             } catch (error) {
-                elements.walletBalance.textContent = '0 TON';
+                elements.walletBalance.innerHTML = '<span>💎</span><span>0 TON</span>';
             }
         }
 
@@ -1235,13 +1285,12 @@
                 const userId = getTelegramUserId();
                 const comment = `NotFrens Premium Payment - User ID: ${userId}`;
                 
-                // FIXED: Transaction configuration for proper TON
                 const transaction = {
-                    validUntil: Math.floor(Date.now() / 1000) + 300, // 5 minutes
+                    validUntil: Math.floor(Date.now() / 1000) + 300,
                     messages: [{
                         address: OWNER_USDT_ADDRESS,
-                        amount: "11000000", // 11 USDT in nano units
-                        bounce: false, // Important for USDT
+                        amount: "11000000",
+                        bounce: false,
                         payload: btoa(comment)
                     }]
                 };
@@ -1267,8 +1316,8 @@
                 elements.usdtPaymentModal.style.display = 'none';
                 
                 setTimeout(() => {
-                    updatePremiumStatus(true);
-                    showStatus('🎉 Premium activated! Level progression unlocked!', 'success');
+                    updatePremiumStatus(true, { used: 0, max: 3, remaining: 3, canInvite: true });
+                    showStatus('🎉 Premium activated! You can now invite 3 users!', 'success');
                     loadUserData();
                 }, 2000);
                 
@@ -1312,7 +1361,6 @@
                     updateUserInterface(currentUser);
                     return true;
                 } else {
-                    // Start with empty data - Real production
                     loadEmptyData(userData);
                     return false;
                 }
@@ -1323,7 +1371,6 @@
             }
         }
 
-        // FIXED: Start with 0 referrals and tokens
         function loadEmptyData(userData = null) {
             const user = userData || getTelegramUserData();
             
@@ -1332,9 +1379,15 @@
                 username: user.username,
                 firstName: user.first_name,
                 lastName: user.last_name,
-                totalDirectReferrals: 0, // Start with 0
+                totalDirectReferrals: 0,
                 referralLink: `https://t.me/not_frens_bot?start=ref${user.id}`,
                 isPremium: false,
+                premiumReferralInfo: {
+                    used: 0,
+                    max: 3,
+                    remaining: 3,
+                    canInvite: false
+                },
                 levels: {
                     1: { current: 0, required: 1, completed: false, reward: 0 },
                     2: { current: 0, required: 3, completed: false, reward: 0 },
@@ -1349,7 +1402,7 @@
                     11: { current: 0, required: 59049, completed: false, reward: 0 },
                     12: { current: 0, required: 177147, completed: false, reward: 222000 }
                 },
-                directReferrals: [] // Start with empty referrals
+                directReferrals: []
             };
             
             updateUserInterface(currentUser);
@@ -1397,7 +1450,6 @@
         function updateUserInterface(user) {
             if (!user) return;
             
-            // FIXED: Correct token calculation - 100 per referral
             const totalTokens = user.totalDirectReferrals * 100;
             elements.tokenBalance.textContent = `${totalTokens.toLocaleString()} NOTF`;
             
@@ -1405,32 +1457,35 @@
             elements.tokensEarned.textContent = `${totalTokens} Tokens Earned from Referrals`;
             elements.referralInput.value = user.referralLink || `https://t.me/not_frens_bot?start=ref${user.telegramId}`;
             
-            updatePremiumStatus(user.isPremium);
-            updateDirectReferrals(user.directReferrals || []);
+            updatePremiumStatus(user.isPremium, user.premiumReferralInfo);
+            updateDirectReferrals(user.directReferrals || [], user.premiumReferralInfo);
             
             if (user.levels) {
                 updateLevels(user.levels);
             }
         }
 
-        function updatePremiumStatus(isPremium) {
-            if (isPremium) {
+        function updatePremiumStatus(isPremium, premiumInfo = null) {
+            if (isPremium && premiumInfo) {
                 elements.premiumStatusDiv.className = 'premium-status premium';
                 elements.premiumStatusText.textContent = 'Premium ✅';
                 elements.premiumButton.style.display = 'none';
+                elements.premiumSlots.textContent = `Referral Slots: ${premiumInfo.used}/${premiumInfo.max} used`;
                 
                 if (currentUser) {
                     currentUser.isPremium = true;
+                    currentUser.premiumReferralInfo = premiumInfo;
                     updateLevels(currentUser.levels);
                 }
             } else {
                 elements.premiumStatusDiv.className = 'premium-status not-premium';
                 elements.premiumStatusText.textContent = 'Premium ❌';
                 elements.premiumButton.style.display = 'block';
+                elements.premiumSlots.textContent = 'Get Premium to unlock referral slots';
             }
         }
 
-        function updateDirectReferrals(referrals) {
+        function updateDirectReferrals(referrals, premiumInfo = null) {
             elements.directReferrals.innerHTML = '';
             
             for (let i = 0; i < 3; i++) {
@@ -1439,14 +1494,15 @@
                 card.className = 'referral-card';
                 
                 if (referral) {
+                    card.classList.add('premium');
                     card.innerHTML = `
                         <div class="referral-name">@${referral.username}</div>
-                        <div class="referral-status added">Added (+100 tokens)</div>
+                        <div class="referral-status premium-filled">Premium User (+100 NOTF)</div>
                     `;
                 } else {
                     card.innerHTML = `
-                        <div class="referral-name">Slot ${i + 1}</div>
-                        <div class="referral-status not-added">Empty</div>
+                        <div class="referral-name">Premium Slot ${i + 1}</div>
+                        <div class="referral-status empty">${premiumInfo && premiumInfo.canInvite ? 'Available' : 'Empty'}</div>
                     `;
                 }
                 
@@ -1536,8 +1592,8 @@
                 
                 if (navigator.share) {
                     navigator.share({
-                        title: 'Join NotFrens',
-                        text: 'Check out this awesome crypto project! Use my referral link:',
+                        title: 'Join NotFrens Premium',
+                        text: 'Join the premium Web3 referral platform! Use my link:',
                         url: referralLink
                     });
                 } else {
@@ -1562,7 +1618,6 @@
                 window.Telegram.WebApp.expand();
             }
             
-            // Load user data
             setTimeout(() => {
                 loadUserData();
             }, 1000);
@@ -1572,7 +1627,6 @@
             initializeApp();
         });
 
-        // Global functions
         window.showUSDTPayment = showUSDTPayment;
         window.sendUSDTPayment = sendUSDTPayment;
         window.claimReward = claimReward;
