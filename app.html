@@ -1,4 +1,938 @@
-<!DOCTYPE html>
+.referral-status {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .referral-status.premium-filled {
+            color: #55ff7f;
+        }
+
+        .referral-status.empty {
+            color: #ff5555;
+        }
+
+        .referral-info-box {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #FFD700;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .info-list {
+            list-style: none;
+        }
+
+        .info-list li {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: baseline;
+        }
+
+        .info-list li:before {
+            content: "•";
+            color: #FFD700;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .highlight {
+            color: #FFD700;
+            font-weight: 600;
+        }
+
+        .levels-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+        }
+
+        .level-card {
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            min-height: 70px;
+        }
+
+        .level-card.no-claim {
+            padding: 15px;
+        }
+
+        .level-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .level-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            color: #FFD700;
+            font-weight: 600;
+        }
+
+        .level-progress {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .level-rewards {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
+        .reward-amount {
+            font-size: 16px;
+            font-weight: 600;
+            color: #FFD700;
+        }
+
+        .claim-button {
+            background: rgba(255, 215, 0, 0.2);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            border-radius: 8px;
+            color: #FFD700;
+            font-size: 14px;
+            padding: 8px 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .claim-button:hover:not([disabled]) {
+            background: rgba(255, 215, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .claim-button[disabled] {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="mainScreen">
+        <div class="bg-glow bg-glow-1"></div>
+        <div class="bg-glow bg-glow-2"></div>
+        
+        <div class="wallet-connect-area">
+            <div id="ton-connect-ui"></div>
+        </div>
+        
+        <div class="wallet-info" id="walletInfo">
+            <div class="wallet-header">
+                <span class="wallet-icon">💳</span>
+                <span class="wallet-label">TON Wallet Connected</span>
+            </div>
+            <div class="wallet-address" id="walletAddress">Not Connected</div>
+            <div class="wallet-balance" id="walletBalance">
+                <span>💎</span>
+                <span>0 TON</span>
+            </div>
+        </div>
+        
+        <div class="status-message" id="statusMessage"></div>
+        
+        <div class="logo-container">
+            <div class="logo">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <path class="logo-path" d="M50 10 L10 80 L90 80 Z" />
+                    <path class="logo-path" d="M50 10 L50 80" />
+                    <path class="logo-path" d="M50 10 L10 80" />
+                    <path class="logo-path" d="M50 10 L90 80" />
+                    <circle class="logo-node" cx="50" cy="10" r="5" />
+                    <circle class="logo-node" cx="10" cy="80" r="5" />
+                    <circle class="logo-node" cx="90" cy="80" r="5" />
+                    <circle class="logo-node" cx="50" cy="80" r="5" />
+                </svg>
+            </div>
+        </div>
+        
+        <div class="token-display pulse-animation">
+            <div class="token-label">Your Notfrens Balance</div>
+            <div class="token-amount" id="tokenBalance">0 NOTF</div>
+        </div>
+        
+        <div class="button-container">
+            <div class="nav-button">
+                <div class="button-icon">🏆</div>
+                <div class="button-label">Rank</div>
+            </div>
+            
+            <div class="nav-button" id="frensButton">
+                <div class="button-icon">👥</div>
+                <div class="button-label">Frens</div>
+            </div>
+            
+            <div class="nav-button">
+                <div class="button-icon">✅</div>
+                <div class="button-label">Tasks</div>
+            </div>
+            
+            <div class="nav-button coming-soon">
+                <div class="button-icon">🎨</div>
+                <div class="button-label">Trade (NFT)</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="usdtPaymentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">💎 Premium Upgrade - 11 USDT</h3>
+                <button class="close-modal" id="closeUsdtModal">×</button>
+            </div>
+            
+            <div class="payment-amount">
+                <span class="currency">💰</span>
+                <span class="amount">11 USDT</span>
+                <span class="description">Premium Access</span>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <h4 style="color: #FFD700; margin-bottom: 10px;">Premium Benefits:</h4>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="margin: 8px 0; color: #fff;">🔓 All 12 levels unlocked</li>
+                    <li style="margin: 8px 0; color: #fff;">👥 Invite up to 3 premium users</li>
+                    <li style="margin: 8px 0; color: #fff;">💰 100 NOTF per referral</li>
+                    <li style="margin: 8px 0; color: #fff;">🏆 Claim up to $222,000</li>
+                    <li style="margin: 8px 0; color: #fff;">⚡ Priority support</li>
+                </ul>
+            </div>
+            
+            <button onclick="sendUSDTPayment()" class="payment-btn" id="usdtPayBtn">
+                💰 Send 11 USDT Payment
+            </button>
+            
+            <div style="margin-top: 15px; padding: 10px; background: rgba(255, 193, 7, 0.1); border-radius: 8px; font-size: 12px; color: rgba(255, 255, 255, 0.8);">
+                ⚠️ <strong>Important:</strong> Payment sent to owner's wallet. Premium activates immediately.
+            </div>
+        </div>
+    </div>
+
+    <div class="frens-screen" id="frensScreen">
+        <div class="screen-header">
+            <button class="back-button" id="frensBackButton">
+                <span class="back-icon">&#10094;</span> Back
+            </button>
+            <h2 class="screen-title">Premium Frens</h2>
+        </div>
+        
+        <div class="stats-container">
+            <div class="stats-box">
+                <div class="stats-label">Total Earned</div>
+                <div class="stats-value" id="totalEarned">$0</div>
+            </div>
+            <div class="stats-box">
+                <div class="stats-label">Claimed</div>
+                <div class="stats-value" id="withdrawn">$0</div>
+            </div>
+        </div>
+        
+        <div class="referral-link-container">
+            <div class="link-label">Premium Referral Link</div>
+            <div class="link-actions">
+                <input type="text" class="referral-input" id="referralInput" value="Loading..." readonly>
+                <div class="link-buttons">
+                    <button class="link-button" id="copyButton">Copy</button>
+                    <button class="link-button" id="shareButton">Share</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="premium-status not-premium" id="premiumStatusDiv">
+            <div class="premium-header">
+                <span class="status-text" id="premiumStatusText">Premium ❌</span>
+                <button class="premium-button" id="premiumButton" onclick="showUSDTPayment()">Get Premium</button>
+            </div>
+            <div class="premium-slots" id="premiumSlots">
+                Referral Slots: 0/3 used
+            </div>
+        </div>
+        
+        <div class="user-tree">
+            <div class="user-profile">
+                <div class="user-avatar" id="userAvatar">👤</div>
+                <div class="user-name" id="userName">Loading...</div>
+                <div class="tokens-earned" id="tokensEarned">0 Tokens Earned from Referrals</div>
+            </div>
+            
+            <div class="direct-referrals" id="directReferrals">
+                <div class="referral-card">
+                    <div class="referral-name">Premium Slot 1</div>
+                    <div class="referral-status empty">Empty</div>
+                </div>
+                <div class="referral-card">
+                    <div class="referral-name">Premium Slot 2</div>
+                    <div class="referral-status empty">Empty</div>
+                </div>
+                <div class="referral-card">
+                    <div class="referral-name">Premium Slot 3</div>
+                    <div class="referral-status empty">Empty</div>
+                </div>
+            </div>
+            
+            <div class="referral-info-box">
+                <div class="info-title">💎 Premium Referral System 💎</div>
+                <ul class="info-list">
+                    <li><span class="highlight">Premium required</span> to invite users</li>
+                    <li><span class="highlight">Max 3 referrals</span> per premium user</li>
+                    <li><span class="highlight">100 NOTF tokens</span> per successful referral</li>
+                    <li><span class="highlight">3x3 system</span> - each of your 3 can invite 3 more</li>
+                    <li>Complete levels to claim cash rewards</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="levels-container" id="levelsContainer">
+            <div class="level-card">
+                <div class="level-info">
+                    <div class="level-name">Level 3</div>
+                    <div class="level-progress" id="level3Progress">0/9</div>
+                </div>
+                <div class="level-rewards">
+                    <div class="reward-amount">$30</div>
+                    <button class="claim-button" disabled id="claim3Button" onclick="claimReward(3)">Premium Required</button>
+                </div>
+            </div>
+            
+            <div class="level-card no-claim">
+                <div class="level-info">
+                    <div class="level-name">Level 4</div>
+                    <div class="level-progress" id="level4Progress">0/27</div>
+                </div>
+            </div>
+            
+            <div class="level-card">
+                <div class="level-info">
+                    <div class="level-name">Level 5</div>
+                    <div class="level-progress" id="level5Progress">0/81</div>
+                </div>
+                <div class="level-rewards">
+                    <div class="reward-amount">$300</div>
+                    <button class="claim-button" disabled id="claim5Button" onclick="claimReward(5)">Premium Required</button>
+                </div>
+            </div>
+            
+            <div class="level-card no-claim">
+                <div class="level-info">
+                    <div class="level-name">Level 6</div>
+                    <div class="level-progress" id="level6Progress">0/243</div>
+                </div>
+            </div>
+            
+            <div class="level-card">
+                <div class="level-info">
+                    <div class="level-name">Level 7</div>
+                    <div class="level-progress" id="level7Progress">0/729</div>
+                </div>
+                <div class="level-rewards">
+                    <div class="reward-amount">$1,800</div>
+                    <button class="claim-button" disabled id="claim7Button" onclick="claimReward(7)">Premium Required</button>
+                </div>
+            </div>
+            
+            <div class="level-card no-claim">
+                <div class="level-info">
+                    <div class="level-name">Level 8</div>
+                    <div class="level-progress" id="level8Progress">0/2187</div>
+                </div>
+            </div>
+            
+            <div class="level-card">
+                <div class="level-info">
+                    <div class="level-name">Level 9</div>
+                    <div class="level-progress" id="level9Progress">0/6561</div>
+                </div>
+                <div class="level-rewards">
+                    <div class="reward-amount">$20,000</div>
+                    <button class="claim-button" disabled id="claim9Button" onclick="claimReward(9)">Premium Required</button>
+                </div>
+            </div>
+            
+            <div class="level-card no-claim">
+                <div class="level-info">
+                    <div class="level-name">Level 10</div>
+                    <div class="level-progress" id="level10Progress">0/19683</div>
+                </div>
+            </div>
+            
+            <div class="level-card no-claim">
+                <div class="level-info">
+                    <div class="level-name">Level 11</div>
+                    <div class="level-progress" id="level11Progress">0/59049</div>
+                </div>
+            </div>
+            
+            <div class="level-card">
+                <div class="level-info">
+                    <div class="level-name">Level 12</div>
+                    <div class="level-progress" id="level12Progress">0/177147</div>
+                </div>
+                <div class="level-rewards">
+                    <div class="reward-amount">$222,000</div>
+                    <button class="claim-button" disabled id="claim12Button" onclick="claimReward(12)">Premium Required</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let tonConnectUI;
+        let currentWallet = null;
+        let currentUser = null;
+        
+        const API_BASE = 'https://notfrens.app';
+        const OWNER_USDT_ADDRESS = "UQCpLxU30SVhlQ049kja71GohOM43YR3emTT3igMHsntmlkI";
+        const USDT_AMOUNT = 11;
+
+        const elements = {
+            walletInfo: document.getElementById('walletInfo'),
+            walletAddress: document.getElementById('walletAddress'),
+            walletBalance: document.getElementById('walletBalance'),
+            statusMessage: document.getElementById('statusMessage'),
+            tokenBalance: document.getElementById('tokenBalance'),
+            mainScreen: document.getElementById('mainScreen'),
+            frensScreen: document.getElementById('frensScreen'),
+            frensButton: document.getElementById('frensButton'),
+            frensBackButton: document.getElementById('frensBackButton'),
+            copyButton: document.getElementById('copyButton'),
+            shareButton: document.getElementById('shareButton'),
+            userName: document.getElementById('userName'),
+            tokensEarned: document.getElementById('tokensEarned'),
+            referralInput: document.getElementById('referralInput'),
+            directReferrals: document.getElementById('directReferrals'),
+            premiumStatusDiv: document.getElementById('premiumStatusDiv'),
+            premiumStatusText: document.getElementById('premiumStatusText'),
+            premiumButton: document.getElementById('premiumButton'),
+            premiumSlots: document.getElementById('premiumSlots'),
+            usdtPaymentModal: document.getElementById('usdtPaymentModal'),
+            closeUsdtModal: document.getElementById('closeUsdtModal')
+        };
+
+        async function makeAPIRequest(endpoint, options = {}) {
+            const url = API_BASE + (endpoint.startsWith('/') ? endpoint : '/' + endpoint);
+            const defaultOptions = {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                ...options
+            };
+
+            try {
+                const response = await fetch(url, defaultOptions);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                const data = await response.json();
+                return { success: true, data };
+            } catch (error) {
+                console.error('API Error:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        async function initTonConnect() {
+            try {
+                tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+                    manifestUrl: `${API_BASE}/tonconnect-manifest.json`,
+                    buttonRootId: 'ton-connect-ui'
+                });
+
+                tonConnectUI.onStatusChange((wallet) => {
+                    if (wallet) {
+                        currentWallet = wallet;
+                        handleWalletConnected(wallet);
+                    } else {
+                        currentWallet = null;
+                        handleWalletDisconnected();
+                    }
+                });
+
+                if (tonConnectUI.wallet) {
+                    currentWallet = tonConnectUI.wallet;
+                    handleWalletConnected(tonConnectUI.wallet);
+                }
+            } catch (error) {
+                showStatus('TON Connect failed', 'error');
+            }
+        }
+
+        async function handleWalletConnected(wallet) {
+            const shortAddress = wallet.account.address.substring(0, 6) + '...' + wallet.account.address.substring(wallet.account.address.length - 4);
+            elements.walletAddress.textContent = shortAddress;
+            elements.walletInfo.classList.add('active');
+            
+            await updateWalletBalance(wallet.account.address);
+            showStatus('Wallet connected!', 'success');
+            await notifyBackendWalletConnection(wallet.account.address);
+        }
+
+        function handleWalletDisconnected() {
+            elements.walletAddress.textContent = 'Not Connected';
+            elements.walletBalance.innerHTML = '<span>💎</span><span>0 TON</span>';
+            elements.walletInfo.classList.remove('active');
+            showStatus('Wallet disconnected', 'error');
+        }
+
+        async function updateWalletBalance(address) {
+            try {
+                const result = await makeAPIRequest('/api/ton/balance', {
+                    method: 'POST',
+                    body: JSON.stringify({ address })
+                });
+
+                if (result.success) {
+                    elements.walletBalance.innerHTML = `<span>💎</span><span>${result.data.balance} TON</span>`;
+                } else {
+                    elements.walletBalance.innerHTML = '<span>💎</span><span>0 TON</span>';
+                }
+            } catch (error) {
+                elements.walletBalance.innerHTML = '<span>💎</span><span>0 TON</span>';
+            }
+        }
+
+        async function notifyBackendWalletConnection(address) {
+            try {
+                const userId = getTelegramUserId();
+                await makeAPIRequest('/api/ton/connect', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        telegramId: parseInt(userId),
+                        walletAddress: address
+                    })
+                });
+            } catch (error) {
+                console.error('Backend notification error:', error);
+            }
+        }
+
+        function getTelegramUserId() {
+            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
+                const user = window.Telegram.WebApp.initDataUnsafe.user;
+                if (user && user.id) {
+                    return user.id.toString();
+                }
+            }
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('user') || '123456789';
+        }
+
+        function getTelegramUserData() {
+            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
+                const user = window.Telegram.WebApp.initDataUnsafe.user;
+                if (user) {
+                    return {
+                        id: user.id,
+                        username: user.username || 'User',
+                        first_name: user.first_name || 'Unknown',
+                        last_name: user.last_name || ''
+                    };
+                }
+            }
+            return {
+                id: parseInt(getTelegramUserId()),
+                username: 'User',
+                first_name: 'New',
+                last_name: 'User'
+            };
+        }
+
+        function showUSDTPayment() {
+            if (!currentWallet) {
+                showStatus('Connect TON wallet first!', 'error');
+                return;
+            }
+            elements.usdtPaymentModal.style.display = 'flex';
+        }
+
+        async function sendUSDTPayment() {
+            if (!currentWallet) {
+                showStatus('Wallet not connected!', 'error');
+                return;
+            }
+            
+            try {
+                const payBtn = document.getElementById('usdtPayBtn');
+                payBtn.disabled = true;
+                payBtn.textContent = 'Processing...';
+                
+                showStatus('Preparing payment...', 'loading');
+                
+                const userId = getTelegramUserId();
+                const comment = `NotFrens Premium - User ${userId}`;
+                
+                const transaction = {
+                    validUntil: Math.floor(Date.now() / 1000) + 300,
+                    messages: [{
+                        address: OWNER_USDT_ADDRESS,
+                        amount: "11000000",
+                        bounce: false,
+                        payload: btoa(comment)
+                    }]
+                };
+                
+                const result = await tonConnectUI.sendTransaction(transaction);
+                
+                showStatus('Payment sent! Activating...', 'success');
+                
+                await makeAPIRequest('/api/payment/usdt', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        telegramId: parseInt(userId),
+                        hash: result.boc,
+                        from: currentWallet.account.address,
+                        to: OWNER_USDT_ADDRESS,
+                        amount: USDT_AMOUNT,
+                        comment: comment
+                    })
+                });
+                
+                elements.usdtPaymentModal.style.display = 'none';
+                
+                setTimeout(() => {
+                    updatePremiumStatus(true, { used: 0, max: 3, remaining: 3, canInvite: true });
+                    showStatus('🎉 Premium activated! You can invite 3 users!', 'success');
+                    loadUserData();
+                }, 2000);
+                
+            } catch (error) {
+                showStatus('Payment failed: ' + error.message, 'error');
+            } finally {
+                const payBtn = document.getElementById('usdtPayBtn');
+                payBtn.disabled = false;
+                payBtn.textContent = '💰 Send 11 USDT Payment';
+            }
+        }
+
+        function showStatus(message, type) {
+            const statusEl = elements.statusMessage;
+            statusEl.className = `status-message ${type}`;
+            
+            if (type === 'loading') {
+                statusEl.innerHTML = `<span class="loading-spinner"></span>${message}`;
+            } else {
+                statusEl.textContent = message;
+            }
+            
+            statusEl.style.display = 'block';
+
+            if (type !== 'loading') {
+                setTimeout(() => {
+                    statusEl.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        async function loadUserData() {
+            try {
+                const userId = getTelegramUserId();
+                const result = await makeAPIRequest(`/api/telegram-user/${userId}`);
+                
+                if (result.success) {
+                    currentUser = result.data.user;
+                    updateUserInterface(currentUser);
+                    return true;
+                } else {
+                    loadEmptyData();
+                    return false;
+                }
+            } catch (error) {
+                loadEmptyData();
+                return false;
+            }
+        }
+
+        function loadEmptyData() {
+            const userData = getTelegramUserData();
+            
+            currentUser = {
+                telegramId: userData.id,
+                username: userData.username,
+                firstName: userData.first_name,
+                lastName: userData.last_name,
+                totalDirectReferrals: 0,
+                referralLink: `https://t.me/not_frens_bot?start=ref${userData.id}`,
+                isPremium: false,
+                premiumReferralInfo: {
+                    used: 0,
+                    max: 3,
+                    remaining: 3,
+                    canInvite: false
+                },
+                levels: {
+                    1: { current: 0, required: 1, completed: false, reward: 0 },
+                    2: { current: 0, required: 3, completed: false, reward: 0 },
+                    3: { current: 0, required: 9, completed: false, reward: 30 },
+                    4: { current: 0, required: 27, completed: false, reward: 0 },
+                    5: { current: 0, required: 81, completed: false, reward: 300 },
+                    6: { current: 0, required: 243, completed: false, reward: 0 },
+                    7: { current: 0, required: 729, completed: false, reward: 1800 },
+                    8: { current: 0, required: 2187, completed: false, reward: 0 },
+                    9: { current: 0, required: 6561, completed: false, reward: 20000 },
+                    10: { current: 0, required: 19683, completed: false, reward: 0 },
+                    11: { current: 0, required: 59049, completed: false, reward: 0 },
+                    12: { current: 0, required: 177147, completed: false, reward: 222000 }
+                },
+                directReferrals: []
+            };
+            
+            updateUserInterface(currentUser);
+        }
+
+        async function claimReward(level) {
+            if (!currentUser) {
+                showStatus('Load user data first!', 'error');
+                return;
+            }
+
+            if (!currentUser.isPremium) {
+                showStatus('Premium required!', 'error');
+                showUSDTPayment();
+                return;
+            }
+            
+            const button = document.getElementById(`claim${level}Button`);
+            const originalText = button.textContent;
+            
+            button.textContent = 'Claiming...';
+            button.disabled = true;
+
+            const result = await makeAPIRequest('/api/telegram-claim', {
+                method: 'POST',
+                body: JSON.stringify({
+                    telegramId: currentUser.telegramId,
+                    level: level
+                })
+            });
+
+            if (result.success) {
+                const claimData = result.data.claimRequest;
+                showStatus(`🎉 Claim submitted! Level ${claimData.level}: ${claimData.amount.toLocaleString()}`, 'success');
+                button.textContent = 'Claimed ✅';
+                button.style.background = 'rgba(46, 204, 113, 0.3)';
+                button.style.borderColor = 'rgba(46, 204, 113, 0.6)';
+            } else {
+                showStatus(`❌ Claim failed: ${result.error}`, 'error');
+                button.textContent = originalText;
+                button.disabled = false;
+            }
+        }
+
+        function updateUserInterface(user) {
+            if (!user) return;
+            
+            const totalTokens = user.totalDirectReferrals * 100;
+            elements.tokenBalance.textContent = `${totalTokens.toLocaleString()} NOTF`;
+            
+            elements.userName.textContent = `@${user.username}`;
+            elements.tokensEarned.textContent = `${totalTokens} Tokens Earned from Referrals`;
+            elements.referralInput.value = user.referralLink || `https://t.me/not_frens_bot?start=ref${user.telegramId}`;
+            
+            updatePremiumStatus(user.isPremium, user.premiumReferralInfo);
+            updateDirectReferrals(user.directReferrals || [], user.premiumReferralInfo);
+            
+            if (user.levels) {
+                updateLevels(user.levels);
+            }
+        }
+
+        function updatePremiumStatus(isPremium, premiumInfo = null) {
+            if (isPremium && premiumInfo) {
+                elements.premiumStatusDiv.className = 'premium-status premium';
+                elements.premiumStatusText.textContent = 'Premium ✅';
+                elements.premiumButton.style.display = 'none';
+                elements.premiumSlots.textContent = `Referral Slots: ${premiumInfo.used}/${premiumInfo.max} used`;
+                
+                if (currentUser) {
+                    currentUser.isPremium = true;
+                    currentUser.premiumReferralInfo = premiumInfo;
+                    updateLevels(currentUser.levels);
+                }
+            } else {
+                elements.premiumStatusDiv.className = 'premium-status not-premium';
+                elements.premiumStatusText.textContent = 'Premium ❌';
+                elements.premiumButton.style.display = 'block';
+                elements.premiumSlots.textContent = 'Get Premium to unlock referral slots';
+            }
+        }
+
+        function updateDirectReferrals(referrals, premiumInfo = null) {
+            elements.directReferrals.innerHTML = '';
+            
+            for (let i = 0; i < 3; i++) {
+                const referral = referrals[i];
+                const card = document.createElement('div');
+                card.className = 'referral-card';
+                
+                if (referral) {
+                    card.classList.add('premium');
+                    card.innerHTML = `
+                        <div class="referral-name">@${referral.username}</div>
+                        <div class="referral-status premium-filled">Premium User (+100 NOTF)</div>
+                    `;
+                } else {
+                    card.innerHTML = `
+                        <div class="referral-name">Premium Slot ${i + 1}</div>
+                        <div class="referral-status empty">${premiumInfo && premiumInfo.canInvite ? 'Available' : 'Empty'}</div>
+                    `;
+                }
+                
+                elements.directReferrals.appendChild(card);
+            }
+        }
+
+        function updateLevels(levels) {
+            Object.keys(levels).forEach(levelNum => {
+                const level = levels[levelNum];
+                const progressElement = document.getElementById(`level${levelNum}Progress`);
+                const claimButton = document.getElementById(`claim${levelNum}Button`);
+                
+                if (progressElement) {
+                    progressElement.textContent = `${level.current}/${level.required}`;
+                    
+                    if (level.completed && currentUser && currentUser.isPremium) {
+                        progressElement.style.color = '#55ff7f';
+                        
+                        if (claimButton && level.reward > 0) {
+                            claimButton.disabled = false;
+                            claimButton.textContent = 'Claim';
+                            claimButton.style.opacity = '1';
+                            claimButton.style.background = 'rgba(255, 215, 0, 0.3)';
+                        }
+                    } else if (level.completed && currentUser && !currentUser.isPremium) {
+                        progressElement.style.color = '#ff9500';
+                        
+                        if (claimButton && level.reward > 0) {
+                            claimButton.textContent = 'Premium Required';
+                            claimButton.disabled = true;
+                            claimButton.style.opacity = '0.5';
+                        }
+                    } else {
+                        if (claimButton && level.reward > 0) {
+                            claimButton.textContent = currentUser && currentUser.isPremium ? 'Not Complete' : 'Premium Required';
+                            claimButton.disabled = true;
+                            claimButton.style.opacity = '0.5';
+                        }
+                    }
+                }
+            });
+        }
+
+        function setupEventListeners() {
+            elements.frensButton?.addEventListener('click', function() {
+                elements.mainScreen.style.display = 'none';
+                elements.frensScreen.style.display = 'flex';
+            });
+            
+            elements.frensBackButton?.addEventListener('click', function() {
+                elements.frensScreen.style.display = 'none';
+                elements.mainScreen.style.display = 'flex';
+            });
+            
+            elements.closeUsdtModal?.addEventListener('click', function() {
+                elements.usdtPaymentModal.style.display = 'none';
+            });
+
+            window.addEventListener('click', function(event) {
+                if (event.target === elements.usdtPaymentModal) {
+                    elements.usdtPaymentModal.style.display = 'none';
+                }
+            });
+            
+            elements.copyButton?.addEventListener('click', function() {
+                const referralInput = elements.referralInput;
+                referralInput.select();
+                referralInput.setSelectionRange(0, 99999);
+                
+                try {
+                    document.execCommand('copy');
+                    this.textContent = 'Copied!';
+                    this.style.background = 'rgba(46, 204, 113, 0.3)';
+                    
+                    setTimeout(() => {
+                        this.textContent = 'Copy';
+                        this.style.background = 'rgba(255, 215, 0, 0.2)';
+                    }, 2000);
+                } catch (err) {
+                    navigator.clipboard.writeText(referralInput.value);
+                }
+            });
+            
+            elements.shareButton?.addEventListener('click', function() {
+                const referralLink = elements.referralInput.value;
+                
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Join NotFrens Premium',
+                        text: 'Join the premium Web3 referral platform! Use my link:',
+                        url: referralLink
+                    });
+                } else {
+                    navigator.clipboard.writeText(referralLink);
+                    this.textContent = 'Copied!';
+                    this.style.background = 'rgba(46, 204, 113, 0.3)';
+                    
+                    setTimeout(() => {
+                        this.textContent = 'Share';
+                        this.style.background = 'rgba(255, 215, 0, 0.2)';
+                    }, 2000);
+                }
+            });
+        }
+
+        async function initializeApp() {
+            setupEventListeners();
+            await initTonConnect();
+            
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.ready();
+                window.Telegram.WebApp.expand();
+            }
+            
+            setTimeout(() => {
+                loadUserData();
+            }, 1000);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        window.showUSDTPayment = showUSDTPayment;
+        window.sendUSDTPayment = sendUSDTPayment;
+        window.claimReward = claimReward;
+        window.loadUserData = loadUserData;
+    </script>
+</body>
+</html><!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -308,7 +1242,6 @@
             100% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
         }
 
-        /* MODAL STYLES */
         .modal {
             display: none;
             position: fixed;
@@ -417,7 +1350,6 @@
             transform: none;
         }
 
-        /* FRENS SCREEN STYLES */
         .frens-screen {
             width: 100%;
             height: 100vh;
@@ -683,954 +1615,3 @@
         }
 
         .referral-status {
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .referral-status.premium-filled {
-            color: #55ff7f;
-        }
-
-        .referral-status.empty {
-            color: #ff5555;
-        }
-
-        .referral-info-box {
-            background: rgba(20, 20, 20, 0.8);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 12px;
-            padding: 15px;
-            margin-top: 20px;
-            margin-bottom: 20px;
-        }
-
-        .info-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #FFD700;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-
-        .info-list {
-            list-style: none;
-        }
-
-        .info-list li {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 8px;
-            display: flex;
-            align-items: baseline;
-        }
-
-        .info-list li:before {
-            content: "•";
-            color: #FFD700;
-            font-weight: bold;
-            margin-right: 8px;
-        }
-
-        .highlight {
-            color: #FFD700;
-            font-weight: 600;
-        }
-
-        .levels-container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 30px;
-            padding-bottom: 30px;
-        }
-
-        .level-card {
-            background: rgba(20, 20, 20, 0.8);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 12px;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            min-height: 70px;
-        }
-
-        .level-card.no-claim {
-            padding: 15px;
-        }
-
-        .level-info {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .level-name {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 18px;
-            color: #FFD700;
-            font-weight: 600;
-        }
-
-        .level-progress {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .level-rewards {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 8px;
-        }
-
-        .reward-amount {
-            font-size: 16px;
-            font-weight: 600;
-            color: #FFD700;
-        }
-
-        .claim-button {
-            background: rgba(255, 215, 0, 0.2);
-            border: 1px solid rgba(255, 215, 0, 0.4);
-            border-radius: 8px;
-            color: #FFD700;
-            font-size: 14px;
-            padding: 8px 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .claim-button:hover:not([disabled]) {
-            background: rgba(255, 215, 0, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .claim-button[disabled] {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        @media (max-width: 480px) {
-            .container {
-                padding: 15px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container" id="mainScreen">
-        <div class="bg-glow bg-glow-1"></div>
-        <div class="bg-glow bg-glow-2"></div>
-        
-        <div class="wallet-connect-area">
-            <div id="ton-connect-ui"></div>
-        </div>
-        
-        <div class="wallet-info" id="walletInfo">
-            <div class="wallet-header">
-                <span class="wallet-icon">💳</span>
-                <span class="wallet-label">TON Wallet Connected</span>
-            </div>
-            <div class="wallet-address" id="walletAddress">Not Connected</div>
-            <div class="wallet-balance" id="walletBalance">
-                <span>💎</span>
-                <span>0 TON</span>
-            </div>
-        </div>
-        
-        <div class="status-message" id="statusMessage"></div>
-        
-        <div class="logo-container">
-            <div class="logo">
-                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <path class="logo-path" d="M50 10 L10 80 L90 80 Z" />
-                    <path class="logo-path" d="M50 10 L50 80" />
-                    <path class="logo-path" d="M50 10 L10 80" />
-                    <path class="logo-path" d="M50 10 L90 80" />
-                    <circle class="logo-node" cx="50" cy="10" r="5" />
-                    <circle class="logo-node" cx="10" cy="80" r="5" />
-                    <circle class="logo-node" cx="90" cy="80" r="5" />
-                    <circle class="logo-node" cx="50" cy="80" r="5" />
-                </svg>
-            </div>
-        </div>
-        
-        <div class="token-display pulse-animation">
-            <div class="token-label">Your Notfrens Balance</div>
-            <div class="token-amount" id="tokenBalance">0 NOTF</div>
-        </div>
-        
-        <div class="button-container">
-            <div class="nav-button">
-                <div class="button-icon">🏆</div>
-                <div class="button-label">Rank</div>
-            </div>
-            
-            <div class="nav-button" id="frensButton">
-                <div class="button-icon">👥</div>
-                <div class="button-label">Frens</div>
-            </div>
-            
-            <div class="nav-button">
-                <div class="button-icon">✅</div>
-                <div class="button-label">Tasks</div>
-            </div>
-            
-            <div class="nav-button coming-soon">
-                <div class="button-icon">🎨</div>
-                <div class="button-label">Trade (NFT)</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- PREMIUM PAYMENT MODAL -->
-    <div class="modal" id="usdtPaymentModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">💎 Premium Upgrade - 11 USDT</h3>
-                <button class="close-modal" id="closeUsdtModal">×</button>
-            </div>
-            
-            <div class="payment-amount">
-                <span class="currency">💰</span>
-                <span class="amount">11 USDT</span>
-                <span class="description">Premium Access</span>
-            </div>
-            
-            <div style="margin-bottom: 20px;">
-                <h4 style="color: #FFD700; margin-bottom: 10px;">Premium Benefits:</h4>
-                <ul style="list-style: none; padding: 0;">
-                    <li style="margin: 8px 0; color: #fff;">🔓 All 12 levels unlocked</li>
-                    <li style="margin: 8px 0; color: #fff;">👥 Invite up to 3 premium users</li>
-                    <li style="margin: 8px 0; color: #fff;">💰 100 NOTF per referral</li>
-                    <li style="margin: 8px 0; color: #fff;">🏆 Claim up to $222,000</li>
-                    <li style="margin: 8px 0; color: #fff;">⚡ Priority support</li>
-                </ul>
-            </div>
-            
-            <button onclick="sendUSDTPayment()" class="payment-btn" id="usdtPayBtn">
-                💰 Send 11 USDT Payment
-            </button>
-            
-            <div style="margin-top: 15px; padding: 10px; background: rgba(255, 193, 7, 0.1); border-radius: 8px; font-size: 12px; color: rgba(255, 255, 255, 0.8);">
-                ⚠️ <strong>Important:</strong> Payment will be sent to owner's wallet. Premium activates immediately.
-            </div>
-        </div>
-    </div>
-
-    <!-- FRENS SCREEN -->
-    <div class="frens-screen" id="frensScreen">
-        <div class="screen-header">
-            <button class="back-button" id="frensBackButton">
-                <span class="back-icon">&#10094;</span> Back
-            </button>
-            <h2 class="screen-title">Premium Frens</h2>
-        </div>
-        
-        <div class="stats-container">
-            <div class="stats-box">
-                <div class="stats-label">Total Earned</div>
-                <div class="stats-value" id="totalEarned">$0</div>
-            </div>
-            <div class="stats-box">
-                <div class="stats-label">Claimed</div>
-                <div class="stats-value" id="withdrawn">$0</div>
-            </div>
-        </div>
-        
-        <div class="referral-link-container">
-            <div class="link-label">Premium Referral Link</div>
-            <div class="link-actions">
-                <input type="text" class="referral-input" id="referralInput" value="Loading..." readonly>
-                <div class="link-buttons">
-                    <button class="link-button" id="copyButton">Copy</button>
-                    <button class="link-button" id="shareButton">Share</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="premium-status not-premium" id="premiumStatusDiv">
-            <div class="premium-header">
-                <span class="status-text" id="premiumStatusText">Premium ❌</span>
-                <button class="premium-button" id="premiumButton" onclick="showUSDTPayment()">Get Premium</button>
-            </div>
-            <div class="premium-slots" id="premiumSlots">
-                Referral Slots: 0/3 used
-            </div>
-        </div>
-        
-        <div class="user-tree">
-            <div class="user-profile">
-                <div class="user-avatar" id="userAvatar">👤</div>
-                <div class="user-name" id="userName">Loading...</div>
-                <div class="tokens-earned" id="tokensEarned">0 Tokens Earned from Referrals</div>
-            </div>
-            
-            <div class="direct-referrals" id="directReferrals">
-                <div class="referral-card">
-                    <div class="referral-name">Premium Slot 1</div>
-                    <div class="referral-status empty">Empty</div>
-                </div>
-                <div class="referral-card">
-                    <div class="referral-name">Premium Slot 2</div>
-                    <div class="referral-status empty">Empty</div>
-                </div>
-                <div class="referral-card">
-                    <div class="referral-name">Premium Slot 3</div>
-                    <div class="referral-status empty">Empty</div>
-                </div>
-            </div>
-            
-            <div class="referral-info-box">
-                <div class="info-title">💎 Premium Referral System 💎</div>
-                <ul class="info-list">
-                    <li><span class="highlight">Premium required</span> to invite users</li>
-                    <li><span class="highlight">Max 3 referrals</span> per premium user</li>
-                    <li><span class="highlight">100 NOTF tokens</span> per successful referral</li>
-                    <li><span class="highlight">3x3 system</span> - each of your 3 can invite 3 more</li>
-                    <li>Complete levels to claim cash rewards</li>
-                </ul>
-            </div>
-        </div>
-        
-        <div class="levels-container" id="levelsContainer">
-            <div class="level-card">
-                <div class="level-info">
-                    <div class="level-name">Level 3</div>
-                    <div class="level-progress" id="level3Progress">0/9</div>
-                </div>
-                <div class="level-rewards">
-                    <div class="reward-amount">$30</div>
-                    <button class="claim-button" disabled id="claim3Button" onclick="claimReward(3)">Premium Required</button>
-                </div>
-            </div>
-            
-            <div class="level-card no-claim">
-                <div class="level-info">
-                    <div class="level-name">Level 4</div>
-                    <div class="level-progress" id="level4Progress">0/27</div>
-                </div>
-            </div>
-            
-            <div class="level-card">
-                <div class="level-info">
-                    <div class="level-name">Level 5</div>
-                    <div class="level-progress" id="level5Progress">0/81</div>
-                </div>
-                <div class="level-rewards">
-                    <div class="reward-amount">$300</div>
-                    <button class="claim-button" disabled id="claim5Button" onclick="claimReward(5)">Premium Required</button>
-                </div>
-            </div>
-            
-            <div class="level-card no-claim">
-                <div class="level-info">
-                    <div class="level-name">Level 6</div>
-                    <div class="level-progress" id="level6Progress">0/243</div>
-                </div>
-            </div>
-            
-            <div class="level-card">
-                <div class="level-info">
-                    <div class="level-name">Level 7</div>
-                    <div class="level-progress" id="level7Progress">0/729</div>
-                </div>
-                <div class="level-rewards">
-                    <div class="reward-amount">$1,800</div>
-                    <button class="claim-button" disabled id="claim7Button" onclick="claimReward(7)">Premium Required</button>
-                </div>
-            </div>
-            
-            <div class="level-card no-claim">
-                <div class="level-info">
-                    <div class="level-name">Level 8</div>
-                    <div class="level-progress" id="level8Progress">0/2187</div>
-                </div>
-            </div>
-            
-            <div class="level-card">
-                <div class="level-info">
-                    <div class="level-name">Level 9</div>
-                    <div class="level-progress" id="level9Progress">0/6561</div>
-                </div>
-                <div class="level-rewards">
-                    <div class="reward-amount">$20,000</div>
-                    <button class="claim-button" disabled id="claim9Button" onclick="claimReward(9)">Premium Required</button>
-                </div>
-            </div>
-            
-            <div class="level-card no-claim">
-                <div class="level-info">
-                    <div class="level-name">Level 10</div>
-                    <div class="level-progress" id="level10Progress">0/19683</div>
-                </div>
-            </div>
-            
-            <div class="level-card no-claim">
-                <div class="level-info">
-                    <div class="level-name">Level 11</div>
-                    <div class="level-progress" id="level11Progress">0/59049</div>
-                </div>
-            </div>
-            
-            <div class="level-card">
-                <div class="level-info">
-                    <div class="level-name">Level 12</div>
-                    <div class="level-progress" id="level12Progress">0/177147</div>
-                </div>
-                <div class="level-rewards">
-                    <div class="reward-amount">$222,000</div>
-                    <button class="claim-button" disabled id="claim12Button" onclick="claimReward(12)">Premium Required</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let tonConnectUI;
-        let currentWallet = null;
-        let currentUser = null;
-        
-        const API_BASE = 'https://notfrens.app';
-        const OWNER_USDT_ADDRESS = "UQCpLxU30SVhlQ049kja71GohOM43YR3emTT3igMHsntmlkI";
-        const USDT_AMOUNT = 11;
-
-        const elements = {
-            walletInfo: document.getElementById('walletInfo'),
-            walletAddress: document.getElementById('walletAddress'),
-            walletBalance: document.getElementById('walletBalance'),
-            statusMessage: document.getElementById('statusMessage'),
-            tokenBalance: document.getElementById('tokenBalance'),
-            mainScreen: document.getElementById('mainScreen'),
-            frensScreen: document.getElementById('frensScreen'),
-            frensButton: document.getElementById('frensButton'),
-            frensBackButton: document.getElementById('frensBackButton'),
-            copyButton: document.getElementById('copyButton'),
-            shareButton: document.getElementById('shareButton'),
-            userName: document.getElementById('userName'),
-            tokensEarned: document.getElementById('tokensEarned'),
-            referralInput: document.getElementById('referralInput'),
-            directReferrals: document.getElementById('directReferrals'),
-            premiumStatusDiv: document.getElementById('premiumStatusDiv'),
-            premiumStatusText: document.getElementById('premiumStatusText'),
-            premiumButton: document.getElementById('premiumButton'),
-            premiumSlots: document.getElementById('premiumSlots'),
-            usdtPaymentModal: document.getElementById('usdtPaymentModal'),
-            closeUsdtModal: document.getElementById('closeUsdtModal')
-        };
-
-        async function makeAPIRequest(endpoint, options = {}) {
-            if (!endpoint.startsWith('/')) {
-                endpoint = '/' + endpoint;
-            }
-            
-            const url = `${API_BASE}${endpoint}`;
-            const defaultOptions = {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                ...options
-            };
-
-            try {
-                const response = await fetch(url, defaultOptions);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-                
-                const data = await response.json();
-                return { success: true, data };
-            } catch (error) {
-                console.error('API Error:', error.message);
-                return { success: false, error: error.message };
-            }
-        }
-
-        async function initTonConnect() {
-            try {
-                tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-                    manifestUrl: `${API_BASE}/tonconnect-manifest.json`,
-                    buttonRootId: 'ton-connect-ui'
-                });
-
-                tonConnectUI.onStatusChange((wallet) => {
-                    if (wallet) {
-                        currentWallet = wallet;
-                        handleWalletConnected(wallet);
-                    } else {
-                        currentWallet = null;
-                        handleWalletDisconnected();
-                    }
-                });
-
-                if (tonConnectUI.wallet) {
-                    currentWallet = tonConnectUI.wallet;
-                    handleWalletConnected(tonConnectUI.wallet);
-                }
-            } catch (error) {
-                showStatus('TON Connect failed to load', 'error');
-            }
-        }
-
-        async function handleWalletConnected(wallet) {
-            const shortAddress = wallet.account.address.substring(0, 6) + '...' + wallet.account.address.substring(wallet.account.address.length - 4);
-            elements.walletAddress.textContent = shortAddress;
-            elements.walletInfo.classList.add('active');
-            
-            await updateWalletBalance(wallet.account.address);
-            showStatus('Wallet connected successfully!', 'success');
-            await notifyBackendWalletConnection(wallet.account.address);
-        }
-
-        function handleWalletDisconnected() {
-            elements.walletAddress.textContent = 'Not Connected';
-            elements.walletBalance.innerHTML = '<span>💎</span><span>0 TON</span>';
-            elements.walletInfo.classList.remove('active');
-            showStatus('Wallet disconnected', 'error');
-        }
-
-        async function updateWalletBalance(address) {
-            try {
-                const result = await makeAPIRequest('/api/ton/balance', {
-                    method: 'POST',
-                    body: JSON.stringify({ address })
-                });
-
-                if (result.success) {
-                    elements.walletBalance.innerHTML = `<span>💎</span><span>${result.data.balance} TON</span>`;
-                } else {
-                    elements.walletBalance.innerHTML = '<span>💎</span><span>0 TON</span>';
-                }
-            } catch (error) {
-                elements.walletBalance.innerHTML = '<span>💎</span><span>0 TON</span>';
-            }
-        }
-
-        async function notifyBackendWalletConnection(address) {
-            try {
-                const userId = getTelegramUserId();
-                
-                await makeAPIRequest('/api/ton/connect', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        telegramId: parseInt(userId),
-                        walletAddress: address
-                    })
-                });
-            } catch (error) {
-                console.error('Backend notification error:', error);
-            }
-        }
-
-        function getTelegramUserId() {
-            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
-                const user = window.Telegram.WebApp.initDataUnsafe.user;
-                if (user && user.id) {
-                    return user.id.toString();
-                }
-            }
-            
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get('user') || '123456789';
-        }
-
-        function getTelegramUserData() {
-            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
-                const user = window.Telegram.WebApp.initDataUnsafe.user;
-                if (user) {
-                    return {
-                        id: user.id,
-                        username: user.username || 'User',
-                        first_name: user.first_name || 'Unknown',
-                        last_name: user.last_name || ''
-                    };
-                }
-            }
-            
-            return {
-                id: parseInt(getTelegramUserId()),
-                username: 'User',
-                first_name: 'New',
-                last_name: 'User'
-            };
-        }
-
-        function showUSDTPayment() {
-            if (!currentWallet) {
-                showStatus('Please connect your TON wallet first!', 'error');
-                return;
-            }
-            
-            elements.usdtPaymentModal.style.display = 'flex';
-        }
-
-        async function sendUSDTPayment() {
-            if (!currentWallet) {
-                showStatus('Wallet not connected!', 'error');
-                return;
-            }
-            
-            try {
-                const payBtn = document.getElementById('usdtPayBtn');
-                payBtn.disabled = true;
-                payBtn.textContent = 'Processing...';
-                
-                showStatus('Preparing USDT payment...', 'loading');
-                
-                const userId = getTelegramUserId();
-                const comment = `NotFrens Premium Payment - User ID: ${userId}`;
-                
-                const transaction = {
-                    validUntil: Math.floor(Date.now() / 1000) + 300,
-                    messages: [{
-                        address: OWNER_USDT_ADDRESS,
-                        amount: "11000000",
-                        bounce: false,
-                        payload: btoa(comment)
-                    }]
-                };
-                
-                const result = await tonConnectUI.sendTransaction(transaction);
-                
-                showStatus('Payment sent! Activating premium...', 'success');
-                
-                await makeAPIRequest('/api/payment/usdt', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        telegramId: parseInt(userId),
-                        type: 'usdt_direct',
-                        hash: result.boc,
-                        from: currentWallet.account.address,
-                        to: OWNER_USDT_ADDRESS,
-                        amount: USDT_AMOUNT,
-                        comment: comment,
-                        usdtEquivalent: USDT_AMOUNT
-                    })
-                });
-                
-                elements.usdtPaymentModal.style.display = 'none';
-                
-                setTimeout(() => {
-                    updatePremiumStatus(true, { used: 0, max: 3, remaining: 3, canInvite: true });
-                    showStatus('🎉 Premium activated! You can now invite 3 users!', 'success');
-                    loadUserData();
-                }, 2000);
-                
-            } catch (error) {
-                showStatus('Payment failed: ' + error.message, 'error');
-            } finally {
-                const payBtn = document.getElementById('usdtPayBtn');
-                payBtn.disabled = false;
-                payBtn.textContent = '💰 Send 11 USDT Payment';
-            }
-        }
-
-        function showStatus(message, type) {
-            const statusEl = elements.statusMessage;
-            statusEl.className = `status-message ${type}`;
-            
-            if (type === 'loading') {
-                statusEl.innerHTML = `<span class="loading-spinner"></span>${message}`;
-            } else {
-                statusEl.textContent = message;
-            }
-            
-            statusEl.style.display = 'block';
-
-            if (type !== 'loading') {
-                setTimeout(() => {
-                    statusEl.style.display = 'none';
-                }, 5000);
-            }
-        }
-
-        async function loadUserData() {
-            try {
-                const userId = getTelegramUserId();
-                const userData = getTelegramUserData();
-                
-                const result = await makeAPIRequest(`/api/telegram-user/${userId}`);
-                
-                if (result.success) {
-                    currentUser = result.data.user;
-                    updateUserInterface(currentUser);
-                    return true;
-                } else {
-                    loadEmptyData(userData);
-                    return false;
-                }
-            } catch (error) {
-                const userData = getTelegramUserData();
-                loadEmptyData(userData);
-                return false;
-            }
-        }
-
-        function loadEmptyData(userData = null) {
-            const user = userData || getTelegramUserData();
-            
-            currentUser = {
-                telegramId: user.id,
-                username: user.username,
-                firstName: user.first_name,
-                lastName: user.last_name,
-                totalDirectReferrals: 0,
-                referralLink: `https://t.me/not_frens_bot?start=ref${user.id}`,
-                isPremium: false,
-                premiumReferralInfo: {
-                    used: 0,
-                    max: 3,
-                    remaining: 3,
-                    canInvite: false
-                },
-                levels: {
-                    1: { current: 0, required: 1, completed: false, reward: 0 },
-                    2: { current: 0, required: 3, completed: false, reward: 0 },
-                    3: { current: 0, required: 9, completed: false, reward: 30 },
-                    4: { current: 0, required: 27, completed: false, reward: 0 },
-                    5: { current: 0, required: 81, completed: false, reward: 300 },
-                    6: { current: 0, required: 243, completed: false, reward: 0 },
-                    7: { current: 0, required: 729, completed: false, reward: 1800 },
-                    8: { current: 0, required: 2187, completed: false, reward: 0 },
-                    9: { current: 0, required: 6561, completed: false, reward: 20000 },
-                    10: { current: 0, required: 19683, completed: false, reward: 0 },
-                    11: { current: 0, required: 59049, completed: false, reward: 0 },
-                    12: { current: 0, required: 177147, completed: false, reward: 222000 }
-                },
-                directReferrals: []
-            };
-            
-            updateUserInterface(currentUser);
-        }
-
-        async function claimReward(level) {
-            if (!currentUser) {
-                showStatus('Please load user data first!', 'error');
-                return;
-            }
-
-            if (!currentUser.isPremium) {
-                showStatus('Premium required for claiming rewards!', 'error');
-                showUSDTPayment();
-                return;
-            }
-            
-            const button = document.getElementById(`claim${level}Button`);
-            const originalText = button.textContent;
-            
-            button.textContent = 'Claiming...';
-            button.disabled = true;
-
-            const result = await makeAPIRequest('/api/telegram-claim', {
-                method: 'POST',
-                body: JSON.stringify({
-                    telegramId: currentUser.telegramId,
-                    level: level
-                })
-            });
-
-            if (result.success) {
-                const claimData = result.data.claimRequest;
-                showStatus(`🎉 Claim submitted! Level ${claimData.level}: ${claimData.amount.toLocaleString()}`, 'success');
-                button.textContent = 'Claimed ✅';
-                button.style.background = 'rgba(46, 204, 113, 0.3)';
-                button.style.borderColor = 'rgba(46, 204, 113, 0.6)';
-            } else {
-                showStatus(`❌ Claim failed: ${result.error}`, 'error');
-                button.textContent = originalText;
-                button.disabled = false;
-            }
-        }
-
-        function updateUserInterface(user) {
-            if (!user) return;
-            
-            const totalTokens = user.totalDirectReferrals * 100;
-            elements.tokenBalance.textContent = `${totalTokens.toLocaleString()} NOTF`;
-            
-            elements.userName.textContent = `@${user.username}`;
-            elements.tokensEarned.textContent = `${totalTokens} Tokens Earned from Referrals`;
-            elements.referralInput.value = user.referralLink || `https://t.me/not_frens_bot?start=ref${user.telegramId}`;
-            
-            updatePremiumStatus(user.isPremium, user.premiumReferralInfo);
-            updateDirectReferrals(user.directReferrals || [], user.premiumReferralInfo);
-            
-            if (user.levels) {
-                updateLevels(user.levels);
-            }
-        }
-
-        function updatePremiumStatus(isPremium, premiumInfo = null) {
-            if (isPremium && premiumInfo) {
-                elements.premiumStatusDiv.className = 'premium-status premium';
-                elements.premiumStatusText.textContent = 'Premium ✅';
-                elements.premiumButton.style.display = 'none';
-                elements.premiumSlots.textContent = `Referral Slots: ${premiumInfo.used}/${premiumInfo.max} used`;
-                
-                if (currentUser) {
-                    currentUser.isPremium = true;
-                    currentUser.premiumReferralInfo = premiumInfo;
-                    updateLevels(currentUser.levels);
-                }
-            } else {
-                elements.premiumStatusDiv.className = 'premium-status not-premium';
-                elements.premiumStatusText.textContent = 'Premium ❌';
-                elements.premiumButton.style.display = 'block';
-                elements.premiumSlots.textContent = 'Get Premium to unlock referral slots';
-            }
-        }
-
-        function updateDirectReferrals(referrals, premiumInfo = null) {
-            elements.directReferrals.innerHTML = '';
-            
-            for (let i = 0; i < 3; i++) {
-                const referral = referrals[i];
-                const card = document.createElement('div');
-                card.className = 'referral-card';
-                
-                if (referral) {
-                    card.classList.add('premium');
-                    card.innerHTML = `
-                        <div class="referral-name">@${referral.username}</div>
-                        <div class="referral-status premium-filled">Premium User (+100 NOTF)</div>
-                    `;
-                } else {
-                    card.innerHTML = `
-                        <div class="referral-name">Premium Slot ${i + 1}</div>
-                        <div class="referral-status empty">${premiumInfo && premiumInfo.canInvite ? 'Available' : 'Empty'}</div>
-                    `;
-                }
-                
-                elements.directReferrals.appendChild(card);
-            }
-        }
-
-        function updateLevels(levels) {
-            Object.keys(levels).forEach(levelNum => {
-                const level = levels[levelNum];
-                const progressElement = document.getElementById(`level${levelNum}Progress`);
-                const claimButton = document.getElementById(`claim${levelNum}Button`);
-                
-                if (progressElement) {
-                    progressElement.textContent = `${level.current}/${level.required}`;
-                    
-                    if (level.completed && currentUser && currentUser.isPremium) {
-                        progressElement.style.color = '#55ff7f';
-                        
-                        if (claimButton && level.reward > 0) {
-                            claimButton.disabled = false;
-                            claimButton.textContent = 'Claim';
-                            claimButton.style.opacity = '1';
-                            claimButton.style.background = 'rgba(255, 215, 0, 0.3)';
-                        }
-                    } else if (level.completed && currentUser && !currentUser.isPremium) {
-                        progressElement.style.color = '#ff9500';
-                        
-                        if (claimButton && level.reward > 0) {
-                            claimButton.textContent = 'Premium Required';
-                            claimButton.disabled = true;
-                            claimButton.style.opacity = '0.5';
-                        }
-                    } else {
-                        if (claimButton && level.reward > 0) {
-                            claimButton.textContent = currentUser && currentUser.isPremium ? 'Not Complete' : 'Premium Required';
-                            claimButton.disabled = true;
-                            claimButton.style.opacity = '0.5';
-                        }
-                    }
-                }
-            });
-        }
-
-        function setupEventListeners() {
-            elements.frensButton?.addEventListener('click', function() {
-                elements.mainScreen.style.display = 'none';
-                elements.frensScreen.style.display = 'flex';
-            });
-            
-            elements.frensBackButton?.addEventListener('click', function() {
-                elements.frensScreen.style.display = 'none';
-                elements.mainScreen.style.display = 'flex';
-            });
-            
-            elements.closeUsdtModal?.addEventListener('click', function() {
-                elements.usdtPaymentModal.style.display = 'none';
-            });
-
-            window.addEventListener('click', function(event) {
-                if (event.target === elements.usdtPaymentModal) {
-                    elements.usdtPaymentModal.style.display = 'none';
-                }
-            });
-            
-            elements.copyButton?.addEventListener('click', function() {
-                const referralInput = elements.referralInput;
-                referralInput.select();
-                referralInput.setSelectionRange(0, 99999);
-                
-                try {
-                    document.execCommand('copy');
-                    this.textContent = 'Copied!';
-                    this.style.background = 'rgba(46, 204, 113, 0.3)';
-                    
-                    setTimeout(() => {
-                        this.textContent = 'Copy';
-                        this.style.background = 'rgba(255, 215, 0, 0.2)';
-                    }, 2000);
-                } catch (err) {
-                    navigator.clipboard.writeText(referralInput.value);
-                }
-            });
-            
-            elements.shareButton?.addEventListener('click', function() {
-                const referralLink = elements.referralInput.value;
-                
-                if (navigator.share) {
-                    navigator.share({
-                        title: 'Join NotFrens Premium',
-                        text: 'Join the premium Web3 referral platform! Use my link:',
-                        url: referralLink
-                    });
-                } else {
-                    navigator.clipboard.writeText(referralLink);
-                    this.textContent = 'Copied!';
-                    this.style.background = 'rgba(46, 204, 113, 0.3)';
-                    
-                    setTimeout(() => {
-                        this.textContent = 'Share';
-                        this.style.background = 'rgba(255, 215, 0, 0.2)';
-                    }, 2000);
-                }
-            });
-        }
-
-        async function initializeApp() {
-            setupEventListeners();
-            await initTonConnect();
-            
-            if (window.Telegram && window.Telegram.WebApp) {
-                window.Telegram.WebApp.ready();
-                window.Telegram.WebApp.expand();
-            }
-            
-            setTimeout(() => {
-                loadUserData();
-            }, 1000);
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeApp();
-        });
-
-        window.showUSDTPayment = showUSDTPayment;
-        window.sendUSDTPayment = sendUSDTPayment;
-        window.claimReward = claimReward;
-        window.loadUserData = loadUserData;
-    </script>
-</body>
-</html>
