@@ -1072,8 +1072,8 @@
         let currentWallet = null;
         let currentUser = null;
         
-        // RAILWAY API BASE - BU YERGA RAILWAY URL NI QO'YING!
-        const API_BASE = 'notfrens-app-production.up.railway.app/api';
+        // API BASE URL - O'Z DOMENINGIZGA O'ZGARTIRING
+        const API_BASE = 'https://notfrens-app-production.up.railway.app';
         
         // Configuration
         const OWNER_USDT_ADDRESS = "UQCpLxU30SVhlQ049kja71GohOM43YR3emTT3igMHsntmlkI";
@@ -1104,8 +1104,13 @@
         };
 
         async function makeAPIRequest(endpoint, options = {}) {
+            if (!endpoint.startsWith('/')) {
+                endpoint = '/' + endpoint;
+            }
+            
             const url = `${API_BASE}${endpoint}`;
             const defaultOptions = {
+                method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
@@ -1114,11 +1119,13 @@
             };
 
             try {
-                console.log('API Request:', url);
+                console.log('API Request:', url, defaultOptions.method);
                 const response = await fetch(url, defaultOptions);
+                
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
+                
                 const data = await response.json();
                 return { success: true, data };
             } catch (error) {
@@ -1131,13 +1138,17 @@
             elements.apiStatus.textContent = 'API: Testing...';
             elements.apiStatus.className = 'api-status testing';
             
-            const result = await makeAPIRequest('/health');
-            
-            if (result.success) {
-                elements.apiStatus.textContent = `API: Online (${result.data.users || 'Ready'})`;
-                elements.apiStatus.className = 'api-status online';
-                return true;
-            } else {
+            try {
+                const result = await makeAPIRequest('/api/health');
+                
+                if (result.success) {
+                    elements.apiStatus.textContent = `API: Online (${result.data.users || 0} users)`;
+                    elements.apiStatus.className = 'api-status online';
+                    return true;
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
                 elements.apiStatus.textContent = 'API: Offline';
                 elements.apiStatus.className = 'api-status offline';
                 return false;
@@ -1147,7 +1158,7 @@
         async function initTonConnect() {
             try {
                 tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-                    manifestUrl: 'https://notfrens.app/tonconnect-manifest.json',
+                    manifestUrl: `${API_BASE}/tonconnect-manifest.json`,
                     buttonRootId: 'ton-connect-ui'
                 });
 
@@ -1171,7 +1182,6 @@
         }
 
         async function handleWalletConnected(wallet) {
-            // FULL ADDRESS ko'rsatish
             elements.walletAddress.textContent = wallet.account.address;
             elements.walletInfo.classList.add('active');
             
@@ -1189,7 +1199,7 @@
 
         async function updateWalletBalance(address) {
             try {
-                const result = await makeAPIRequest('/ton/balance', {
+                const result = await makeAPIRequest('/api/ton/balance', {
                     method: 'POST',
                     body: JSON.stringify({ address })
                 });
@@ -1208,7 +1218,7 @@
             try {
                 const userId = getTelegramUserId();
                 
-                await makeAPIRequest('/ton/connect', {
+                await makeAPIRequest('/api/ton/connect', {
                     method: 'POST',
                     body: JSON.stringify({
                         telegramId: parseInt(userId),
@@ -1221,7 +1231,6 @@
         }
 
         function getTelegramUserId() {
-            // Try to get user ID from Telegram WebApp
             if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
                 const user = window.Telegram.WebApp.initDataUnsafe.user;
                 if (user && user.id) {
@@ -1229,7 +1238,6 @@
                 }
             }
             
-            // Fallback to URL parameter
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get('user') || '123456789';
         }
@@ -1280,12 +1288,11 @@
                 const userId = getTelegramUserId();
                 const comment = `NotFrens Premium Payment - User ID: ${userId}`;
                 
-                // USDT Transaction to owner wallet
                 const transaction = {
                     validUntil: Math.floor(Date.now() / 1000) + 600,
                     messages: [{
                         address: OWNER_USDT_ADDRESS,
-                        amount: (USDT_AMOUNT * 1000000).toString(), // USDT in micro units
+                        amount: (USDT_AMOUNT * 1000000).toString(),
                         payload: btoa(comment)
                     }]
                 };
@@ -1294,8 +1301,7 @@
                 
                 showStatus('Payment sent! Activating premium...', 'success');
                 
-                // Notify backend about payment
-                await makeAPIRequest('/payment/usdt', {
+                await makeAPIRequest('/api/payment/usdt', {
                     method: 'POST',
                     body: JSON.stringify({
                         telegramId: parseInt(userId),
@@ -1309,14 +1315,12 @@
                     })
                 });
                 
-                // Close modal and update UI
                 elements.usdtPaymentModal.style.display = 'none';
                 
-                // Update premium status
                 setTimeout(() => {
                     updatePremiumStatus(true);
                     showStatus('🎉 Premium activated! Level progression unlocked!', 'success');
-                    loadUserData(); // Refresh user data
+                    loadUserData();
                 }, 3000);
                 
             } catch (error) {
@@ -1352,14 +1356,13 @@
                 const userId = getTelegramUserId();
                 const userData = getTelegramUserData();
                 
-                const result = await makeAPIRequest(`/telegram-user/${userId}`);
+                const result = await makeAPIRequest(`/api/telegram-user/${userId}`);
                 
                 if (result.success) {
                     currentUser = result.data.user;
                     updateUserInterface(currentUser);
                     return true;
                 } else {
-                    // Load demo data with real Telegram user info
                     loadDemoData(userData);
                     return false;
                 }
@@ -1404,6 +1407,45 @@
             updateUserInterface(currentUser);
         }
 
+        async function claimReward(level) {
+            if (!currentUser) {
+                showStatus('Please load user data first!', 'error');
+                return;
+            }
+
+            if (!currentUser.isPremium) {
+                showStatus('Premium required for claiming rewards!', 'error');
+                showUSDTPayment();
+                return;
+            }
+            
+            const button = document.getElementById(`claim${level}Button`);
+            const originalText = button.textContent;
+            
+            button.textContent = 'Claiming...';
+            button.disabled = true;
+
+            const result = await makeAPIRequest('/api/telegram-claim', {
+                method: 'POST',
+                body: JSON.stringify({
+                    telegramId: currentUser.telegramId,
+                    level: level
+                })
+            });
+
+            if (result.success) {
+                const claimData = result.data.claimRequest;
+                showStatus(`🎉 Claim submitted! Level ${claimData.level}: ${claimData.amount.toLocaleString()}`, 'success');
+                button.textContent = 'Claimed ✅';
+                button.style.background = 'rgba(46, 204, 113, 0.3)';
+                button.style.borderColor = 'rgba(46, 204, 113, 0.6)';
+            } else {
+                showStatus(`❌ Claim failed: ${result.error}`, 'error');
+                button.textContent = originalText;
+                button.disabled = false;
+            }
+        }
+
         function updateUserInterface(user) {
             if (!user) return;
             
@@ -1430,7 +1472,6 @@
                 
                 if (currentUser) {
                     currentUser.isPremium = true;
-                    // Update levels with premium access
                     updateLevels(currentUser.levels);
                 }
             } else {
@@ -1501,45 +1542,6 @@
             });
         }
 
-        async function claimReward(level) {
-            if (!currentUser) {
-                showStatus('Please load user data first!', 'error');
-                return;
-            }
-
-            if (!currentUser.isPremium) {
-                showStatus('Premium required for claiming rewards!', 'error');
-                showUSDTPayment();
-                return;
-            }
-            
-            const button = document.getElementById(`claim${level}Button`);
-            const originalText = button.textContent;
-            
-            button.textContent = 'Claiming...';
-            button.disabled = true;
-
-            const result = await makeAPIRequest('/telegram-claim', {
-                method: 'POST',
-                body: JSON.stringify({
-                    telegramId: currentUser.telegramId,
-                    level: level
-                })
-            });
-
-            if (result.success) {
-                const claimData = result.data.claimRequest;
-                showStatus(`🎉 Claim submitted! Level ${claimData.level}: ${claimData.amount.toLocaleString()}`, 'success');
-                button.textContent = 'Claimed ✅';
-                button.style.background = 'rgba(46, 204, 113, 0.3)';
-                button.style.borderColor = 'rgba(46, 204, 113, 0.6)';
-            } else {
-                showStatus(`❌ Claim failed: ${result.error}`, 'error');
-                button.textContent = originalText;
-                button.disabled = false;
-            }
-        }
-
         function setupEventListeners() {
             elements.frensButton?.addEventListener('click', function() {
                 elements.mainScreen.style.display = 'none';
@@ -1555,7 +1557,6 @@
                 elements.usdtPaymentModal.style.display = 'none';
             });
 
-            // Close modal when clicking outside
             window.addEventListener('click', function(event) {
                 if (event.target === elements.usdtPaymentModal) {
                     elements.usdtPaymentModal.style.display = 'none';
@@ -1607,21 +1608,26 @@
             setupEventListeners();
             await initTonConnect();
             
-            // Initialize Telegram WebApp
             if (window.Telegram && window.Telegram.WebApp) {
                 window.Telegram.WebApp.ready();
                 window.Telegram.WebApp.expand();
                 
-                // Get user data from Telegram
                 const telegramUser = getTelegramUserData();
                 console.log('Telegram User:', telegramUser);
             }
             
             const apiHealthy = await checkAPIHealth();
             
-            setTimeout(() => {
-                loadUserData();
-            }, 1000);
+            if (apiHealthy) {
+                setTimeout(() => {
+                    loadUserData();
+                }, 1000);
+            } else {
+                setTimeout(() => {
+                    const userData = getTelegramUserData();
+                    loadDemoData(userData);
+                }, 1000);
+            }
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -1636,6 +1642,4 @@
         window.checkAPIHealth = checkAPIHealth;
     </script>
 </body>
-</html></h4>
-                <ul style="list-style: none; padding: 0;">
-                    <li style="margin: 8px 0; color: #fff;">🔓 Level
+</html>
