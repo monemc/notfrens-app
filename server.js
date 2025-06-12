@@ -1087,3 +1087,39 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`📅 Started: ${new Date().toISOString()}`);
   console.log(`🔥 PREMIUM REFERRAL SYSTEM ACTIVE!`);
 });
+// Health Check - line ~200 ga qo'shing
+app.get('/api/health', (req, res) => {
+  try {
+    const uptimeHours = (process.uptime() / 3600).toFixed(1);
+    const memoryUsage = process.memoryUsage();
+    
+    const health = {
+      status: 'PRODUCTION_LIVE',
+      timestamp: new Date().toISOString(),
+      uptime: `${uptimeHours} hours`,
+      environment: 'PRODUCTION',
+      version: '2.0.0-PREMIUM',
+      server: 'Railway',
+      
+      system: {
+        memory: `${Math.round(memoryUsage.heapUsed / 1024 / 1024)}MB`,
+        bot: botStatus,
+        database: 'ACTIVE',
+        payments: 'ENABLED'
+      },
+      
+      features: {
+        premiumReferralSystem: true,
+        maxReferralsPerUser: 3
+      }
+    };
+    
+    res.json(health);
+  } catch (error) {
+    console.error('Health check error:', error);
+    res.status(500).json({
+      status: 'ERROR',
+      message: 'Health check failed'
+    });
+  }
+});
