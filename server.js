@@ -37,7 +37,7 @@ try {
   botStatus = 'ERROR';
 }
 
-// PRODUCTION CORS - All domains allowed for real users
+// PRODUCTION CORS
 app.use(cors({
   origin: true,
   credentials: true,
@@ -63,7 +63,7 @@ app.use((req, res, next) => {
   }
 });
 
-// Request logging for real users
+// Request logging
 app.use((req, res, next) => {
   const timestamp = new Date().toISOString();
   const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || 'unknown';
@@ -71,13 +71,12 @@ app.use((req, res, next) => {
   next();
 });
 
-// =================== REAL DATABASE (Production Memory) ===================
+// =================== DATABASE ===================
 const users = new Map();
 const referrals = new Map(); 
 const payments = new Map();
 const claims = new Map();
 
-// Production statistics
 let stats = {
   totalUsers: 0,
   totalReferrals: 0,
@@ -87,7 +86,6 @@ let stats = {
   startTime: new Date().toISOString()
 };
 
-// REAL Level Configuration
 const LEVELS = {
   1: { required: 1, reward: 0, premium: false },
   2: { required: 3, reward: 0, premium: false },
@@ -199,7 +197,7 @@ function calculateRealLevels(userId) {
   return levels;
 }
 
-// =================== PRODUCTION ROUTES ===================
+// =================== ROUTES ===================
 
 // Frontend Route
 app.get('/', (req, res) => {
@@ -211,7 +209,7 @@ app.get('/', (req, res) => {
   }
 });
 
-// FIXED: Production Health Check
+// Health Check
 app.get('/api/health', (req, res) => {
   try {
     const uptimeHours = (process.uptime() / 3600).toFixed(1);
@@ -235,7 +233,7 @@ app.get('/api/health', (req, res) => {
       
       system: {
         memory: `${Math.round(memoryUsage.heapUsed / 1024 / 1024)}MB`,
-        bot: botStatus, // FIXED: Use actual bot status
+        bot: botStatus,
         database: 'ACTIVE',
         payments: 'ENABLED'
       },
@@ -260,7 +258,7 @@ app.get('/api/health', (req, res) => {
   }
 });
 
-// User Management Routes
+// User Management
 app.get('/api/telegram-user/:telegramId', (req, res) => {
   try {
     const telegramId = parseInt(req.params.telegramId);
@@ -352,7 +350,6 @@ app.post('/api/telegram-referral', (req, res) => {
     const success = addRealReferral(referrerId, telegramId);
     
     if (success) {
-      // Bot notification
       if (bot && botStatus === 'LIVE') {
         try {
           const referral = users.get(telegramId);
@@ -507,7 +504,6 @@ app.post('/api/payment/usdt', (req, res) => {
     
     console.log(`💰 REAL PAYMENT PROCESSED: ${telegramId} paid $${amount} USDT - Premium activated`);
     
-    // Bot notifications
     if (bot && botStatus === 'LIVE') {
       try {
         bot.sendMessage(telegramId,
@@ -619,7 +615,6 @@ app.post('/api/telegram-claim', (req, res) => {
     
     console.log(`🏆 REAL CLAIM REQUEST: ${telegramId} requested Level ${level} - $${levelData.reward}`);
     
-    // Bot notifications
     if (bot && botStatus === 'LIVE') {
       try {
         bot.sendMessage(telegramId,
@@ -718,9 +713,9 @@ app.get('/api/admin/stats', (req, res) => {
   }
 });
 
-// =================== TELEGRAM BOT - FIXED ===================
+// =================== TELEGRAM BOT ===================
 if (bot && botStatus === 'LIVE') {
-  // FIXED: Webhook handler
+  // Webhook handler
   app.post('/webhook', (req, res) => {
     try {
       bot.processUpdate(req.body);
@@ -731,14 +726,14 @@ if (bot && botStatus === 'LIVE') {
     }
   });
 
-  // Set webhook endpoint
+  // Set webhook
   app.get('/set-webhook', (req, res) => {
     const webhookUrl = `${WEB_APP_URL}/webhook`;
     
     bot.setWebHook(webhookUrl)
       .then(() => {
         console.log(`🔗 Webhook set: ${webhookUrl}`);
-        botStatus = 'LIVE'; // Update status after successful webhook
+        botStatus = 'LIVE';
         res.json({ 
           success: true, 
           message: 'Webhook configured for production',
@@ -755,7 +750,7 @@ if (bot && botStatus === 'LIVE') {
       });
   });
 
-  // FIXED: Bot commands
+  // Bot commands
   bot.onText(/\/start(.*)/, async (msg, match) => {
     const chatId = msg.chat.id;
     const userId = msg.from.id;
@@ -1013,3 +1008,4 @@ app.listen(PORT, '0.0.0.0', () => {
         });
     }, 5000);
   }
+});
