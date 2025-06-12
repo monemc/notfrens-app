@@ -751,7 +751,9 @@ if (bot) {
       res.sendStatus(200);
     } catch (error) {
       console.error('Bot start error:', error);
-      await bot.sendMessage(chatId, '❌ Service temporarily unavailable. Please try again.');
+      bot.sendMessage(chatId, '❌ Service temporarily unavailable. Please try again.')
+        .catch(err => console.error('Message send error:', err));
+    }
     }
   });
 
@@ -818,7 +820,8 @@ if (bot) {
       
     } catch (error) {
       console.error('Callback error:', error);
-      await bot.answerCallbackQuery(query.id, { text: '❌ Error occurred' });
+      bot.answerCallbackQuery(query.id, { text: '❌ Error occurred' })
+        .catch(err => console.error('Callback answer error:', err));
     }
   });
 }
@@ -942,13 +945,14 @@ app.listen(PORT, '0.0.0.0', () => {
   
   // Set webhook if bot is available
   if (bot) {
-    setTimeout(async () => {
-      try {
-        await bot.setWebHook(`${WEB_APP_URL}/webhook`);
-        console.log(`🔗 Production webhook set: ${WEB_APP_URL}/webhook`);
-      } catch (error) {
-        console.error('❌ Webhook setup failed:', error.message);
-      }
+    setTimeout(() => {
+      bot.setWebHook(`${WEB_APP_URL}/webhook`)
+        .then(() => {
+          console.log(`🔗 Production webhook set: ${WEB_APP_URL}/webhook`);
+        })
+        .catch(error => {
+          console.error('❌ Webhook setup failed:', error.message);
+        });
     }, 5000);
   }
 });
@@ -958,23 +962,25 @@ app.listen(PORT, '0.0.0.0', () => {
   });
 
   // Set webhook
-  app.get('/set-webhook', async (req, res) => {
-    try {
-      const webhookUrl = `${WEB_APP_URL}/webhook`;
-      await bot.setWebHook(webhookUrl);
-      console.log(`🔗 Webhook set: ${webhookUrl}`);
-      res.json({ 
-        success: true, 
-        message: 'Webhook configured for production',
-        url: webhookUrl
+  app.get('/set-webhook', (req, res) => {
+    const webhookUrl = `${WEB_APP_URL}/webhook`;
+    
+    bot.setWebHook(webhookUrl)
+      .then(() => {
+        console.log(`🔗 Webhook set: ${webhookUrl}`);
+        res.json({ 
+          success: true, 
+          message: 'Webhook configured for production',
+          url: webhookUrl
+        });
+      })
+      .catch(error => {
+        console.error('Webhook setup error:', error);
+        res.status(500).json({ 
+          success: false, 
+          error: error.message 
+        });
       });
-    } catch (error) {
-      console.error('Webhook setup error:', error);
-      res.status(500).json({ 
-        success: false, 
-        error: error.message 
-      });
-    }
   });
 
   // Production bot commands
@@ -1011,11 +1017,11 @@ app.listen(PORT, '0.0.0.0', () => {
         `💎 The #1 Web3 Referral Platform\n\n` +
         `🎯 Your earning opportunities:\n` +
         `• 👥 100 NOTF per referral\n` +
-        `• 💰 $${PREMIUM_PRICE} Premium unlocks levels\n` +
+        `• 💰 ${PREMIUM_PRICE} Premium unlocks levels\n` +
         `• 🏆 Claim up to $222,000 in rewards\n` +
         `• 🚀 Real money, real opportunities\n\n` +
         `📊 Current users: ${stats.totalUsers}\n` +
-        `💰 Total paid: $${stats.totalRevenue}\n\n` +
+        `💰 Total paid: ${stats.totalRevenue}\n\n` +
         `Ready to start earning?`;
       
       const keyboard = {
@@ -1032,9 +1038,9 @@ app.listen(PORT, '0.0.0.0', () => {
         ]
       };
       
-      await bot.sendMessage(chatId, welcomeText, { 
+      bot.sendMessage(chatId, welcomeText, { 
         reply_markup: keyboard,
         parse_mode: 'HTML'
-      });
+      }).catch(err => console.error('Welcome message error:', err));
       
     } catch (error) {
