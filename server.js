@@ -217,7 +217,7 @@ function calculateLevels(userId) {
 // =================== ROUTES ===================
 
 // Frontend Route
-app.get('/', (req, res) => {
+app.get('/api/health', (req, res) => {
   try {
     res.sendFile(path.join(__dirname, 'app.html'));
   } catch (error) {
