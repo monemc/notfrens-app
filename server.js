@@ -1123,3 +1123,11 @@ app.get('/api/health', (req, res) => {
     });
   }
 });
+// Server.js oxirida:
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection:', reason);
+});
