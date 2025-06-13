@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NotFrens - Web3 Platform</title>
+    <title>NotFrens Matrix - Premium 3x3 System</title>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Space+Grotesk:wght@300;400;500;700&display=swap');
@@ -16,13 +16,9 @@
         }
 
         body {
-            background-color: #000;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 100%);
             color: #fff;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
             overflow-x: hidden;
         }
 
@@ -34,29 +30,7 @@
             padding: 20px;
             display: flex;
             flex-direction: column;
-            align-items: center;
             position: relative;
-            overflow: hidden;
-        }
-
-        .bg-glow {
-            position: absolute;
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            background: rgba(255, 215, 0, 0.15);
-            filter: blur(80px);
-            z-index: 0;
-        }
-
-        .bg-glow-1 {
-            top: 20%;
-            left: -100px;
-        }
-
-        .bg-glow-2 {
-            bottom: 10%;
-            right: -50px;
         }
 
         .api-status {
@@ -91,20 +65,17 @@
             width: 100%;
             display: flex;
             justify-content: center;
-            margin-top: 20px;
-            margin-bottom: 10px;
-            position: relative;
+            margin-bottom: 20px;
             z-index: 3;
         }
 
         .wallet-info {
-            background: rgba(20, 20, 20, 0.8);
+            background: rgba(20, 20, 40, 0.8);
             backdrop-filter: blur(10px);
             border-radius: 15px;
             padding: 15px;
             margin: 10px 0;
             border: 1px solid rgba(0, 152, 234, 0.3);
-            box-shadow: 0 0 15px rgba(0, 152, 234, 0.2);
             width: 100%;
             text-align: center;
             display: none;
@@ -123,139 +94,12 @@
             background: rgba(0, 152, 234, 0.1);
             padding: 8px;
             border-radius: 8px;
-            border: 1px solid rgba(0, 152, 234, 0.2);
         }
 
         .wallet-balance {
             font-size: 16px;
             color: #FFD700;
             font-weight: 600;
-            margin: 8px 0;
-        }
-
-        .logo-container {
-            margin-top: 40px;
-            margin-bottom: 20px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .logo {
-            width: 150px;
-            height: 150px;
-            position: relative;
-        }
-
-        .logo svg {
-            width: 100%;
-            height: 100%;
-            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.7));
-        }
-
-        .logo-path {
-            stroke: #FFD700;
-            stroke-width: 2;
-            fill: none;
-            filter: drop-shadow(0 0 3px #FFD700);
-        }
-
-        .logo-node {
-            fill: #FFD700;
-            filter: drop-shadow(0 0 5px #FFD700);
-        }
-
-        .token-display {
-            margin: 30px 0;
-            background: rgba(20, 20, 20, 0.8);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 20px;
-            text-align: center;
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
-            width: 100%;
-            position: relative;
-            z-index: 2;
-        }
-
-        .token-label {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .token-amount {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 32px;
-            font-weight: 700;
-            color: #FFD700;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-        }
-
-        .button-container {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            grid-template-rows: repeat(2, 1fr);
-            gap: 15px;
-            width: 100%;
-            margin-top: auto;
-            position: relative;
-            z-index: 2;
-        }
-
-        .nav-button {
-            background: rgba(20, 20, 20, 0.8);
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 12px;
-            padding: 20px 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .nav-button:hover {
-            background: rgba(30, 30, 30, 0.9);
-            border-color: rgba(255, 215, 0, 0.6);
-            transform: translateY(-2px);
-        }
-
-        .button-icon {
-            font-size: 24px;
-            margin-bottom: 8px;
-            color: #FFD700;
-            position: relative;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .button-label {
-            font-size: 14px;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .coming-soon::before {
-            content: "Coming Soon";
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: #FFD700;
-            color: #000;
-            font-size: 8px;
-            padding: 3px 6px;
-            border-radius: 8px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
         }
 
         .status-message {
@@ -265,8 +109,6 @@
             text-align: center;
             font-size: 14px;
             display: none;
-            width: 100%;
-            max-width: 400px;
         }
 
         .status-message.success {
@@ -303,15 +145,344 @@
             100% { transform: rotate(360deg); }
         }
 
-        .pulse-animation {
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
-            animation: pulse 2s infinite;
+        .logo-container {
+            text-align: center;
+            margin: 20px 0;
         }
 
-        @keyframes pulse {
-            0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
-            50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
-            100% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #FFD700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 5px;
+        }
+
+        .premium-status {
+            background: rgba(20, 20, 40, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .premium-status.active {
+            border-color: #55ff7f;
+        }
+
+        .premium-status.inactive {
+            border-color: #ff5555;
+        }
+
+        .status-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .status-text {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .status-description {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 20px;
+        }
+
+        .premium-button {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .premium-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .matrix-info {
+            background: rgba(20, 20, 40, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .matrix-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #FFD700;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .matrix-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #FFD700;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 5px;
+        }
+
+        .referral-section {
+            background: rgba(20, 20, 40, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .referral-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #FFD700;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .referral-code {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            color: #fff;
+            font-family: 'Orbitron', monospace;
+            font-size: 16px;
+            text-align: center;
+            margin-bottom: 15px;
+            word-break: break-all;
+        }
+
+        .referral-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .referral-button {
+            flex: 1;
+            background: rgba(255, 215, 0, 0.2);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            border-radius: 8px;
+            color: #FFD700;
+            font-size: 14px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .referral-button:hover {
+            background: rgba(255, 215, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .matrix-visual {
+            background: rgba(20, 20, 40, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .matrix-visual-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #FFD700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .matrix-slots {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .matrix-slot {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .matrix-slot.filled {
+            border: 2px solid #55ff7f;
+            background: rgba(85, 255, 127, 0.1);
+        }
+
+        .slot-number {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 5px;
+        }
+
+        .slot-username {
+            font-size: 14px;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .slot-empty {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .levels-container {
+            background: rgba(20, 20, 40, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .levels-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #FFD700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .level-item {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .level-item.completed {
+            border: 1px solid #55ff7f;
+            background: rgba(85, 255, 127, 0.1);
+        }
+
+        .level-item.locked {
+            opacity: 0.5;
+        }
+
+        .level-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .level-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            color: #FFD700;
+            font-weight: 600;
+        }
+
+        .level-progress {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .level-reward {
+            text-align: right;
+        }
+
+        .reward-amount {
+            font-size: 16px;
+            font-weight: 600;
+            color: #FFD700;
+        }
+
+        .claim-button {
+            background: rgba(255, 215, 0, 0.2);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            border-radius: 6px;
+            color: #FFD700;
+            font-size: 12px;
+            padding: 6px 12px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        .claim-button:hover:not([disabled]) {
+            background: rgba(255, 215, 0, 0.3);
+        }
+
+        .claim-button[disabled] {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .navigation {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: auto;
+            padding: 20px 0;
+        }
+
+        .nav-button {
+            background: rgba(20, 20, 40, 0.8);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            border-color: rgba(255, 215, 0, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .button-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: #FFD700;
+        }
+
+        .button-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
         }
 
         /* MODAL STYLES */
@@ -330,14 +501,13 @@
         }
 
         .modal-content {
-            background: rgba(20, 20, 20, 0.95);
+            background: rgba(20, 20, 40, 0.95);
             border: 1px solid rgba(255, 215, 0, 0.3);
             border-radius: 15px;
             padding: 25px;
             max-width: 90%;
             width: 400px;
             position: relative;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
             max-height: 90vh;
             overflow-y: auto;
         }
@@ -365,7 +535,6 @@
             font-size: 20px;
             cursor: pointer;
             transition: color 0.3s ease;
-            outline: none;
         }
 
         .close-modal:hover {
@@ -393,11 +562,6 @@
             color: #000;
         }
 
-        .payment-amount .description {
-            font-size: 16px;
-            color: #333;
-        }
-
         .payment-btn {
             width: 100%;
             background: linear-gradient(45deg, #FFD700, #FFA500);
@@ -423,388 +587,13 @@
             transform: none;
         }
 
-        /* FRENS SCREEN STYLES */
-        .frens-screen {
-            width: 100%;
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: 0;
-            background: #000;
-            z-index: 20;
-            padding: 20px;
-            display: none;
-            flex-direction: column;
-            overflow-y: auto;
-        }
-
-        .screen-header {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
-            position: relative;
-        }
-
-        .screen-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 22px;
-            color: #FFD700;
-            font-weight: 700;
-        }
-
-        .back-button {
-            background: none;
-            border: none;
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            position: absolute;
-            left: 0;
-        }
-
-        .back-icon {
-            margin-right: 5px;
-            font-size: 14px;
-        }
-
-        .back-button:hover {
-            color: #FFD700;
-        }
-
-        .stats-container {
-            display: flex;
-            justify-content: space-between;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .stats-box {
-            flex: 1;
-            background: rgba(20, 20, 20, 0.8);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
-        }
-
-        .stats-label {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .stats-value {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 24px;
-            font-weight: 700;
-            color: #FFD700;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-        }
-
-        .referral-link-container {
-            background: rgba(20, 20, 20, 0.8);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-
-        .link-label {
-            font-size: 14px;
-            color: #FFD700;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-
-        .link-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .referral-input {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 12px;
-            color: #fff;
-            font-size: 13px;
-            outline: none;
-        }
-
-        .link-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .link-button {
-            flex: 1;
-            background: rgba(255, 215, 0, 0.2);
-            border: 1px solid rgba(255, 215, 0, 0.4);
-            border-radius: 8px;
-            color: #FFD700;
-            font-size: 14px;
-            padding: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .link-button:hover {
-            background: rgba(255, 215, 0, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .premium-status {
-            background: rgba(20, 20, 20, 0.8);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .not-premium .status-text {
-            color: #ff5555;
-            font-weight: 500;
-        }
-
-        .premium .status-text {
-            color: #55ff7f;
-            font-weight: 500;
-        }
-
-        .premium-button {
-            background: rgba(255, 215, 0, 0.2);
-            border: 1px solid rgba(255, 215, 0, 0.4);
-            border-radius: 8px;
-            color: #FFD700;
-            font-size: 14px;
-            padding: 8px 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .premium-button:hover {
-            background: rgba(255, 215, 0, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .premium-button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .user-tree {
-            margin-bottom: 30px;
-        }
-
-        .user-profile {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .user-avatar {
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #FFD700, #B8860B);
-            border: 2px solid rgba(255, 215, 0, 0.8);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
-            overflow: hidden;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 36px;
-        }
-
-        .user-name {
-            font-size: 16px;
-            color: #fff;
-            font-weight: 500;
-        }
-
-        .tokens-earned {
-            font-size: 14px;
-            color: #FFD700;
-            margin-top: 5px;
-            font-weight: 500;
-        }
-
-        .direct-referrals {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .referral-card {
-            flex: 1;
-            background: rgba(20, 20, 20, 0.8);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 12px;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            min-height: 80px;
-        }
-
-        .referral-name {
-            font-size: 14px;
-            color: #fff;
-            margin-bottom: 10px;
-            word-break: break-all;
-        }
-
-        .referral-status {
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .referral-status.added {
-            color: #55ff7f;
-        }
-
-        .referral-status.not-added {
-            color: #ff5555;
-        }
-
-        .referral-info-box {
-            background: rgba(20, 20, 20, 0.8);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 12px;
-            padding: 15px;
-            margin-top: 20px;
-            margin-bottom: 20px;
-        }
-
-        .info-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #FFD700;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-
-        .info-list {
-            list-style: none;
-        }
-
-        .info-list li {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 8px;
-            display: flex;
-            align-items: baseline;
-        }
-
-        .info-list li:before {
-            content: "•";
-            color: #FFD700;
-            font-weight: bold;
-            margin-right: 8px;
-        }
-
-        .highlight {
-            color: #FFD700;
-            font-weight: 600;
-        }
-
-        .levels-container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 30px;
-            padding-bottom: 30px;
-        }
-
-        .level-card {
-            background: rgba(20, 20, 20, 0.8);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 12px;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            min-height: 70px;
-        }
-
-        .level-card.no-claim {
-            padding: 15px;
-        }
-
-        .level-info {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .level-name {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 18px;
-            color: #FFD700;
-            font-weight: 600;
-        }
-
-        .level-progress {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .level-rewards {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 8px;
-        }
-
-        .reward-amount {
-            font-size: 16px;
-            font-weight: 600;
-            color: #FFD700;
-        }
-
-        .claim-button {
-            background: rgba(255, 215, 0, 0.2);
-            border: 1px solid rgba(255, 215, 0, 0.4);
-            border-radius: 8px;
-            color: #FFD700;
-            font-size: 14px;
-            padding: 8px 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .claim-button:hover:not([disabled]) {
-            background: rgba(255, 215, 0, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .claim-button[disabled] {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
         @media (max-width: 480px) {
             .container {
                 padding: 15px;
+            }
+
+            .matrix-stats {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -812,10 +601,7 @@
 <body>
     <div class="api-status" id="apiStatus">API: Checking...</div>
     
-    <div class="container" id="mainScreen">
-        <div class="bg-glow bg-glow-1"></div>
-        <div class="bg-glow bg-glow-2"></div>
-        
+    <div class="container">
         <div class="wallet-connect-area">
             <div id="ton-connect-ui"></div>
         </div>
@@ -828,44 +614,91 @@
         <div class="status-message" id="statusMessage"></div>
         
         <div class="logo-container">
-            <div class="logo">
-                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <path class="logo-path" d="M50 10 L10 80 L90 80 Z" />
-                    <path class="logo-path" d="M50 10 L50 80" />
-                    <path class="logo-path" d="M50 10 L10 80" />
-                    <path class="logo-path" d="M50 10 L90 80" />
-                    <circle class="logo-node" cx="50" cy="10" r="5" />
-                    <circle class="logo-node" cx="10" cy="80" r="5" />
-                    <circle class="logo-node" cx="90" cy="80" r="5" />
-                    <circle class="logo-node" cx="50" cy="80" r="5" />
-                </svg>
+            <div class="logo">NotFrens Matrix</div>
+            <div class="subtitle">Premium 3x3 Referral System</div>
+        </div>
+        
+        <!-- Premium Status -->
+        <div class="premium-status" id="premiumStatus">
+            <div class="status-icon" id="statusIcon">❌</div>
+            <div class="status-text" id="statusText">Premium Required</div>
+            <div class="status-description" id="statusDescription">
+                Purchase Premium ($11 USDT) to unlock matrix referral system
+            </div>
+            <button class="premium-button" id="premiumButton" onclick="showUSDTPayment()">
+                💎 Buy Premium - $11 USDT
+            </button>
+        </div>
+        
+        <!-- Matrix Info -->
+        <div class="matrix-info" id="matrixInfo" style="display: none;">
+            <div class="matrix-title">📊 Your Matrix Status</div>
+            <div class="matrix-stats">
+                <div class="stat-box">
+                    <div class="stat-value" id="matrixLevel">0</div>
+                    <div class="stat-label">Matrix Level</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="directReferrals">0/3</div>
+                    <div class="stat-label">Direct Referrals</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="totalReferrals">0</div>
+                    <div class="stat-label">Total Network</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="completedLevels">0/12</div>
+                    <div class="stat-label">Levels Complete</div>
+                </div>
             </div>
         </div>
         
-        <div class="token-display pulse-animation">
-            <div class="token-label">Your Notfrens Balance</div>
-            <div class="token-amount" id="tokenBalance">0 NOTF</div>
+        <!-- Referral Section -->
+        <div class="referral-section" id="referralSection" style="display: none;">
+            <div class="referral-title">🔗 Your Referral Link</div>
+            <div class="referral-code" id="referralCode">Loading...</div>
+            <div class="referral-buttons">
+                <button class="referral-button" id="copyButton">📋 Copy</button>
+                <button class="referral-button" id="shareButton">📤 Share</button>
+            </div>
         </div>
         
-        <div class="button-container">
-            <div class="nav-button">
-                <div class="button-icon">🏆</div>
-                <div class="button-label">Rank</div>
+        <!-- Matrix Visual -->
+        <div class="matrix-visual" id="matrixVisual" style="display: none;">
+            <div class="matrix-visual-title">👥 Your Direct Referrals (3x3)</div>
+            <div class="matrix-slots" id="matrixSlots">
+                <div class="matrix-slot">
+                    <div class="slot-number">Slot 1</div>
+                    <div class="slot-empty">Empty</div>
+                </div>
+                <div class="matrix-slot">
+                    <div class="slot-number">Slot 2</div>
+                    <div class="slot-empty">Empty</div>
+                </div>
+                <div class="matrix-slot">
+                    <div class="slot-number">Slot 3</div>
+                    <div class="slot-empty">Empty</div>
+                </div>
             </div>
-            
-            <div class="nav-button" id="frensButton">
-                <div class="button-icon">👥</div>
-                <div class="button-label">Frens</div>
+        </div>
+        
+        <!-- Levels Container -->
+        <div class="levels-container">
+            <div class="levels-title">🏆 Matrix Levels & Rewards</div>
+            <div id="levelsContainer">
+                <!-- Levels will be populated by JavaScript -->
             </div>
-            
-            <div class="nav-button">
-                <div class="button-icon">✅</div>
-                <div class="button-label">Tasks</div>
+        </div>
+        
+        <!-- Navigation -->
+        <div class="navigation">
+            <div class="nav-button" onclick="window.location.reload()">
+                <div class="button-icon">🔄</div>
+                <div class="button-label">Refresh</div>
             </div>
-            
-            <div class="nav-button coming-soon">
-                <div class="button-icon">🎨</div>
-                <div class="button-label">Trade (NFT)</div>
+            <div class="nav-button" onclick="checkApiHealth()">
+                <div class="button-icon">📡</div>
+                <div class="button-label">API Status</div>
             </div>
         </div>
     </div>
@@ -874,24 +707,23 @@
     <div class="modal" id="usdtPaymentModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">💎 Premium Upgrade - 11 USDT</h3>
+                <h3 class="modal-title">💎 Premium Matrix Access</h3>
                 <button class="close-modal" id="closeUsdtModal">×</button>
             </div>
             
             <div class="payment-amount">
                 <span class="currency">💰</span>
                 <span class="amount">11 USDT</span>
-                <span class="description">Premium Access</span>
             </div>
             
             <div style="margin-bottom: 20px;">
-                <h4 style="color: #FFD700; margin-bottom: 10px;">Premium Benefits:</h4>
+                <h4 style="color: #FFD700; margin-bottom: 10px;">🚀 Premium Benefits:</h4>
                 <ul style="list-style: none; padding: 0;">
-                    <li style="margin: 8px 0; color: #fff;">🔓 Level progression unlocked</li>
-                    <li style="margin: 8px 0; color: #fff;">💰 Referral rewards enabled</li>
-                    <li style="margin: 8px 0; color: #fff;">🏆 Priority support</li>
-                    <li style="margin: 8px 0; color: #fff;">📊 Advanced analytics</li>
-                    <li style="margin: 8px 0; color: #fff;">⚡ Higher token rewards</li>
+                    <li style="margin: 8px 0; color: #fff;">🔓 Unlock 3x3 matrix system</li>
+                    <li style="margin: 8px 0; color: #fff;">👥 Refer up to 3 premium members</li>
+                    <li style="margin: 8px 0; color: #fff;">💰 Earn from 12 matrix levels</li>
+                    <li style="margin: 8px 0; color: #fff;">🏆 Claim level rewards</li>
+                    <li style="margin: 8px 0; color: #fff;">📊 Matrix analytics & tracking</li>
                 </ul>
             </div>
             
@@ -900,169 +732,7 @@
             </button>
             
             <div style="margin-top: 15px; padding: 10px; background: rgba(255, 193, 7, 0.1); border-radius: 8px; font-size: 12px; color: rgba(255, 255, 255, 0.8);">
-                ⚠️ <strong>Important:</strong> Payment will be sent to owner's wallet. After confirmation, premium will be activated automatically.
-            </div>
-        </div>
-    </div>
-
-    <!-- FRENS SCREEN -->
-    <div class="frens-screen" id="frensScreen">
-        <div class="screen-header">
-            <button class="back-button" id="frensBackButton">
-                <span class="back-icon">&#10094;</span> Back
-            </button>
-            <h2 class="screen-title">Frens</h2>
-        </div>
-        
-        <div class="stats-container">
-            <div class="stats-box">
-                <div class="stats-label">Total</div>
-                <div class="stats-value" id="totalEarned">$0</div>
-            </div>
-            <div class="stats-box">
-                <div class="stats-label">Withdrawn</div>
-                <div class="stats-value" id="withdrawn">$0</div>
-            </div>
-        </div>
-        
-        <div class="referral-link-container">
-            <div class="link-label">Referral Link</div>
-            <div class="link-actions">
-                <input type="text" class="referral-input" id="referralInput" value="Loading..." readonly>
-                <div class="link-buttons">
-                    <button class="link-button" id="copyButton">Copy</button>
-                    <button class="link-button" id="shareButton">Share</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="premium-status not-premium" id="premiumStatusDiv">
-            <span class="status-text" id="premiumStatusText">Premium ❌</span>
-            <button class="premium-button" id="premiumButton" onclick="showUSDTPayment()">Pay 11 USDT</button>
-        </div>
-        
-        <div class="user-tree">
-            <div class="user-profile">
-                <div class="user-avatar" id="userAvatar">👤</div>
-                <div class="user-name" id="userName">Loading...</div>
-                <div class="tokens-earned" id="tokensEarned">0 Tokens Earned from Referrals</div>
-            </div>
-            
-            <div class="direct-referrals" id="directReferrals">
-                <div class="referral-card">
-                    <div class="referral-name">Slot 1</div>
-                    <div class="referral-status not-added">Empty</div>
-                </div>
-                <div class="referral-card">
-                    <div class="referral-name">Slot 2</div>
-                    <div class="referral-status not-added">Empty</div>
-                </div>
-                <div class="referral-card">
-                    <div class="referral-name">Slot 3</div>
-                    <div class="referral-status not-added">Empty</div>
-                </div>
-            </div>
-            
-            <div class="referral-info-box">
-                <div class="info-title">💎 Premium Required for Progression 💎</div>
-                <ul class="info-list">
-                    <li><span class="highlight">100 NOTF tokens</span> for every direct referral</li>
-                    <li><span class="highlight">Premium subscription</span> required for level progression</li>
-                    <li><span class="highlight">Only premium users</span> can advance through levels</li>
-                    <li>Claim payments when levels are complete</li>
-                </ul>
-            </div>
-        </div>
-        
-        <div class="levels-container" id="levelsContainer">
-            <div class="level-card">
-                <div class="level-info">
-                    <div class="level-name">Level 3</div>
-                    <div class="level-progress" id="level3Progress">0/9</div>
-                </div>
-                <div class="level-rewards">
-                    <div class="reward-amount">$30</div>
-                    <button class="claim-button" disabled id="claim3Button" onclick="claimReward(3)">Premium Required</button>
-                </div>
-            </div>
-            
-            <div class="level-card no-claim">
-                <div class="level-info">
-                    <div class="level-name">Level 4</div>
-                    <div class="level-progress" id="level4Progress">0/27</div>
-                </div>
-            </div>
-            
-            <div class="level-card">
-                <div class="level-info">
-                    <div class="level-name">Level 5</div>
-                    <div class="level-progress" id="level5Progress">0/81</div>
-                </div>
-                <div class="level-rewards">
-                    <div class="reward-amount">$300</div>
-                    <button class="claim-button" disabled id="claim5Button" onclick="claimReward(5)">Premium Required</button>
-                </div>
-            </div>
-            
-            <div class="level-card no-claim">
-                <div class="level-info">
-                    <div class="level-name">Level 6</div>
-                    <div class="level-progress" id="level6Progress">0/243</div>
-                </div>
-            </div>
-            
-            <div class="level-card">
-                <div class="level-info">
-                    <div class="level-name">Level 7</div>
-                    <div class="level-progress" id="level7Progress">0/729</div>
-                </div>
-                <div class="level-rewards">
-                    <div class="reward-amount">$1,800</div>
-                    <button class="claim-button" disabled id="claim7Button" onclick="claimReward(7)">Premium Required</button>
-                </div>
-            </div>
-            
-            <div class="level-card no-claim">
-                <div class="level-info">
-                    <div class="level-name">Level 8</div>
-                    <div class="level-progress" id="level8Progress">0/2187</div>
-                </div>
-            </div>
-            
-            <div class="level-card">
-                <div class="level-info">
-                    <div class="level-name">Level 9</div>
-                    <div class="level-progress" id="level9Progress">0/6561</div>
-                </div>
-                <div class="level-rewards">
-                    <div class="reward-amount">$20,000</div>
-                    <button class="claim-button" disabled id="claim9Button" onclick="claimReward(9)">Premium Required</button>
-                </div>
-            </div>
-            
-            <div class="level-card no-claim">
-                <div class="level-info">
-                    <div class="level-name">Level 10</div>
-                    <div class="level-progress" id="level10Progress">0/19683</div>
-                </div>
-            </div>
-            
-            <div class="level-card no-claim">
-                <div class="level-info">
-                    <div class="level-name">Level 11</div>
-                    <div class="level-progress" id="level11Progress">0/59049</div>
-                </div>
-            </div>
-            
-            <div class="level-card">
-                <div class="level-info">
-                    <div class="level-name">Level 12</div>
-                    <div class="level-progress" id="level12Progress">0/177147</div>
-                </div>
-                <div class="level-rewards">
-                    <div class="reward-amount">$222,000</div>
-                    <button class="claim-button" disabled id="claim12Button" onclick="claimReward(12)">Premium Required</button>
-                </div>
+                ⚠️ <strong>Important:</strong> Only premium members can participate in matrix system. Payment activates your matrix immediately.
             </div>
         </div>
     </div>
@@ -1072,95 +742,80 @@
         let currentWallet = null;
         let currentUser = null;
         
-        // API BASE URL - Railway URL
+        // API Configuration
         const API_BASE = 'https://notfrens.app/api';
-        
-        // Configuration
         const OWNER_USDT_ADDRESS = "UQCpLxU30SVhlQ049kja71GohOM43YR3emTT3igMHsntmlkI";
         const USDT_AMOUNT = 11;
 
+        // DOM Elements
         const elements = {
             apiStatus: document.getElementById('apiStatus'),
             walletInfo: document.getElementById('walletInfo'),
             walletAddress: document.getElementById('walletAddress'),
             walletBalance: document.getElementById('walletBalance'),
             statusMessage: document.getElementById('statusMessage'),
-            tokenBalance: document.getElementById('tokenBalance'),
-            mainScreen: document.getElementById('mainScreen'),
-            frensScreen: document.getElementById('frensScreen'),
-            frensButton: document.getElementById('frensButton'),
-            frensBackButton: document.getElementById('frensBackButton'),
+            premiumStatus: document.getElementById('premiumStatus'),
+            statusIcon: document.getElementById('statusIcon'),
+            statusText: document.getElementById('statusText'),
+            statusDescription: document.getElementById('statusDescription'),
+            premiumButton: document.getElementById('premiumButton'),
+            matrixInfo: document.getElementById('matrixInfo'),
+            matrixLevel: document.getElementById('matrixLevel'),
+            directReferrals: document.getElementById('directReferrals'),
+            totalReferrals: document.getElementById('totalReferrals'),
+            completedLevels: document.getElementById('completedLevels'),
+            referralSection: document.getElementById('referralSection'),
+            referralCode: document.getElementById('referralCode'),
             copyButton: document.getElementById('copyButton'),
             shareButton: document.getElementById('shareButton'),
-            userName: document.getElementById('userName'),
-            tokensEarned: document.getElementById('tokensEarned'),
-            referralInput: document.getElementById('referralInput'),
-            directReferrals: document.getElementById('directReferrals'),
-            premiumStatusDiv: document.getElementById('premiumStatusDiv'),
-            premiumStatusText: document.getElementById('premiumStatusText'),
-            premiumButton: document.getElementById('premiumButton'),
+            matrixVisual: document.getElementById('matrixVisual'),
+            matrixSlots: document.getElementById('matrixSlots'),
+            levelsContainer: document.getElementById('levelsContainer'),
             usdtPaymentModal: document.getElementById('usdtPaymentModal'),
             closeUsdtModal: document.getElementById('closeUsdtModal')
         };
 
+        // API Functions
         async function makeAPIRequest(endpoint, options = {}) {
             const url = `${API_BASE}${endpoint}`;
-            const defaultOptions = {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                ...options
-            };
-
+            console.log('API Request:', url);
+            
             try {
-                console.log('API Request:', url);
-                const response = await fetch(url, defaultOptions);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
+                const response = await fetch(url, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    ...options
+                });
                 
                 const data = await response.json();
-                console.log('API Response:', data);
                 return { success: true, data };
             } catch (error) {
-                console.error('API Error:', error.message);
+                console.error('API Error:', error);
                 return { success: false, error: error.message };
             }
         }
 
-        async function checkAPIHealth() {
+        async function checkApiHealth() {
             elements.apiStatus.textContent = 'API: Testing...';
             elements.apiStatus.className = 'api-status testing';
             
-            try {
-                const result = await makeAPIRequest('/health');
-                
-                if (result.success) {
-                    const data = result.data;
-                    elements.apiStatus.textContent = `API: Online (${data.database?.users || 0} users)`;
-                    elements.apiStatus.className = 'api-status online';
-                    
-                    console.log('API Health:', {
-                        status: data.status,
-                        users: data.database?.users,
-                        bot: data.telegram?.bot,
-                        version: data.version
-                    });
-                    
-                    return true;
-                } else {
-                    throw new Error(result.error);
-                }
-            } catch (error) {
-                console.error('API Health check failed:', error);
+            const result = await makeAPIRequest('/health');
+            
+            if (result.success) {
+                const data = result.data;
+                elements.apiStatus.textContent = `API: Online (${data.users || 0} users, ${data.premiumUsers || 0} premium)`;
+                elements.apiStatus.className = 'api-status online';
+                return true;
+            } else {
                 elements.apiStatus.textContent = 'API: Offline';
                 elements.apiStatus.className = 'api-status offline';
                 return false;
             }
         }
 
+        // TON Connect Integration
         async function initTonConnect() {
             try {
                 tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
@@ -1183,7 +838,6 @@
                     handleWalletConnected(tonConnectUI.wallet);
                 }
             } catch (error) {
-                console.error('TON Connect init error:', error);
                 showStatus('TON Connect failed to load', 'error');
             }
         }
@@ -1194,14 +848,21 @@
             
             await updateWalletBalance(wallet.account.address);
             showStatus('Wallet connected successfully!', 'success');
-            await notifyBackendWalletConnection(wallet.account.address);
+            
+            // Notify backend
+            await makeAPIRequest('/ton/connect', {
+                method: 'POST',
+                body: JSON.stringify({
+                    telegramId: getTelegramUserId(),
+                    walletAddress: wallet.account.address
+                })
+            });
         }
 
         function handleWalletDisconnected() {
             elements.walletAddress.textContent = 'Not Connected';
             elements.walletBalance.textContent = '0 TON';
             elements.walletInfo.classList.remove('active');
-            showStatus('Wallet disconnected', 'error');
         }
 
         async function updateWalletBalance(address) {
@@ -1213,40 +874,23 @@
 
                 if (result.success) {
                     elements.walletBalance.textContent = `${result.data.balance} TON`;
-                } else {
-                    elements.walletBalance.textContent = '0 TON';
                 }
             } catch (error) {
                 elements.walletBalance.textContent = '0 TON';
             }
         }
 
-        async function notifyBackendWalletConnection(address) {
-            try {
-                const userId = getTelegramUserId();
-                
-                await makeAPIRequest('/ton/connect', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        telegramId: parseInt(userId),
-                        walletAddress: address
-                    })
-                });
-            } catch (error) {
-                console.error('Backend notification error:', error);
-            }
-        }
-
+        // User Functions
         function getTelegramUserId() {
             if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
                 const user = window.Telegram.WebApp.initDataUnsafe.user;
                 if (user && user.id) {
-                    return user.id.toString();
+                    return user.id;
                 }
             }
             
             const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get('user') || '123456789';
+            return parseInt(urlParams.get('user')) || 123456789;
         }
 
         function getTelegramUserData() {
@@ -1270,6 +914,145 @@
             };
         }
 
+        // Load User Data
+        async function loadUserData() {
+            try {
+                const userId = getTelegramUserId();
+                console.log('Loading user data for:', userId);
+                
+                const result = await makeAPIRequest(`/telegram-user/${userId}`);
+                
+                if (result.success) {
+                    currentUser = result.data.user;
+                    updateUserInterface(currentUser);
+                    console.log('User data loaded:', currentUser);
+                    return true;
+                } else {
+                    console.error('Failed to load user data:', result.error);
+                    showStatus('Failed to load user data', 'error');
+                    return false;
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                showStatus('Error loading user data', 'error');
+                return false;
+            }
+        }
+
+        // Update UI
+        function updateUserInterface(user) {
+            if (!user) return;
+            
+            // Update premium status
+            updatePremiumStatus(user.isPremium);
+            
+            if (user.isPremium) {
+                // Show matrix info
+                elements.matrixInfo.style.display = 'block';
+                elements.referralSection.style.display = 'block';
+                elements.matrixVisual.style.display = 'block';
+                
+                // Update matrix stats
+                elements.matrixLevel.textContent = user.matrix?.level || 1;
+                elements.directReferrals.textContent = `${user.totalDirectReferrals || 0}/3`;
+                elements.totalReferrals.textContent = user.stats?.totalReferrals || 0;
+                elements.completedLevels.textContent = `${user.stats?.completedLevels || 0}/12`;
+                
+                // Update referral link
+                elements.referralCode.textContent = user.referralLink || 'Loading...';
+                
+                // Update matrix visual
+                updateMatrixVisual(user.directReferrals || []);
+                
+                // Update levels
+                updateLevels(user.levels || {});
+            } else {
+                // Hide premium-only sections
+                elements.matrixInfo.style.display = 'none';
+                elements.referralSection.style.display = 'none';
+                elements.matrixVisual.style.display = 'none';
+                
+                // Show basic levels (locked)
+                updateLevels(user.levels || {});
+            }
+        }
+
+        function updatePremiumStatus(isPremium) {
+            if (isPremium) {
+                elements.premiumStatus.className = 'premium-status active';
+                elements.statusIcon.textContent = '✅';
+                elements.statusText.textContent = 'Premium Active';
+                elements.statusDescription.textContent = 'You can now build your 3x3 matrix and refer premium members!';
+                elements.premiumButton.style.display = 'none';
+            } else {
+                elements.premiumStatus.className = 'premium-status inactive';
+                elements.statusIcon.textContent = '❌';
+                elements.statusText.textContent = 'Premium Required';
+                elements.statusDescription.textContent = 'Purchase Premium ($11 USDT) to unlock matrix referral system';
+                elements.premiumButton.style.display = 'block';
+            }
+        }
+
+        function updateMatrixVisual(referrals) {
+            const slots = elements.matrixSlots.children;
+            
+            for (let i = 0; i < 3; i++) {
+                const slot = slots[i];
+                const referral = referrals[i];
+                
+                if (referral) {
+                    slot.className = 'matrix-slot filled';
+                    slot.innerHTML = `
+                        <div class="slot-number">Slot ${i + 1}</div>
+                        <div class="slot-username">@${referral.username}</div>
+                    `;
+                } else {
+                    slot.className = 'matrix-slot';
+                    slot.innerHTML = `
+                        <div class="slot-number">Slot ${i + 1}</div>
+                        <div class="slot-empty">Empty</div>
+                    `;
+                }
+            }
+        }
+
+        function updateLevels(levels) {
+            elements.levelsContainer.innerHTML = '';
+            
+            for (let level = 1; level <= 12; level++) {
+                const levelData = levels[level] || {
+                    current: 0,
+                    required: Math.pow(3, level),
+                    completed: false,
+                    reward: Math.pow(3, level) * 10,
+                    canClaim: false,
+                    locked: !currentUser?.isPremium
+                };
+                
+                const levelItem = document.createElement('div');
+                levelItem.className = `level-item ${levelData.completed ? 'completed' : ''} ${levelData.locked ? 'locked' : ''}`;
+                
+                levelItem.innerHTML = `
+                    <div class="level-info">
+                        <div class="level-name">Level ${level}</div>
+                        <div class="level-progress">${levelData.current}/${levelData.required} referrals</div>
+                    </div>
+                    <div class="level-reward">
+                        <div class="reward-amount">${levelData.reward.toLocaleString()}</div>
+                        ${levelData.canClaim ? 
+                            `<button class="claim-button" onclick="claimReward(${level})">Claim</button>` : 
+                            levelData.locked ? 
+                                `<button class="claim-button" disabled>Premium Required</button>` :
+                                `<button class="claim-button" disabled>Not Complete</button>`
+                        }
+                    </div>
+                `;
+                
+                elements.levelsContainer.appendChild(levelItem);
+            }
+        }
+
+        // Payment Functions
         function showUSDTPayment() {
             if (!currentWallet) {
                 showStatus('Please connect your TON wallet first!', 'error');
@@ -1293,7 +1076,7 @@
                 showStatus('Preparing USDT payment...', 'loading');
                 
                 const userId = getTelegramUserId();
-                const comment = `NotFrens Premium Payment - User ID: ${userId}`;
+                const comment = `NotFrens Matrix Premium - User ID: ${userId}`;
                 
                 const transaction = {
                     validUntil: Math.floor(Date.now() / 1000) + 600,
@@ -1308,11 +1091,12 @@
                 
                 showStatus('Payment sent! Activating premium...', 'success');
                 
+                // Notify backend
                 await makeAPIRequest('/payment/usdt', {
                     method: 'POST',
                     body: JSON.stringify({
-                        telegramId: parseInt(userId),
-                        type: 'usdt_direct',
+                        telegramId: userId,
+                        type: 'premium_purchase',
                         hash: result.boc,
                         from: currentWallet.account.address,
                         to: OWNER_USDT_ADDRESS,
@@ -1325,92 +1109,20 @@
                 elements.usdtPaymentModal.style.display = 'none';
                 
                 setTimeout(() => {
-                    updatePremiumStatus(user.isPremium);
-            updateDirectReferrals(user.directReferrals || []);
-            
-            if (user.levels) {
-                updateLevels(user.levels);
+                    showStatus('🎉 Premium activated! You can now build your matrix!', 'success');
+                    loadUserData(); // Reload user data
+                }, 2000);
+                
+            } catch (error) {
+                showStatus('Payment failed: ' + error.message, 'error');
+            } finally {
+                const payBtn = document.getElementById('usdtPayBtn');
+                payBtn.disabled = false;
+                payBtn.textContent = '💰 Send 11 USDT Payment';
             }
         }
 
-        function updatePremiumStatus(isPremium) {
-            if (isPremium) {
-                elements.premiumStatusDiv.className = 'premium-status premium';
-                elements.premiumStatusText.textContent = 'Premium ✅';
-                elements.premiumButton.style.display = 'none';
-                
-                if (currentUser) {
-                    currentUser.isPremium = true;
-                    updateLevels(currentUser.levels);
-                }
-            } else {
-                elements.premiumStatusDiv.className = 'premium-status not-premium';
-                elements.premiumStatusText.textContent = 'Premium ❌';
-                elements.premiumButton.style.display = 'block';
-            }
-        }
-
-        function updateDirectReferrals(referrals) {
-            elements.directReferrals.innerHTML = '';
-            
-            for (let i = 0; i < 3; i++) {
-                const referral = referrals[i];
-                const card = document.createElement('div');
-                card.className = 'referral-card';
-                
-                if (referral) {
-                    card.innerHTML = `
-                        <div class="referral-name">@${referral.username}</div>
-                        <div class="referral-status added">Added (+100 tokens)</div>
-                    `;
-                } else {
-                    card.innerHTML = `
-                        <div class="referral-name">Slot ${i + 1}</div>
-                        <div class="referral-status not-added">Empty</div>
-                    `;
-                }
-                
-                elements.directReferrals.appendChild(card);
-            }
-        }
-
-        function updateLevels(levels) {
-            Object.keys(levels).forEach(levelNum => {
-                const level = levels[levelNum];
-                const progressElement = document.getElementById(`level${levelNum}Progress`);
-                const claimButton = document.getElementById(`claim${levelNum}Button`);
-                
-                if (progressElement) {
-                    progressElement.textContent = `${level.current}/${level.required}`;
-                    
-                    if (level.completed && currentUser && currentUser.isPremium) {
-                        progressElement.style.color = '#55ff7f';
-                        
-                        if (claimButton && level.reward > 0) {
-                            claimButton.disabled = false;
-                            claimButton.textContent = 'Claim';
-                            claimButton.style.opacity = '1';
-                            claimButton.style.background = 'rgba(255, 215, 0, 0.3)';
-                        }
-                    } else if (level.completed && currentUser && !currentUser.isPremium) {
-                        progressElement.style.color = '#ff9500';
-                        
-                        if (claimButton && level.reward > 0) {
-                            claimButton.textContent = 'Premium Required';
-                            claimButton.disabled = true;
-                            claimButton.style.opacity = '0.5';
-                        }
-                    } else {
-                        if (claimButton && level.reward > 0) {
-                            claimButton.textContent = currentUser && currentUser.isPremium ? 'Not Complete' : 'Premium Required';
-                            claimButton.disabled = true;
-                            claimButton.style.opacity = '0.5';
-                        }
-                    }
-                }
-            });
-        }
-
+        // Claim Functions
         async function claimReward(level) {
             if (!currentUser) {
                 showStatus('Please load user data first!', 'error');
@@ -1423,181 +1135,40 @@
                 return;
             }
             
-            const button = document.getElementById(`claim${level}Button`);
+            const button = event.target;
             const originalText = button.textContent;
             
             button.textContent = 'Claiming...';
             button.disabled = true;
 
-            const result = await makeAPIRequest('/telegram-claim', {
-                method: 'POST',
-                body: JSON.stringify({
-                    telegramId: currentUser.telegramId,
-                    level: level
-                })
-            });
+            try {
+                const result = await makeAPIRequest('/telegram-claim', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        telegramId: currentUser.telegramId,
+                        level: level
+                    })
+                });
 
-            if (result.success) {
-                const claimData = result.data.claimRequest;
-                showStatus(`🎉 Claim submitted! Level ${claimData.level}: ${claimData.amount.toLocaleString()}`, 'success');
-                button.textContent = 'Claimed ✅';
-                button.style.background = 'rgba(46, 204, 113, 0.3)';
-                button.style.borderColor = 'rgba(46, 204, 113, 0.6)';
-            } else {
-                showStatus(`❌ Claim failed: ${result.error}`, 'error');
+                if (result.success) {
+                    const claimData = result.data.claimRequest;
+                    showStatus(`🎉 Claim submitted! Level ${claimData.level}: ${claimData.amount.toLocaleString()}`, 'success');
+                    button.textContent = 'Claimed ✅';
+                    button.style.background = 'rgba(85, 255, 127, 0.3)';
+                    button.style.borderColor = 'rgba(85, 255, 127, 0.6)';
+                } else {
+                    showStatus(`❌ Claim failed: ${result.error}`, 'error');
+                    button.textContent = originalText;
+                    button.disabled = false;
+                }
+            } catch (error) {
+                showStatus('Error processing claim', 'error');
                 button.textContent = originalText;
                 button.disabled = false;
             }
         }
 
-        function setupEventListeners() {
-            elements.frensButton?.addEventListener('click', function() {
-                elements.mainScreen.style.display = 'none';
-                elements.frensScreen.style.display = 'flex';
-            });
-            
-            elements.frensBackButton?.addEventListener('click', function() {
-                elements.frensScreen.style.display = 'none';
-                elements.mainScreen.style.display = 'flex';
-            });
-            
-            elements.closeUsdtModal?.addEventListener('click', function() {
-                elements.usdtPaymentModal.style.display = 'none';
-            });
-
-            window.addEventListener('click', function(event) {
-                if (event.target === elements.usdtPaymentModal) {
-                    elements.usdtPaymentModal.style.display = 'none';
-                }
-            });
-            
-            elements.copyButton?.addEventListener('click', function() {
-                const referralInput = elements.referralInput;
-                referralInput.select();
-                referralInput.setSelectionRange(0, 99999);
-                
-                try {
-                    document.execCommand('copy');
-                    this.textContent = 'Copied!';
-                    this.style.background = 'rgba(46, 204, 113, 0.3)';
-                    
-                    setTimeout(() => {
-                        this.textContent = 'Copy';
-                        this.style.background = 'rgba(255, 215, 0, 0.2)';
-                    }, 2000);
-                } catch (err) {
-                    navigator.clipboard.writeText(referralInput.value);
-                }
-            });
-            
-            elements.shareButton?.addEventListener('click', function() {
-                const referralLink = elements.referralInput.value;
-                
-                if (navigator.share) {
-                    navigator.share({
-                        title: 'Join NotFrens',
-                        text: 'Check out this awesome crypto project! Use my referral link:',
-                        url: referralLink
-                    });
-                } else {
-                    navigator.clipboard.writeText(referralLink);
-                    this.textContent = 'Copied!';
-                    this.style.background = 'rgba(46, 204, 113, 0.3)';
-                    
-                    setTimeout(() => {
-                        this.textContent = 'Share';
-                        this.style.background = 'rgba(255, 215, 0, 0.2)';
-                    }, 2000);
-                }
-            });
-
-            // API status click handler
-            elements.apiStatus?.addEventListener('click', function() {
-                checkAPIHealth();
-            });
-        }
-
-        async function initializeApp() {
-            console.log('🚀 Initializing NotFrens App...');
-            
-            setupEventListeners();
-            
-            // Initialize Telegram WebApp
-            if (window.Telegram && window.Telegram.WebApp) {
-                window.Telegram.WebApp.ready();
-                window.Telegram.WebApp.expand();
-                
-                const telegramUser = getTelegramUserData();
-                console.log('Telegram User:', telegramUser);
-            }
-            
-            // Check API health first
-            const apiHealthy = await checkAPIHealth();
-            
-            if (apiHealthy) {
-                console.log('✅ API is healthy, proceeding with initialization');
-            } else {
-                console.log('⚠️ API health check failed, but continuing with demo data');
-            }
-            
-            // Initialize TON Connect
-            await initTonConnect();
-            
-            // Load user data
-            setTimeout(() => {
-                loadUserData();
-            }, 1000);
-            
-            console.log('✅ App initialization complete');
-        }
-
-        // Error handling
-        window.addEventListener('error', function(event) {
-            console.error('Global error:', event.error);
-            showStatus('An error occurred. Please refresh the page.', 'error');
-        });
-
-        window.addEventListener('unhandledrejection', function(event) {
-            console.error('Unhandled promise rejection:', event.reason);
-        });
-
-        // Initialize app when DOM is ready
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeApp();
-        });
-
-        // Global functions for external access
-        window.showUSDTPayment = showUSDTPayment;
-        window.sendUSDTPayment = sendUSDTPayment;
-        window.claimReward = claimReward;
-        window.loadUserData = loadUserData;
-        window.checkAPIHealth = checkAPIHealth;
-        
-        // Debug functions
-        window.debugInfo = function() {
-            return {
-                currentUser,
-                currentWallet,
-                API_BASE,
-                apiStatus: elements.apiStatus.textContent
-            };
-        };
-    </script>
-</body>
-</html>true);
-                    showStatus('🎉 Premium activated! Level progression unlocked!', 'success');
-                    loadUserData();
-                }, 3000);
-                
-            } catch (error) {
-                showStatus('Payment failed: ' + error.message, 'error');
-            } finally {
-                const payBtn = document.getElementById('usdtPayBtn');
-                payBtn.disabled = false;
-                payBtn.textContent = '💰 Send 11 USDT Payment';
-            }
-        }
-
+        // Utility Functions
         function showStatus(message, type) {
             const statusEl = elements.statusMessage;
             statusEl.className = `status-message ${type}`;
@@ -1617,75 +1188,143 @@
             }
         }
 
-        async function loadUserData() {
-            try {
-                const userId = getTelegramUserId();
-                const userData = getTelegramUserData();
-                
-                console.log('Loading user data for:', userId);
-                
-                const result = await makeAPIRequest(`/telegram-user/${userId}`);
-                
-                if (result.success) {
-                    currentUser = result.data.user;
-                    updateUserInterface(currentUser);
-                    console.log('User data loaded:', currentUser);
-                    return true;
-                } else {
-                    console.log('Failed to load user data, using demo data');
-                    loadDemoData(userData);
-                    return false;
+        // Event Listeners
+        function setupEventListeners() {
+            // Close modal
+            elements.closeUsdtModal?.addEventListener('click', function() {
+                elements.usdtPaymentModal.style.display = 'none';
+            });
+
+            // Close modal on outside click
+            window.addEventListener('click', function(event) {
+                if (event.target === elements.usdtPaymentModal) {
+                    elements.usdtPaymentModal.style.display = 'none';
                 }
-            } catch (error) {
-                console.error('Error loading user data:', error);
-                const userData = getTelegramUserData();
-                loadDemoData(userData);
-                return false;
+            });
+            
+            // Copy referral link
+            elements.copyButton?.addEventListener('click', function() {
+                const referralCode = elements.referralCode.textContent;
+                
+                try {
+                    navigator.clipboard.writeText(referralCode);
+                    this.textContent = '✅ Copied!';
+                    this.style.background = 'rgba(85, 255, 127, 0.3)';
+                    
+                    setTimeout(() => {
+                        this.textContent = '📋 Copy';
+                        this.style.background = 'rgba(255, 215, 0, 0.2)';
+                    }, 2000);
+                } catch (err) {
+                    // Fallback for older browsers
+                    const textArea = document.createElement('textarea');
+                    textArea.value = referralCode;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    
+                    this.textContent = '✅ Copied!';
+                    setTimeout(() => {
+                        this.textContent = '📋 Copy';
+                    }, 2000);
+                }
+            });
+            
+            // Share referral link
+            elements.shareButton?.addEventListener('click', function() {
+                const referralLink = elements.referralCode.textContent;
+                
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Join NotFrens Matrix',
+                        text: 'Join the premium 3x3 matrix system and earn together!',
+                        url: referralLink
+                    });
+                } else {
+                    navigator.clipboard.writeText(referralLink);
+                    this.textContent = '✅ Shared!';
+                    this.style.background = 'rgba(85, 255, 127, 0.3)';
+                    
+                    setTimeout(() => {
+                        this.textContent = '📤 Share';
+                        this.style.background = 'rgba(255, 215, 0, 0.2)';
+                    }, 2000);
+                }
+            });
+
+            // API status click
+            elements.apiStatus?.addEventListener('click', function() {
+                checkApiHealth();
+            });
+        }
+
+        // App Initialization
+        async function initializeApp() {
+            console.log('🚀 Initializing NotFrens Matrix App...');
+            
+            setupEventListeners();
+            
+            // Initialize Telegram WebApp
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.ready();
+                window.Telegram.WebApp.expand();
+                
+                const telegramUser = getTelegramUserData();
+                console.log('Telegram User:', telegramUser);
             }
+            
+            // Check API health
+            const apiHealthy = await checkApiHealth();
+            
+            if (apiHealthy) {
+                console.log('✅ API is healthy');
+            } else {
+                console.log('⚠️ API health check failed');
+            }
+            
+            // Initialize TON Connect
+            await initTonConnect();
+            
+            // Load user data
+            setTimeout(() => {
+                loadUserData();
+            }, 1000);
+            
+            console.log('✅ App initialization complete');
         }
 
-        function loadDemoData(userData = null) {
-            const user = userData || getTelegramUserData();
-            
-            currentUser = {
-                telegramId: user.id,
-                username: user.username,
-                firstName: user.first_name,
-                lastName: user.last_name,
-                totalDirectReferrals: 2,
-                referralLink: `https://t.me/not_frens_bot?start=ref${user.id}`,
-                isPremium: false,
-                levels: {
-                    1: { current: 2, required: 1, completed: true, reward: 0 },
-                    2: { current: 2, required: 3, completed: false, reward: 0 },
-                    3: { current: 2, required: 9, completed: false, reward: 30 },
-                    4: { current: 2, required: 27, completed: false, reward: 0 },
-                    5: { current: 2, required: 81, completed: false, reward: 300 },
-                    6: { current: 2, required: 243, completed: false, reward: 0 },
-                    7: { current: 2, required: 729, completed: false, reward: 1800 },
-                    8: { current: 2, required: 2187, completed: false, reward: 0 },
-                    9: { current: 2, required: 6561, completed: false, reward: 20000 },
-                    10: { current: 2, required: 19683, completed: false, reward: 0 },
-                    11: { current: 2, required: 59049, completed: false, reward: 0 },
-                    12: { current: 2, required: 177147, completed: false, reward: 222000 }
-                },
-                directReferrals: [
-                    { username: 'Friend1', telegramId: 987654321 },
-                    { username: 'Friend2', telegramId: 555666777 }
-                ]
+        // Error handling
+        window.addEventListener('error', function(event) {
+            console.error('Global error:', event.error);
+            showStatus('An error occurred. Please refresh the page.', 'error');
+        });
+
+        // Initialize app when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        // Global functions
+        window.showUSDTPayment = showUSDTPayment;
+        window.sendUSDTPayment = sendUSDTPayment;
+        window.claimReward = claimReward;
+        window.loadUserData = loadUserData;
+        window.checkApiHealth = checkApiHealth;
+        
+        // Debug function
+        window.debugInfo = function() {
+            return {
+                currentUser,
+                currentWallet,
+                API_BASE,
+                apiStatus: elements.apiStatus.textContent
             };
-            
-            updateUserInterface(currentUser);
-        }
-
-        function updateUserInterface(user) {
-            if (!user) return;
-            
-            const totalTokens = user.totalDirectReferrals * 100;
-            elements.tokenBalance.textContent = `${totalTokens.toLocaleString()} NOTF`;
-            
-            elements.userName.textContent = `@${user.username}`;
-            elements.tokensEarned.textContent = `${totalTokens} Tokens Earned from Referrals`;
-            elements.referralInput.value = user.referralLink || `https://t.me/not_frens_bot?start=ref${user.telegramId}`;
-            
-            updatePremiumStatus(
+        };
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-
