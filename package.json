@@ -1,10 +1,22 @@
 {
   "name": "notfrens-app",
-  "version": "1.0.0",
+  "version": "4.0.0",
+  "description": "NotFrens - Complete Web3 Platform with TON Wallet & Real Payments",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "node server.js",
+    "production": "NODE_ENV=production node server.js"
   },
+  "keywords": [
+    "telegram",
+    "ton",
+    "web3",
+    "referral",
+    "crypto",
+    "miniapp",
+    "blockchain"
+  ],
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5",
@@ -13,5 +25,11 @@
   },
   "engines": {
     "node": ">=18.0.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/notfrens-app.git"
+  },
+  "author": "NotFrens Team",
+  "license": "MIT"
 }
