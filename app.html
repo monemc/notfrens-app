@@ -870,17 +870,17 @@
         </div>
     </div>
 
-    <!-- PREMIUM PAYMENT MODAL -->
-    <div class="modal" id="usdtPaymentModal">
+    <!-- TON PAYMENT MODAL -->
+    <div class="modal" id="tonPaymentModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">💎 Premium Upgrade - 11 USDT</h3>
-                <button class="close-modal" id="closeUsdtModal">×</button>
+                <h3 class="modal-title">💎 Premium Upgrade - 0.05 TON</h3>
+                <button class="close-modal" id="closeTonModal">×</button>
             </div>
             
             <div class="payment-amount">
-                <span class="currency">💰</span>
-                <span class="amount">11 USDT</span>
+                <span class="currency">💎</span>
+                <span class="amount">0.05 TON</span>
                 <span class="description">Premium Access</span>
             </div>
             
@@ -895,11 +895,11 @@
                 </ul>
             </div>
             
-            <button onclick="sendUSDTPayment()" class="payment-btn" id="usdtPayBtn">
-                💰 Send 11 USDT Payment
+            <button onclick="sendTONPayment()" class="payment-btn" id="tonPayBtn">
+                💎 Send 0.05 TON Payment
             </button>
             
-            <div style="margin-top: 15px; padding: 10px; background: rgba(255, 193, 7, 0.1); border-radius: 8px; font-size: 12px; color: rgba(255, 255, 255, 0.8);">
+            <div style="margin-top: 15px; padding: 10px; background: rgba(52, 152, 219, 0.1); border-radius: 8px; font-size: 12px; color: rgba(255, 255, 255, 0.8);">
                 ⚠️ <strong>Important:</strong> Payment will be sent to owner's wallet. After confirmation, premium will be activated automatically.
             </div>
         </div>
@@ -938,7 +938,7 @@
         
         <div class="premium-status not-premium" id="premiumStatusDiv">
             <span class="status-text" id="premiumStatusText">Premium ❌</span>
-            <button class="premium-button" id="premiumButton" onclick="showUSDTPayment()">Pay 11 USDT</button>
+            <button class="premium-button" id="premiumButton" onclick="showTONPayment()">Pay 0.05 TON</button>
         </div>
         
         <div class="user-tree">
@@ -1072,12 +1072,12 @@
         let currentWallet = null;
         let currentUser = null;
         
-        // ASOSIY MUAMMO - API_BASE konfiguratsiyasi tuzatildi
-        const API_BASE = 'https://notfrens.app/api';  // https:// qo'shildi
+        // PRODUCTION API BASE - REAL RAILWAY URL
+        const API_BASE = 'https://notfrens-app-production.up.railway.app/api';
         
         // Configuration
-        const OWNER_USDT_ADDRESS = "UQCpLxU30SVhlQ049kja71GohOM43YR3emTT3igMHsntmlkI";
-        const USDT_AMOUNT = 11;
+        const OWNER_TON_ADDRESS = "UQCpLxU30SVhlQ049kja71GohOM43YR3emTT3igMHsntmlkI";
+        const TON_AMOUNT = 0.05;
 
         const elements = {
             apiStatus: document.getElementById('apiStatus'),
@@ -1099,40 +1099,34 @@
             premiumStatusDiv: document.getElementById('premiumStatusDiv'),
             premiumStatusText: document.getElementById('premiumStatusText'),
             premiumButton: document.getElementById('premiumButton'),
-            usdtPaymentModal: document.getElementById('usdtPaymentModal'),
-            closeUsdtModal: document.getElementById('closeUsdtModal')
+            tonPaymentModal: document.getElementById('tonPaymentModal'),
+            closeTonModal: document.getElementById('closeTonModal')
         };
 
-        // API so'rovlarini optimizatsiya qilish
+        // API Request Function
         async function makeAPIRequest(endpoint, options = {}) {
             const url = `${API_BASE}${endpoint}`;
             const defaultOptions = {
+                method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
                 },
-                timeout: 10000, // 10 soniya timeout
                 ...options
             };
 
             try {
-                console.log('API Request:', url);
+                console.log('API Request:', url, defaultOptions);
                 
-                // Timeout promise
-                const timeoutPromise = new Promise((_, reject) => {
-                    setTimeout(() => reject(new Error('Request timeout')), 10000);
-                });
-                
-                const response = await Promise.race([
-                    fetch(url, defaultOptions),
-                    timeoutPromise
-                ]);
+                const response = await fetch(url, defaultOptions);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
                 
                 const data = await response.json();
+                console.log('API Response:', data);
+                
                 return { success: true, data };
             } catch (error) {
                 console.error('API Error:', error.message);
@@ -1140,33 +1134,29 @@
             }
         }
 
-        // API health check tuzatildi
+        // API Health Check
         async function checkAPIHealth() {
             elements.apiStatus.textContent = 'API: Testing...';
             elements.apiStatus.className = 'api-status testing';
             
-            try {
-                const result = await makeAPIRequest('/health');
-                
-                if (result.success) {
-                    elements.apiStatus.textContent = `API: Online (${result.data.users || 0} users)`;
-                    elements.apiStatus.className = 'api-status online';
-                    return true;
-                } else {
-                    throw new Error(result.error || 'API unavailable');
-                }
-            } catch (error) {
-                console.error('Health check failed:', error);
+            const result = await makeAPIRequest('/health');
+            
+            if (result.success) {
+                elements.apiStatus.textContent = `API: Online (${result.data.users || 0} users)`;
+                elements.apiStatus.className = 'api-status online';
+                return true;
+            } else {
                 elements.apiStatus.textContent = 'API: Offline';
                 elements.apiStatus.className = 'api-status offline';
                 return false;
             }
         }
 
+        // TON Connect Initialization
         async function initTonConnect() {
             try {
                 tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-                    manifestUrl: 'https://notfrens.app/tonconnect-manifest.json',
+                    manifestUrl: 'https://notfrens-app-production.up.railway.app/tonconnect-manifest.json',
                     buttonRootId: 'ton-connect-ui'
                 });
 
@@ -1185,11 +1175,12 @@
                     handleWalletConnected(tonConnectUI.wallet);
                 }
             } catch (error) {
-                console.error('TON Connect error:', error);
                 showStatus('TON Connect failed to load', 'error');
+                console.error('TON Connect Error:', error);
             }
         }
 
+        // Wallet Connected Handler
         async function handleWalletConnected(wallet) {
             elements.walletAddress.textContent = wallet.account.address;
             elements.walletInfo.classList.add('active');
@@ -1199,6 +1190,7 @@
             await notifyBackendWalletConnection(wallet.account.address);
         }
 
+        // Wallet Disconnected Handler
         function handleWalletDisconnected() {
             elements.walletAddress.textContent = 'Not Connected';
             elements.walletBalance.textContent = '0 TON';
@@ -1206,6 +1198,7 @@
             showStatus('Wallet disconnected', 'error');
         }
 
+        // Update Wallet Balance
         async function updateWalletBalance(address) {
             try {
                 const result = await makeAPIRequest('/ton/balance', {
@@ -1219,11 +1212,11 @@
                     elements.walletBalance.textContent = '0 TON';
                 }
             } catch (error) {
-                console.error('Balance check error:', error);
                 elements.walletBalance.textContent = '0 TON';
             }
         }
 
+        // Notify Backend Wallet Connection
         async function notifyBackendWalletConnection(address) {
             try {
                 const userId = getTelegramUserId();
@@ -1240,34 +1233,59 @@
             }
         }
 
+        // Get Telegram User ID
         function getTelegramUserId() {
-            // Telegram WebApp dan user ID olish
+            // Try to get user ID from Telegram WebApp
             if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
                 const user = window.Telegram.WebApp.initDataUnsafe.user;
                 if (user && user.id) {
+                    console.log('Real Telegram User ID:', user.id);
                     return user.id.toString();
                 }
             }
             
-            // URL parametridan fallback
+            // URL'dan user ID olish
             const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get('user') || '123456789';
+            const urlUserId = urlParams.get('user');
+            if (urlUserId) {
+                console.log('URL User ID:', urlUserId);
+                return urlUserId;
+            }
+            
+            // Demo ID (development uchun)
+            const demoId = '123456789';
+            console.log('Using demo ID:', demoId);
+            return demoId;
         }
 
+        // Get Telegram User Data
         function getTelegramUserData() {
             if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
                 const user = window.Telegram.WebApp.initDataUnsafe.user;
                 if (user) {
                     return {
                         id: user.id,
-                        username: user.username || 'User',
-                        first_name: user.first_name || 'Unknown',
+                        username: user.username || `User${user.id}`,
+                        first_name: user.first_name || 'User',
                         last_name: user.last_name || ''
                     };
                 }
             }
             
-            // Demo data
+            // URL'dan user ID olish
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlUserId = urlParams.get('user');
+            
+            if (urlUserId) {
+                return {
+                    id: parseInt(urlUserId),
+                    username: `User${urlUserId}`,
+                    first_name: 'User',
+                    last_name: ''
+                };
+            }
+            
+            // Demo foydalanuvchi (test uchun)
             return {
                 id: 123456789,
                 username: 'DemoUser',
@@ -1276,78 +1294,84 @@
             };
         }
 
-        function showUSDTPayment() {
+        // Show TON Payment Modal
+        function showTONPayment() {
             if (!currentWallet) {
                 showStatus('Please connect your TON wallet first!', 'error');
                 return;
             }
             
-            elements.usdtPaymentModal.style.display = 'flex';
+            elements.tonPaymentModal.style.display = 'flex';
         }
 
-        async function sendUSDTPayment() {
+        // Send TON Payment
+        async function sendTONPayment() {
             if (!currentWallet) {
                 showStatus('Wallet not connected!', 'error');
                 return;
             }
             
             try {
-                const payBtn = document.getElementById('usdtPayBtn');
+                const payBtn = document.getElementById('tonPayBtn');
                 payBtn.disabled = true;
                 payBtn.textContent = 'Processing...';
                 
-                showStatus('Preparing USDT payment...', 'loading');
+                showStatus('Preparing TON payment...', 'loading');
                 
                 const userId = getTelegramUserId();
                 const comment = `NotFrens Premium Payment - User ID: ${userId}`;
                 
-                // USDT transaction
+                // Sodda TON transfer (xavfsiz)
                 const transaction = {
-                    validUntil: Math.floor(Date.now() / 1000) + 600,
+                    validUntil: Math.floor(Date.now() / 1000) + 300, // 5 minut
                     messages: [{
-                        address: OWNER_USDT_ADDRESS,
-                        amount: (USDT_AMOUNT * 1000000).toString(),
-                        payload: btoa(comment)
+                        address: OWNER_TON_ADDRESS,
+                        amount: "50000000", // 0.05 TON (nanoton)
+                        payload: btoa(comment) // Base64 encoded comment
                     }]
                 };
                 
+                console.log('Sending TON transaction:', transaction);
+                
                 const result = await tonConnectUI.sendTransaction(transaction);
                 
-                showStatus('Payment sent! Activating premium...', 'success');
+                showStatus('Payment sent! Verifying...', 'success');
                 
-                // Backend ga xabar berish
-                await makeAPIRequest('/payment/usdt', {
+                // Backend'ga to'lov ma'lumotini yuborish
+                const paymentResult = await makeAPIRequest('/payment/ton', {
                     method: 'POST',
                     body: JSON.stringify({
                         telegramId: parseInt(userId),
-                        type: 'usdt_direct',
+                        type: 'ton_direct',
                         hash: result.boc,
                         from: currentWallet.account.address,
-                        to: OWNER_USDT_ADDRESS,
-                        amount: USDT_AMOUNT,
+                        to: OWNER_TON_ADDRESS,
+                        amount: 0.05,
                         comment: comment,
-                        usdtEquivalent: USDT_AMOUNT
+                        usdtEquivalent: 11 // 11 USDT'ga teng deb hisoblaymiz
                     })
                 });
                 
-                elements.usdtPaymentModal.style.display = 'none';
-                
-                setTimeout(() => {
+                if (paymentResult.success) {
+                    elements.tonPaymentModal.style.display = 'none';
                     updatePremiumStatus(true);
                     showStatus('🎉 Premium activated! Level progression unlocked!', 'success');
-                    loadUserData();
-                }, 3000);
+                    await loadUserData();
+                } else {
+                    throw new Error(paymentResult.error || 'Payment verification failed');
+                }
                 
             } catch (error) {
                 console.error('Payment error:', error);
                 showStatus('Payment failed: ' + error.message, 'error');
             } finally {
-                const payBtn = document.getElementById('usdtPayBtn');
+                const payBtn = document.getElementById('tonPayBtn');
                 payBtn.disabled = false;
-                payBtn.textContent = '💰 Send 11 USDT Payment';
+                payBtn.textContent = '💎 Send 0.05 TON Payment';
             }
         }
 
+        // Show Status Message
         function showStatus(message, type) {
             const statusEl = elements.statusMessage;
             statusEl.className = `status-message ${type}`;
@@ -1367,34 +1391,38 @@
             }
         }
 
-        // User ma'lumotlarini yuklash optimizatsiya qilindi
+        // Load User Data
         async function loadUserData() {
             try {
                 const userId = getTelegramUserId();
                 const userData = getTelegramUserData();
                 
-                showStatus('Loading user data...', 'loading');
+                showStatus('Ma\'lumotlar yuklanmoqda...', 'loading');
                 
                 const result = await makeAPIRequest(`/telegram-user/${userId}`);
                 
-                if (result.success) {
+                if (result.success && result.data.user) {
                     currentUser = result.data.user;
                     updateUserInterface(currentUser);
-                    showStatus('User data loaded!', 'success');
+                    showStatus('Ma\'lumotlar muvaffaqiyatli yuklandi!', 'success');
+                    console.log('Real user data loaded:', currentUser);
                     return true;
                 } else {
-                    console.log('Using demo data:', result.error);
-                    loadDemoData(userData);
-                    return false;
+                    throw new Error(result.error || 'API dan ma\'lumot olmadi');
                 }
             } catch (error) {
-                console.error('Load user data error:', error);
+                console.error('API bilan bog\'lanishda xatolik:', error);
+                
+                // Demo ma'lumotlarni yuklash (0 dan boshlash)
                 const userData = getTelegramUserData();
                 loadDemoData(userData);
+                
+                showStatus('Demo rejimda ishlayapti (offline)', 'error');
                 return false;
             }
         }
 
+        // Load Demo Data (Starting from ZERO)
         function loadDemoData(userData = null) {
             const user = userData || getTelegramUserData();
             
@@ -1403,50 +1431,79 @@
                 username: user.username,
                 firstName: user.first_name,
                 lastName: user.last_name,
-                totalDirectReferrals: 2,
-                referralLink: `https://t.me/not_frens_bot?start=ref${user.id}`,
+                totalDirectReferrals: 0, // 0 dan boshlash
+                referralLink: generateReferralLink(user.id),
                 isPremium: false,
-                levels: {
-                    1: { current: 2, required: 1, completed: true, reward: 0 },
-                    2: { current: 2, required: 3, completed: false, reward: 0 },
-                    3: { current: 2, required: 9, completed: false, reward: 30 },
-                    4: { current: 2, required: 27, completed: false, reward: 0 },
-                    5: { current: 2, required: 81, completed: false, reward: 300 },
-                    6: { current: 2, required: 243, completed: false, reward: 0 },
-                    7: { current: 2, required: 729, completed: false, reward: 1800 },
-                    8: { current: 2, required: 2187, completed: false, reward: 0 },
-                    9: { current: 2, required: 6561, completed: false, reward: 20000 },
-                    10: { current: 2, required: 19683, completed: false, reward: 0 },
-                    11: { current: 2, required: 59049, completed: false, reward: 0 },
-                    12: { current: 2, required: 177147, completed: false, reward: 222000 }
-                },
-                directReferrals: [
-                    { username: 'Friend1', telegramId: 987654321 },
-                    { username: 'Friend2', telegramId: 555666777 }
-                ]
+                levels: generateEmptyLevels(),
+                directReferrals: [], // Bo'sh array
+                stats: {
+                    totalTokensEarned: 0,
+                    levelsCompleted: 0,
+                    totalEarningsPotential: 0
+                }
             };
             
             updateUserInterface(currentUser);
+            console.log('Demo data loaded (starting from zero):', currentUser);
         }
 
+        // Generate Referral Link
+        function generateReferralLink(userId) {
+            return `https://t.me/not_frens_bot?start=ref${userId}`;
+        }
+
+        // Generate Empty Levels
+        function generateEmptyLevels() {
+            const levels = {};
+            const levelRequirements = [0, 1, 3, 9, 27, 81, 243, 729, 2187, 6561, 19683, 59049, 177147];
+            const levelRewards = [0, 0, 0, 30, 0, 300, 0, 1800, 0, 20000, 0, 0, 222000];
+            
+            for (let i = 1; i <= 12; i++) {
+                levels[i] = {
+                    current: 0, // Hamma levellar 0 dan boshlaydi
+                    required: levelRequirements[i],
+                    completed: false,
+                    reward: levelRewards[i],
+                    hasReward: levelRewards[i] > 0,
+                    premiumRequired: i >= 3, // 3-leveldan boshlab premium kerak
+                    canProgress: false
+                };
+            }
+            
+            return levels;
+        }
+
+        // Update User Interface
         function updateUserInterface(user) {
             if (!user) return;
             
+            // Token balansini 0 dan boshlash
             const totalTokens = user.totalDirectReferrals * 100;
-            elements.tokenBalance.textContent = `${totalTokens.toLocaleString()} NOTF`;
+            elements.tokenBalance.textContent = `${totalTokens} NOTF`;
             
+            // User ma'lumotlari
             elements.userName.textContent = `@${user.username}`;
             elements.tokensEarned.textContent = `${totalTokens} Tokens Earned from Referrals`;
-            elements.referralInput.value = user.referralLink || `https://t.me/not_frens_bot?start=ref${user.telegramId}`;
             
+            // Referal linkni to'g'ri ko'rsatish
+            const referralLink = user.referralLink || generateReferralLink(user.telegramId);
+            elements.referralInput.value = referralLink;
+            
+            // Premium statusni yangilash
             updatePremiumStatus(user.isPremium);
+            
+            // Direct referrallarni yangilash
             updateDirectReferrals(user.directReferrals || []);
             
+            // Levelllarni yangilash
             if (user.levels) {
                 updateLevels(user.levels);
             }
+            
+            console.log('User interface updated:', user);
         }
 
+        // Update Premium Status
         function updatePremiumStatus(isPremium) {
             if (isPremium) {
                 elements.premiumStatusDiv.className = 'premium-status premium';
@@ -1455,6 +1512,7 @@
                 
                 if (currentUser) {
                     currentUser.isPremium = true;
+                    // Update levels with premium access
                     updateLevels(currentUser.levels);
                 }
             } else {
@@ -1464,6 +1522,7 @@
             }
         }
 
+        // Update Direct Referrals
         function updateDirectReferrals(referrals) {
             elements.directReferrals.innerHTML = '';
             
@@ -1488,6 +1547,7 @@
             }
         }
 
+        // Update Levels
         function updateLevels(levels) {
             Object.keys(levels).forEach(levelNum => {
                 const level = levels[levelNum];
@@ -1525,6 +1585,7 @@
             });
         }
 
+        // Claim Reward
         async function claimReward(level) {
             if (!currentUser) {
                 showStatus('Please load user data first!', 'error');
@@ -1533,7 +1594,7 @@
 
             if (!currentUser.isPremium) {
                 showStatus('Premium required for claiming rewards!', 'error');
-                showUSDTPayment();
+                showTONPayment();
                 return;
             }
             
@@ -1564,27 +1625,33 @@
             }
         }
 
+        // Setup Event Listeners
         function setupEventListeners() {
+            // Frens button
             elements.frensButton?.addEventListener('click', function() {
                 elements.mainScreen.style.display = 'none';
                 elements.frensScreen.style.display = 'flex';
             });
             
+            // Back button
             elements.frensBackButton?.addEventListener('click', function() {
                 elements.frensScreen.style.display = 'none';
                 elements.mainScreen.style.display = 'flex';
             });
             
-            elements.closeUsdtModal?.addEventListener('click', function() {
-                elements.usdtPaymentModal.style.display = 'none';
+            // Close modal
+            elements.closeTonModal?.addEventListener('click', function() {
+                elements.tonPaymentModal.style.display = 'none';
             });
 
+            // Close modal when clicking outside
             window.addEventListener('click', function(event) {
-                if (event.target === elements.usdtPaymentModal) {
-                    elements.usdtPaymentModal.style.display = 'none';
+                if (event.target === elements.tonPaymentModal) {
+                    elements.tonPaymentModal.style.display = 'none';
                 }
             });
             
+            // Copy button
             elements.copyButton?.addEventListener('click', function() {
                 const referralInput = elements.referralInput;
                 referralInput.select();
@@ -1604,6 +1671,7 @@
                 }
             });
             
+            // Share button
             elements.shareButton?.addEventListener('click', function() {
                 const referralLink = elements.referralInput.value;
                 
@@ -1624,51 +1692,68 @@
                     }, 2000);
                 }
             });
-
-            // API status ni bosish orqali tekshirish
-            elements.apiStatus?.addEventListener('click', function() {
-                checkAPIHealth();
-            });
         }
 
-        // App ni ishga tushirish
+        // Initialize Zero State
+        function initializeZeroState() {
+            // Token balansini 0 qilib qo'yish
+            elements.tokenBalance.textContent = '0 NOTF';
+            
+            // Referal ma'lumotlarini 0 qilib qo'yish
+            elements.tokensEarned.textContent = '0 Tokens Earned from Referrals';
+            
+            // Stats'ni 0 qilib qo'yish
+            const totalEarned = document.getElementById('totalEarned');
+            const withdrawn = document.getElementById('withdrawn');
+            
+            if (totalEarned) totalEarned.textContent = '$0';
+            if (withdrawn) withdrawn.textContent = '$0';
+            
+            // Direct referrallarni bo'sh qilib qo'yish
+            updateDirectReferrals([]);
+            
+            console.log('UI initialized with zero state');
+        }
+
+        // Initialize App
         async function initializeApp() {
-            console.log('🚀 Initializing NotFrens App...');
-            
             setupEventListeners();
+            await initTonConnect();
             
-            // Telegram WebApp ni sozlash
+            // Telegram WebApp'ni ishga tushirish
             if (window.Telegram && window.Telegram.WebApp) {
                 window.Telegram.WebApp.ready();
                 window.Telegram.WebApp.expand();
                 
                 const telegramUser = getTelegramUserData();
-                console.log('📱 Telegram User:', telegramUser);
+                console.log('Telegram User:', telegramUser);
             }
             
             // API holatini tekshirish
             const apiHealthy = await checkAPIHealth();
-            console.log('🌐 API Status:', apiHealthy ? 'Healthy' : 'Unhealthy');
             
-            // TON Connect ni ishga tushirish
-            await initTonConnect();
+            // UI'ni 0 holat bilan boshlash
+            initializeZeroState();
             
-            // User ma'lumotlarini yuklash
+            // Foydalanuvchi ma'lumotlarini yuklash
             setTimeout(() => {
                 loadUserData();
             }, 1000);
-            
-            console.log('✅ App initialization complete');
         }
 
-        // DOM yuklangandan keyin ishga tushirish
+        // Document Ready
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 NotFrens App Starting - PRODUCTION MODE');
+            console.log('📡 API Base:', API_BASE);
+            console.log('💎 Owner Address:', OWNER_TON_ADDRESS);
+            console.log('✅ All systems ready - starting from ZERO');
+            
             initializeApp();
         });
 
-        // Global funksiyalar
-        window.showUSDTPayment = showUSDTPayment;
-        window.sendUSDTPayment = sendUSDTPayment;
+        // Global functions
+        window.showTONPayment = showTONPayment;
+        window.sendTONPayment = sendTONPayment;
         window.claimReward = claimReward;
         window.loadUserData = loadUserData;
         window.checkAPIHealth = checkAPIHealth;
